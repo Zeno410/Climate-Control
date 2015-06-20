@@ -1,0 +1,49 @@
+
+package climateControl.biomeSettings;
+
+import climateControl.api.BiomeSettings;
+import climateControl.api.ClimateControlRules;
+import climateControl.ClimateDistribution;
+import climateControl.utils.Mutable;
+import java.io.File;
+import net.minecraftforge.common.config.Configuration;
+
+/**
+ *
+ * @author Zeno410
+ */
+public class ThaumcraftBiomeSettings extends BiomeSettings {
+    public static final String biomeCategory = "ThaumcraftBiome";
+
+    public ThaumcraftBiomeSettings() {
+        super(biomeCategory);
+        tainted.setDistribution(ClimateDistribution.PLAINS);
+        magicalForest.setDistribution(ClimateDistribution.PLAINS);
+        eerie.setDistribution(ClimateDistribution.PLAINS);
+    }
+
+    public final Element tainted = new Element("Tainted", 192,1);
+    public final Element magicalForest = new Element("Magical Forest", 193,7);
+    public final Element eerie = new Element("Eerie", 194,3);
+
+    @Override
+    public void setNativeBiomeIDs(File configDirectory) {
+        Configuration config = new Configuration(new File(configDirectory,"Thaumcraft.cfg"));
+        tainted.biomeID().set(config.get("biomes","biome_taint", 192).getInt());
+        magicalForest.biomeID().set(config.get("biomes","biome_magical_forest", 193).getInt());
+        eerie.biomeID().set(config.get("biomes","biome_eerie", 194).getInt());
+    }
+
+    @Override
+    public void setRules(ClimateControlRules rules) {
+        // nothing yet
+    }
+    static final String biomesOnName = "ThaumcraftBiomesOn";
+
+    public final Mutable<Boolean> biomesFromConfig = climateControlCategory.booleanSetting(
+                        biomesOnName, "", false);
+    @Override
+    public boolean biomesAreActive() {
+        return this.biomesFromConfig.value();
+    }
+}
