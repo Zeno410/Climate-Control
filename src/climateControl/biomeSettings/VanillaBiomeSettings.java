@@ -2,8 +2,9 @@
 package climateControl.biomeSettings;
 
 import climateControl.api.BiomeSettings;
+import climateControl.api.Climate;
 import climateControl.api.ClimateControlRules;
-import climateControl.ClimateDistribution;
+import climateControl.api.ClimateDistribution;
 import climateControl.utils.Mutable;
 import java.io.File;
 
@@ -46,21 +47,21 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
 
     public static final String biomeCategory = "VanillaBiome";
 
-    Element birchForest = new Element(birchForestName, 27, 10);
-    Element coldTaiga = new Element(coldTaigaName,30 , 10);
-    Element desert = new Element(desertName, 2, 30, true);
-    Element extremeHills = new Element(extremeHillsName,3 , 20);
-    Element forest = new Element(forestName,4 , 20);
-    Element icePlains = new Element(icePlainsName,12 , 30);
-    Element jungle = new Element(jungleName,21, 5);
-    Element megaTaiga = new Element(megaTaigaName,32, 5);
-    Element mesaPlateau = new Element(mesaPlateauName,39, 1);
-    Element mesaPlateau_F = new Element(mesaPlateau_FName,38, 4);
-    Element plains = new Element(plainsName, 1,30,true);
-    Element roofedForest = new Element(roofedForestName,29, 10);
-    Element savanna = new Element(savannaName,35, 20,true);
-    Element swampland = new Element(swamplandName,6, 10);
-    Element taiga = new Element(taigaName,5, 10);
+    Element birchForest = new Element(birchForestName, 27, 10,Climate.WARM.name);
+    Element coldTaiga = new Element(coldTaigaName,30 , 10,Climate.SNOWY.name);
+    Element desert = new Element(desertName, 2, 30, true,Climate.HOT.name);
+    Element extremeHills = new Element(extremeHillsName,3 , 20,ClimateDistribution.MEDIUM.name());
+    Element forest = new Element(forestName,4 , 20,ClimateDistribution.MEDIUM.name());
+    Element icePlains = new Element(icePlainsName,12 , 30,Climate.SNOWY.name);
+    Element jungle = new Element(jungleName,21, 5,Climate.WARM.name);
+    Element megaTaiga = new Element(megaTaigaName,32, 5,Climate.COOL.name);
+    Element mesaPlateau = new Element(mesaPlateauName,39, 1,Climate.HOT.name);
+    Element mesaPlateau_F = new Element(mesaPlateau_FName,38, 4,Climate.HOT.name);
+    Element plains = new Element(plainsName, 1,30,true,ClimateDistribution.PLAINS.name());
+    Element roofedForest = new Element(roofedForestName,29, 10,Climate.COOL.name);
+    Element savanna = new Element(savannaName,35, 20,true,Climate.HOT.name);
+    Element swampland = new Element(swamplandName,6, 10,Climate.WARM.name);
+    Element taiga = new Element(taigaName,5, 10,Climate.COOL.name);
     ID iceMountains = new ID("Ice Mountains",13);
     ID mushroomIsland = new ID("Mushroom Island",14);
     ID desertHills = new ID("Desert Hills",17);
@@ -98,12 +99,6 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
         super(biomeCategory);
         
         // set non-default distributions
-        jungle.setDistribution(ClimateDistribution.WARM);
-        megaTaiga.setDistribution(ClimateDistribution.COOL);
-        plains.setDistribution(ClimateDistribution.PLAINS);
-        swampland.setDistribution(ClimateDistribution.WARM);
-        roofedForest.setDistribution(ClimateDistribution.COOL);
-        taiga.setDistribution(ClimateDistribution.COOL);
 
         // set subBiome distributions
         desert.setSubBiome(desertHills);
@@ -133,6 +128,8 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     @Override
     public void setRules(ClimateControlRules rules) {
         setVillages(rules);
+        rules.disallowStoneBeach(mesaPlateau.biomeID().value());
+        rules.disallowStoneBeach(mesaPlateau_F.biomeID().value());
         // nothing yet
     }
     static final String biomesOnName = "VanillaBiomesOn";

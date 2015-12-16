@@ -13,6 +13,9 @@ import climateControl.customGenLayer.GenLayerAddBiome;
 import climateControl.customGenLayer.GenLayerDederpedHills;
 import climateControl.customGenLayer.GenLayerOceanicIslands;
 import climateControl.utils.RandomIntUser;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerAddIsland;
 import net.minecraft.world.gen.layer.GenLayerFuzzyZoom;
@@ -27,6 +30,7 @@ import net.minecraft.world.gen.layer.GenLayerZoom;
 import climateControl.customGenLayer.GenLayerAddLand;
 import climateControl.customGenLayer.GenLayerAdjustIsland;
 import climateControl.customGenLayer.GenLayerBiomeByClimate;
+import climateControl.customGenLayer.GenLayerCache;
 import climateControl.customGenLayer.GenLayerSmoothWithClimates;
 import climateControl.customGenLayer.GenLayerConstant;
 import climateControl.customGenLayer.GenLayerContinentalShelf;
@@ -41,8 +45,12 @@ import climateControl.customGenLayer.GenLayerRiverMixWrapper;
 import climateControl.customGenLayer.GenLayerSmoothWithBiomes;
 import climateControl.customGenLayer.GenLayerSubBiome;
 
+import climateControl.customGenLayer.GenLayerWidenRiver;
 import climateControl.customGenLayer.GenLayerZoomBiome;
 import climateControl.utils.Acceptor;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import net.minecraft.world.WorldType;
 /**
  * This class creates a world generator from a ClimateControlSettings and a world seed
@@ -72,6 +80,12 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
         GenLayer genlayeraddisland = new GenLayerAddLand(1L, genlayerfuzzyzoom);
         GenLayer smallContinents = new GenLayerOceanicIslands(2L, genlayeraddisland,
                 settings().mediumContinentFrequency.value(),settings().separateLandmasses.value());
+        try {
+            DataOutputStream recording = new DataOutputStream(new FileOutputStream(new File("/StackedRecordedDim.txt")));
+            smallContinents = new GenLayerCache(smallContinents,recording);
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
         genlayeraddisland = new GenLayerAddLand(1L, smallContinents);
         GenLayerZoom genlayerzoom = new GenLayerFuzzyZoom(2001L, genlayeraddisland);
         genlayeraddisland = new GenLayerAddLand(2L, smallContinents);
@@ -157,9 +171,9 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
         GenLayer genlayerriverinit = new GenLayerLessRiver(100L, genlayer,settings().percentageRiverReduction.value());
         GenLayer biomes = null;
         if (settings.randomBiomes.value()) {
-            biomes = new GenLayerRandomBiomes(par0,genlayer3);
+            biomes = new GenLayerRandomBiomes(par0,genlayer3,settings());
         } else {
-            biomes = new GenLayerBiomeByClimate(par0,genlayer3);
+            biomes = new GenLayerBiomeByClimate(par0,genlayer3,settings());
         }//par2WorldType.getBiomeLayer(par0, genlayer3);
         GenLayer object = new GenLayerZoomBiome(1000L, biomes);
         object = new GenLayerAddBiome(1000L, object);
@@ -178,7 +192,10 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
         }
         genlayer = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         genlayer = GenLayerZoom.magnify(1000L, genlayer, b0);
-        GenLayerRiver genlayerriver = new GenLayerRiver(1L, genlayer);
+        GenLayer genlayerriver = new GenLayerRiver(1L, genlayer);
+        if (settings.widerRivers.value()) {
+            genlayerriver = new GenLayerWidenRiver(1L, genlayerriver);
+        }
         GenLayerSmooth genlayersmooth = new GenLayerSmooth(1000L, genlayerriver);
         object = new GenLayerRareBiome(1001L, genlayerhills);
 
@@ -186,13 +203,13 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
         {
             object = new GenLayerZoom((long)(1000 + j), (GenLayer)object);
 
-            if (j == 0)
+            if (j == 1)
             {
                 object = new GenLayerAddIsland(3L, (GenLayer)object);
-                object  = new GenLayerSmoothWithClimates(100L,object);
+                //object  = new GenLayerSmoothWithClimates(100L,object);
             }
 
-            if (j == 1)
+            if (j == 0)
             {
                 try {
                     object = new HighlandsShoreGenGetter().shoreGen(object);
@@ -230,7 +247,7 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
             throw new RuntimeException();
             //biomes = new GenLayerRandomBiomes(par0,genlayer3);
         } else {
-            biomes = new HashEncodedBiomeByClimate(par0,genlayer3,biomeCodes,climateCodes);
+            biomes = new HashEncodedBiomeByClimate(par0,genlayer3,settings,biomeCodes,climateCodes);
         }//par2WorldType.getBiomeLayer(par0, genlayer3);
         GenLayer object = new EncodedZoom(1000L, biomes,biomeCodes);
         if (1>0) throw new RuntimeException();
@@ -246,7 +263,7 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
             genlayerhills = new GenLayerDederpedHills(1000L, object, genlayer1);
         } else {
             genlayerhills = new DecodingSubBiome(1000L, object,subBiomeChooser,mBiomeChooser,
-                    biomeCodes,climateCodes,BiomeRandomizer.instance.pickByClimate());
+                    biomeCodes,climateCodes,new BiomeRandomizer(settings().biomeSettings()).pickByClimate());
         }
         //genlayer = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         genlayer = object;// the encoding is now used for the river demarcations

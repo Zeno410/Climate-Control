@@ -5,6 +5,7 @@ import climateControl.BiomeRandomizer;
 import climateControl.utils.IntRandomizer;
 import climateControl.ClimateControl;
 
+import climateControl.api.ClimateControlSettings;
 import climateControl.generator.Decoder;
 import climateControl.generator.Encoder;
 import climateControl.utils.Acceptor;
@@ -27,10 +28,11 @@ public class HashEncodedBiomeByClimate extends EncodedBiomeByClimate {
     //private PlaneLocated<Integer> biomes = new PlaneLocated<Integer>();
     //private PlaneLocated<Integer> climates = new PlaneLocated<Integer>();
     public HashEncodedBiomeByClimate(long par1, GenLayer par3GenLayer,
+            ClimateControlSettings settings,
             Acceptor<Decoder> forBiomeEncoding,
             Acceptor<Decoder> forClimateEncoding){
 
-        super(par1,par3GenLayer);
+        super(par1,par3GenLayer,settings);
         this.parent = par3GenLayer;
 
         /*this.randomBiomeList = new BiomeGenBase[] {BiomeGenBase.desert, BiomeGenBase.desert, BiomeGenBase.savanna,

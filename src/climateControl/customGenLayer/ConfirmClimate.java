@@ -1,6 +1,6 @@
 
 package climateControl.customGenLayer;
-import climateControl.Climate;
+import climateControl.api.Climate;
 import climateControl.utils.Zeno410Logger;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.PlaneLocated;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.DataOutput;
+import java.util.Set;
 
 /**
  *
@@ -42,7 +43,9 @@ public class PlaneLocated<Type> implements SelfTrackable<PlaneLocated<Type>> {
     }
 
     public int size() {return storedVals.size();}
-    
+
+    public Set<PlaneLocation> locations() {return this.storedVals.keySet();}
+
     public static <StoredType> Streamer<PlaneLocated<StoredType>> streamer(Streamer<StoredType> typeStreamer) {
         return new PlaneLocatedStreamer(typeStreamer);
     }

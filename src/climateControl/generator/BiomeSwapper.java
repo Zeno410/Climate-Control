@@ -11,6 +11,11 @@ import java.util.ArrayList;
 public class BiomeSwapper {
     private int[] swaps = new int[256];
 
+    public BiomeSwapper() {
+        for (int i = 0; i < 256; i++) {
+            swaps[i] = i;
+        }
+    }
     public void clear() {
         for (int i = 0 ; i < swaps.length; i++) swaps[i] = i;
     }

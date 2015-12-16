@@ -4,6 +4,7 @@ import climateControl.BiomeRandomizer;
 import climateControl.utils.IntRandomizer;
 import climateControl.ClimateControl;
 
+import climateControl.api.ClimateControlSettings;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -22,7 +23,7 @@ public class GenLayerBiomeByClimate extends GenLayer {
 
     private BiomeRandomizer.PickByClimate pickByClimate;
 
-    public GenLayerBiomeByClimate(long par1, GenLayer par3GenLayer){
+    public GenLayerBiomeByClimate(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
         super(par1);
         this.parent = par3GenLayer;
 
@@ -34,7 +35,7 @@ public class GenLayerBiomeByClimate extends GenLayer {
             BiomeGenBase.megaTaiga, BiomeGenBase.jungle, BiomeGenBase.jungle};*/
 
 
-        biomeRandomizer = BiomeRandomizer.instance;
+        biomeRandomizer = new BiomeRandomizer(settings.biomeSettings());
         pickByClimate = biomeRandomizer.pickByClimate();
         randomCallback = new IntRandomizer() {
             public int nextInt(int maximum) {

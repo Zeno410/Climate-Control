@@ -4,6 +4,7 @@ package climateControl.utils;
 import climateControl.api.BiomePackage;
 import climateControl.api.BiomeSettings;
 import java.io.File;
+import java.util.logging.Logger;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.config.Configuration;
 
@@ -16,6 +17,7 @@ public class TaggedConfigManager<Type extends Settings> {
     private final String modConfigName;
     private final String groupDirectoryName;
     public final static String worldSpecificConfigFileName = "worldSpecificConfig";
+    public static Logger logger = new Zeno410Logger("TaggedConfigManager").logger();
 
     public TaggedConfigManager(String generalConfigName, String groupDirectoryName) {
         this.modConfigName = generalConfigName;
@@ -34,6 +36,7 @@ public class TaggedConfigManager<Type extends Settings> {
         File specificModFile = new File(specificDirectory,modConfigName);
         File specificAddOnDirectory = new File(specificDirectory,groupDirectoryName);
         if (!specificAddOnDirectory.exists()) specificAddOnDirectory.mkdir();
+        if (!specificAddOnDirectory.exists()) throw new RuntimeException(specificAddOnDirectory.getAbsolutePath());
         File specificAddonFile = new File(specificAddOnDirectory,namedSettings.name);
         readConfigs(specificModFile,specificAddonFile,settings,generalDirectory);
 
@@ -49,21 +52,25 @@ public class TaggedConfigManager<Type extends Settings> {
 
     private void readConfigs(File generalFile, File specificFile, Settings settings, File generalDirectory) {
         Configuration specific = null;
+        try {
+              settings.readForeignConfigs(generalDirectory);
+
+        } catch (ClassCastException e) {
+            // not a biome settings
+        }
         if (specificFile.exists()) {
             specific = new Configuration(specificFile);
             settings.readFrom(specific);
         } else {
             if (generalFile.exists()) {
+                Configuration general = new Configuration(generalFile);
                 settings.readFrom(new Configuration(generalFile));
+                settings.readForeignConfigs(generalDirectory);
+                settings.copyTo(general);
+                general.save();
             }
             specific = new Configuration(specificFile);
             settings.copyTo(specific);
-        }
-        try {
-            // need to develop an alternative to this forced cast.
-            ((BiomeSettings) (settings)).setNativeBiomeIDs(generalDirectory);
-        } catch (ClassCastException e) {
-            // not a biome settings
         }
         settings.copyTo(specific);
         specific.save();

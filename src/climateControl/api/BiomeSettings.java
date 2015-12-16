@@ -5,7 +5,7 @@ import climateControl.biomeSettings.*;
 import climateControl.utils.Mutable;
 import climateControl.utils.Settings;
 import climateControl.generator.BiomeSwapper;
-import climateControl.ClimateDistribution;
+import climateControl.api.ClimateDistribution;
 import climateControl.generator.SubBiomeChooser;
 import java.io.File;
 import java.util.ArrayList;
@@ -35,9 +35,12 @@ abstract public class BiomeSettings extends Settings {
         idCategory = category(categoryName+"IDs");
         incidenceCategory = category(categoryName+"Incidences");
         villagesCategory = category(categoryName+"Villages");
-        climateCategory = category(categoryName+"Climates");
+        climateCategory = category(categoryName+"Climates","Climate Types are: SNOWY,COOL,WARM,HOT,OCEAN,DEEP_OCEAN"+
+                "MEDIUM,PLAINS,LAND.  MEDIUM is COOL and WARM, PLAINS is COOL and WARM and HOT, LAND is all four land");
     }
 
+    public ArrayList<Element> elements() {return elements;}
+    
     public class ID {
         private Mutable<Integer> biomeID;
         private Mutable<Boolean> hasVillages;
@@ -62,6 +65,7 @@ abstract public class BiomeSettings extends Settings {
             this.hasVillages = villagesCategory.booleanSetting(name+" hasVillages", hasVillages);
             this.climate = climateCategory.stringSetting(name + " climate", climate);
             ids.add(this);
+            distribution = null;
         }
 
         public ID(String name, Mutable<Integer> ID) {
@@ -110,6 +114,42 @@ abstract public class BiomeSettings extends Settings {
         public void setSubBiome(ID subBiome) {
             subBiomeChooser = new BiomeReplacer.Fixed(subBiome.biomeID.value());
         }
+
+        private ClimateDistribution defaultDistribution() {
+            TempCategory temp = null;
+            try {
+                temp = BiomeGenBase.getBiomeGenArray()[biomeID().value()].getTempCategory();
+                //ClimateControl.logger.info(" temp for "+this.name + " biome id" + biomeID().value());
+                if (temp == BiomeGenBase.TempCategory.COLD) return ClimateDistribution.SNOWY;
+                if (temp == BiomeGenBase.TempCategory.MEDIUM) return ClimateDistribution.MEDIUM;
+                if (temp == BiomeGenBase.TempCategory.WARM) return ClimateDistribution.HOT;
+            } catch (Exception e) {
+                //ClimateControl.logger.info("temp for " + name + " error " + e.toString());
+            }
+            throw new NoTempSetting();
+        }
+
+        private ClimateDistribution distribution;
+        public void setDistribution(ClimateDistribution newDistribution) {
+            distribution = newDistribution;
+            this.climate.set(newDistribution.name());
+        }
+
+        public  ClimateDistribution distribution() {
+            if (distribution != null) return distribution;
+            return configDistribution();
+        }
+
+        public ClimateDistribution configDistribution() {
+            if (this.climate.value().equalsIgnoreCase("DEFAULT")) return defaultDistribution();
+            if (this.climate.value().equalsIgnoreCase("")) return defaultDistribution();
+            for (ClimateDistribution testedDistribution: ClimateDistribution.list) {
+                if (this.climate.value().equalsIgnoreCase(testedDistribution.name())) {
+                    return testedDistribution;
+                }
+            }
+            throw new RuntimeException("Climate "+climate.value()+" not recognized");
+        }
     }
 
     public class Element extends ID {
@@ -120,7 +160,6 @@ abstract public class BiomeSettings extends Settings {
             biomeIncidence.set(incidence);
             //biomeIncidence = groupCategory.intSetting(name+"Active", incidence);
             elements.add(this);
-            distribution = null;
         }
 
         public Element(String name, int ID, int incidence, boolean hasVillages) {
@@ -150,44 +189,13 @@ abstract public class BiomeSettings extends Settings {
         
         private Mutable<Integer> biomeIncidence;
 
-        private ClimateDistribution distribution;
         
-        public void setDistribution(ClimateDistribution newDistribution) {
-            distribution = newDistribution;
-        }
-        
-        public  ClimateDistribution distribution() {
-            if (distribution != null) return distribution;
-            return configDistribution();
-        }
 
-        public ClimateDistribution configDistribution() {
-            if (this.climate.value().equalsIgnoreCase("DEFAULT")) return defaultDistribution();
-            if (this.climate.value().equalsIgnoreCase("")) return defaultDistribution();
-            for (ClimateDistribution testedDistribution: ClimateDistribution.list) {
-                if (this.climate.value().equalsIgnoreCase(testedDistribution.name())) {
-                    return testedDistribution;
-                }
-            }
-            throw new RuntimeException("Climate "+climate.value()+" not recognized");
-        }
 
         public Mutable<Integer> biomeIncidences() {return biomeIncidence;}
         //private Mutable<Boolean> biomeActive() {return biomeActive;}
 
-        private ClimateDistribution defaultDistribution() {
-            TempCategory temp = null;
-            try {
-                temp = BiomeGenBase.getBiomeGenArray()[biomeID().value()].getTempCategory();
-                //ClimateControl.logger.info(" temp for "+this.name + " biome id" + biomeID().value());
-                if (temp == BiomeGenBase.TempCategory.COLD) return ClimateDistribution.SNOWY;
-                if (temp == BiomeGenBase.TempCategory.MEDIUM) return ClimateDistribution.MEDIUM;
-                if (temp == BiomeGenBase.TempCategory.WARM) return ClimateDistribution.HOT;
-            } catch (Exception e) {
-                //ClimateControl.logger.info("temp for " + name + " error " + e.toString());
-            }
-            throw new NoTempSetting();
-        }
+
     }
 
     public class NoTempSetting extends RuntimeException {}
@@ -242,6 +250,10 @@ abstract public class BiomeSettings extends Settings {
         return new ID(name, new ConcreteMutable<Integer>(biomeID));
     }
 
+    @Override
+    public void readForeignConfigs(File generalConfigDirectory) {
+        setNativeBiomeIDs(generalConfigDirectory);
+    }
     abstract public void setRules(ClimateControlRules rules);
     abstract public void setNativeBiomeIDs(File configDirectory);
 
@@ -260,4 +272,22 @@ abstract public class BiomeSettings extends Settings {
     public abstract boolean biomesAreActive();
 
     public void report() {}
+
+    public void nameDefaultClimates() {
+        for (ID element: this.ids) {
+            if (element.climate.value().equalsIgnoreCase("DEFAULT")) {
+                int biomeID = element.biomeID().value();
+                if (biomeID <0) continue;
+                if (biomeID >255) continue;
+                BiomeGenBase biome = BiomeGenBase.getBiomeGenArray()[biomeID];
+                //if (biome == null) continue;\
+                try {
+                    ClimateDistribution distribution = element.defaultDistribution();
+                    element.setDistribution(distribution);
+                } catch (NoTempSetting e) {
+                    // no action
+                }
+            }
+        }
+    }
 }

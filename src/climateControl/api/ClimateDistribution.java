@@ -1,11 +1,8 @@
 
-package climateControl;
+package climateControl.api;
 
-import climateControl.api.BiomeSettings;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -24,6 +21,7 @@ public class ClimateDistribution {
     public static ClimateDistribution PLAINS = new ClimateDistribution(Climate.COOL,Climate.WARM,Climate.HOT,"PLAINS");
     public static ClimateDistribution OCEAN = new ClimateDistribution(Climate.OCEAN,"OCEAN");
     public static ClimateDistribution DEEP_OCEAN = new ClimateDistribution(Climate.DEEP_OCEAN,"DEEP_OCEAN");
+    public static ClimateDistribution LAND = new ClimateDistribution(Climate.SNOWY,Climate.COOL,Climate.WARM,Climate.HOT,"LAND");
 
     public ClimateDistribution(Climate base,String name){
         climates.add(base);
@@ -46,11 +44,20 @@ public class ClimateDistribution {
         list.add(this);
     }
 
+    private ClimateDistribution(Climate one, Climate two, Climate three,Climate four,String name){
+        climates.add(one);
+        climates.add(two);
+        climates.add(three);
+        climates.add(four);
+        this.name = name;
+        list.add(this);
+    }
+
     public String name() {return name;}
     
     public class Incidence {
         public final int biome;
-        public final int incidence;
+        public final int incidence;  // final because it's constantly regenerated
         public final Climate climate;
         private Incidence(int biome, int incidence,Climate climate) {
             this.biome = biome;

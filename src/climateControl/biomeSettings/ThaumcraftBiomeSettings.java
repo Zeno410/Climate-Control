@@ -3,7 +3,7 @@ package climateControl.biomeSettings;
 
 import climateControl.api.BiomeSettings;
 import climateControl.api.ClimateControlRules;
-import climateControl.ClimateDistribution;
+import climateControl.api.ClimateDistribution;
 import climateControl.utils.Mutable;
 import java.io.File;
 import net.minecraftforge.common.config.Configuration;

@@ -1,7 +1,6 @@
 package climateControl.customGenLayer;
 
 import climateControl.api.ClimateControlSettings;
-import climateControl.OldClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;

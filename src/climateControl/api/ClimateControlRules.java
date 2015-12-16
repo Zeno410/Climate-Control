@@ -11,13 +11,13 @@ public class ClimateControlRules {
     private boolean[] noBeaches = new boolean[256];
     private boolean[] hasVillages = new boolean[256];
 
-    public boolean riversAllowed(int biomeID ) {return !riversDisallowed[biomeID];}
-    public boolean riversDisallowed(int biomeID ) {return riversDisallowed[biomeID];}
-    public boolean stoneBeachAllowed(int biomeID ) {return !stoneBeachDisallowed[biomeID];}
-    public boolean stoneBeachDisallowed(int biomeID ) {return stoneBeachDisallowed[biomeID];}
-    public boolean noBeachesAllowed(int biomeID ) {return noBeaches[biomeID];}
-    public boolean beachesAllowed(int biomeID ) {return !noBeaches[biomeID];}
-    public boolean hasVillages(int biomeID ) {return hasVillages[biomeID];}
+    public final boolean riversAllowed(int biomeID ) {return !riversDisallowed[biomeID];}
+    public final boolean riversDisallowed(int biomeID ) {return riversDisallowed[biomeID];}
+    public final boolean stoneBeachAllowed(int biomeID ) {return !stoneBeachDisallowed[biomeID];}
+    public final boolean stoneBeachDisallowed(int biomeID ) {return stoneBeachDisallowed[biomeID];}
+    public final boolean noBeachesAllowed(int biomeID ) {return noBeaches[biomeID];}
+    public final boolean beachesAllowed(int biomeID ) {return !noBeaches[biomeID];}
+    public final boolean hasVillages(int biomeID ) {return hasVillages[biomeID];}
 
     public void disallowRivers(int biomeID) {
         if (biomeID == -1 ) return;

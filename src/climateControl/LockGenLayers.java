@@ -58,7 +58,7 @@ public class LockGenLayers {
 
         }
         if (settings.biomeRingsNotSaved.value()> -1) {
-           biomeLock.lock(top, dimension, world, settings.biomeRingsNotSaved.value(), true);
+           biomeLock.lock(top, dimension, world, settings.biomeRingsNotSaved.value(), false);
         }
 
         if (settings.subBiomeRingsNotSaved.value()> -1) {
@@ -96,7 +96,7 @@ public class LockGenLayers {
         return new Filter<GenLayer>() {
             public boolean accepts(GenLayer tested) {
                 if (tested == null) return false;
-                LockGenLayer.logger.info(tested.getClass().getCanonicalName());
+                //LockGenLayer.logger.info(tested.getClass().getCanonicalName());
                 //if (tested.getClass().getCanonicalName().contains("GenLayerBiome")) return true; BiomeLayerBiomes
                 if (tested instanceof GenLayerBiome) return true;
                 if (tested instanceof GenLayerBiomeByClimate) return true;
@@ -116,7 +116,7 @@ public class LockGenLayers {
                 if (tested == null) return false;
                 // could be either the minecraft GenLayerRareBiome or a modded one
                 // so do this by name
-                LockGenLayer.logger.info(tested.getClass().getCanonicalName());
+                //LockGenLayer.logger.info(tested.getClass().getCanonicalName());
                 if (tested.getClass().getCanonicalName().contains("GenLayerRareBiome")) return true;
                 if (tested.getClass().getCanonicalName().contains("BiomeLayerSub")) return true;
                 if (tested instanceof GenLayerHillsOneSix) return true;
@@ -131,17 +131,17 @@ public class LockGenLayers {
             private GenLayerSmoothClimate smoothClimateLayer = null;
             public boolean accepts(GenLayer tested) {
                 if (tested == null) return false;
-                LockGenLayer.logger.info(tested.toString());
+                //LockGenLayer.logger.info(tested.toString());
                 if (tested instanceof GenLayerSmoothClimate) {
                     smoothClimateLayer = (GenLayerSmoothClimate)tested;
-                    LockGenLayer.logger.info("smooth climate is "+tested.toString());
-                    LockGenLayer.logger.info("parent is "+parent(tested).toString());
+                    //LockGenLayer.logger.info("smooth climate is "+tested.toString());
+                    //LockGenLayer.logger.info("parent is "+parent(tested).toString());
                     return false; // obviously not the parent
                 }
                 // not parent if we haven't hit the smoothclimate layer
                 if (smoothClimateLayer == null) return false;
                 if (tested.equals(parent(smoothClimateLayer))) {
-                    LockGenLayer.logger.info("smooth climate on "+tested.toString());
+                    //LockGenLayer.logger.info("smooth climate on "+tested.toString());
                     return true;
                 }
                 return false;

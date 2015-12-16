@@ -3,8 +3,9 @@ package climateControl.biomeSettings;
 
 import climateControl.api.BiomeSettings;
 import biomesoplenty.api.content.BOPCBiomes;
+import climateControl.api.Climate;
 import climateControl.api.ClimateControlRules;
-import climateControl.ClimateDistribution;
+import climateControl.api.ClimateDistribution;
 import climateControl.utils.Mutable;
 import java.io.File;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -17,10 +18,10 @@ public class BoPSettings extends BiomeSettings {
 
 
     //public final ID alpsForestSubBiome = new ID("Alps Forest (Sub-Biome)",63);
-    public final Element alpsForest = new Element("Alps Forest",99,0);
-    public final Element alps = new Element("Alps",177,5,"SNOWY");
+    public final Element alpsForest = new Element("Alps Forest",99,0,Climate.SNOWY.name);
+    public final Element alps = new Element("Alps",177,5,Climate.SNOWY.name);
     //public final ID alpsMountainside = new ID("Alps Mountainside (Sub-Biome)",64);
-    public final Element arctic = new Element("Arctic",178,10,true,"SNOWY");
+    public final Element arctic = new Element("Arctic",178,10,true,Climate.SNOWY.name);
     //public final ID autumnHills = new ID("Autumn Hills",58);
     //public final ID badlands = new ID("Badlands",179);
     public final Element bambooForest = new Element("Bamboo Forest",180,5,true,"WARM");
@@ -55,7 +56,7 @@ public class BoPSettings extends BiomeSettings {
     public final Element flowerField = new Element("Flower Field",199,3,true,"WARM");
     public final Element frostForest = new Element("Frost Forest",200,7,true,"SNOWY");
     public final Element fungiForest = new Element("Fungi Forest",201,3);
-    public final Element garden = new Element("Garden",202,3);
+    public final Element garden = new Element("Garden",202,3,ClimateDistribution.MEDIUM.name());
     public final ID glacier = new ID("Glacier",203);
     public final Element grassland = new Element("Grassland",204,true,"COOL");
     public final ID gravelBeach = new ID("Gravel Beach",75);
@@ -84,7 +85,7 @@ public class BoPSettings extends BiomeSettings {
     public final ID oasis = new ID("Oasis",224);
     //public final ID oceanicAbyss = new ID("Oceanic Abyss (Ocean)",72);
     public final Element ominousWoods = new Element("Ominous Woods",225,3,"COOL");
-    public final Element orchard = new Element("Orchard",226,0);
+    public final Element orchard = new Element("Orchard",226,0,ClimateDistribution.MEDIUM.name());
     public final Element originVally = new Element("Origin Valley",227,1,"MEDIUM");
     public final Element outback = new Element("Outback",228,7,true,"HOT");
     //public final ID overgrownBeach = new ID("Overgrown Beach",76);
@@ -98,7 +99,7 @@ public class BoPSettings extends BiomeSettings {
     public final ID quagmire = new ID("Quagmire",232);
     public final Element rainforest = new Element("Rainforest",233,5,true,"WARM");
     public final Element redwoodForest = new Element("Redwood Forest",234,7,true,"COOL");
-    public final Element sacredSprings = new Element("Sacred Springs",235,3);
+    public final Element sacredSprings = new Element("Sacred Springs",235,3,ClimateDistribution.MEDIUM.name());
     public final ID savanna = new ID("Savanna",236);
     public final ID savannaPlateau = new ID("Savanna Plateau (Sub-Biome)",61);
     public final ID scrubland = new ID("Scrubland",237);
@@ -111,7 +112,7 @@ public class BoPSettings extends BiomeSettings {
     public final Element sludgepit = new Element("Sludgepit",242,5,true,"WARM");
     public final Element snowyConiferousForest = new Element("Snowy Coniferous Forest",51,true,"SNOWY");
     public final ID spruceWoods = new ID("Spruce Woods",243,true);
-    public final Element steppe = new Element("Steppe",244,7,true);
+    public final Element steppe = new Element("Steppe",244,7,true,Climate.COOL.name);
     public final Element temperateRainforest = new Element("Temperate Rainforest",245,true,"WARM");
     //public final ID thickOminousWoodsSubBiome = new ID("Thick Ominous Woods (Sub-Biome)",68);
     //public final ID thickShrublandSubBiome = new ID("Thick Shrubland (Sub-Biome)",69);
@@ -132,62 +133,14 @@ public class BoPSettings extends BiomeSettings {
     public final Element wetland = new Element("Wetland",253,7,true,"WARM");
     public final Element woodland = new Element("Woodland",254,true,"WARM");
 
+    //public final Element denseForest = new Element("Dense Forest",56,false,"COOL");
+    //public final Element eucalyptusForest = new Element("Eucalyptus Forest",57,false,"WARM");
+    //public final Element landOfLakes = new Element("Land of Lakes",68,false,"COOL");
+    //public final ID landOfLakesMarsh = new Element("Land of Lakes Marsh",101,false,"COOL");
+    //public final Element xericShrubland = new Element("Xeric Shrubland",98,false,"HOT");
+
     public BoPSettings() {
         super("BoP");
-        /*alps.setDistribution(ClimateDistribution.SNOWY);
-        arctic.setDistribution(ClimateDistribution.SNOWY);
-        this.bambooForest.setDistribution(ClimateDistribution.WARM);
-        this.bayou.setDistribution(ClimateDistribution.WARM);
-        this.bog.setDistribution(ClimateDistribution.COOL);
-        this.borealForest.setDistribution(ClimateDistribution.COOL);
-        this.canyon.setDistribution(ClimateDistribution.HOT);
-        this.chaparral.setDistribution(ClimateDistribution.WARM);
-        this.cherryBlossomGrove.setDistribution(ClimateDistribution.COOL);
-        this.coniferousForest.setDistribution(ClimateDistribution.WARM);
-        this.crag.setDistribution(ClimateDistribution.MEDIUM);
-        this.deadForest.setDistribution(ClimateDistribution.COOL);
-        this.deadSwamp.setDistribution(ClimateDistribution.WARM);
-        this.deciduousForest.setDistribution(ClimateDistribution.WARM);
-        this.fen.setDistribution(ClimateDistribution.WARM);
-        this.flowerField.setDistribution(ClimateDistribution.WARM);
-        this.frostForest.setDistribution(ClimateDistribution.SNOWY);
-        this.grassland.setDistribution(ClimateDistribution.COOL);
-        this.grove.setDistribution(ClimateDistribution.COOL);
-        this.heathland.setDistribution(ClimateDistribution.COOL);
-        this.highland.setDistribution(ClimateDistribution.COOL);
-        this.jadeCliffs.setDistribution(ClimateDistribution.WARM);
-        this.lavenderFields.setDistribution(ClimateDistribution.WARM);
-        this.lushDesert.setDistribution(ClimateDistribution.HOT);
-        this.lushSwamp.setDistribution(ClimateDistribution.WARM);
-        this.mangrove.setDistribution(ClimateDistribution.WARM);
-        this.mapleWoods.setDistribution(ClimateDistribution.COOL);
-        this.marsh.setDistribution(ClimateDistribution.COOL);
-        this.meadow.setDistribution(ClimateDistribution.COOL);
-        this.moor.setDistribution(ClimateDistribution.COOL);
-        this.mountain.setDistribution(ClimateDistribution.MEDIUM);
-        this.mysticGrove.setDistribution(ClimateDistribution.MEDIUM);
-        this.ominousWoods.setDistribution(ClimateDistribution.COOL);
-        this.originVally.setDistribution(ClimateDistribution.MEDIUM);
-        this.outback.setDistribution(ClimateDistribution.HOT);
-        this.prairie.setDistribution(ClimateDistribution.WARM);
-        rainforest.setDistribution(ClimateDistribution.WARM);
-        redwoodForest.setDistribution(ClimateDistribution.COOL);
-        coralReef.setDistribution(ClimateDistribution.OCEAN);
-        kelpForest.setDistribution(ClimateDistribution.OCEAN);
-        this.seasonalForest.setDistribution(ClimateDistribution.COOL);
-        this.shield.setDistribution(ClimateDistribution.COOL);
-        this.shrubland.setDistribution(ClimateDistribution.COOL);
-        this.silkglades.setDistribution(ClimateDistribution.COOL);
-        this.sludgepit.setDistribution(ClimateDistribution.WARM);
-        this.snowyConiferousForest.setDistribution(ClimateDistribution.SNOWY);
-        this.temperateRainforest.setDistribution(ClimateDistribution.WARM);
-        this.thicket.setDistribution(ClimateDistribution.COOL);
-        this.tropicalRainforest.setDistribution(ClimateDistribution.HOT);
-        this.tropics.setDistribution(ClimateDistribution.HOT);
-        this.tundra.setDistribution(ClimateDistribution.SNOWY);
-        this.wasteland.setDistribution(ClimateDistribution.HOT);
-        this.wetland.setDistribution(ClimateDistribution.WARM);
-        this.woodland.setDistribution(ClimateDistribution.WARM);*/
     }
 
     //private setBoPID()
@@ -274,8 +227,21 @@ public class BoPSettings extends BiomeSettings {
         this.wasteland.setIDFrom(BOPCBiomes.wasteland);
         this.wetland.setIDFrom(BOPCBiomes.wetland);
         this.woodland.setIDFrom(BOPCBiomes.woodland);
+        /*this.denseForest.setIDFrom(BOPCBiomes.denseForest);
+        this.eucalyptusForest.setIDFrom(BOPCBiomes.eucalyptusForest);
+        this.landOfLakes.setIDFrom(BOPCBiomes.landOfLakes);
+        this.landOfLakesMarsh.setIDFrom(BOPCBiomes.landOfLakesMarsh);
+        this.xericShrubland.setIDFrom(BOPCBiomes.xericShrubland);*/
         } catch (java.lang.NoClassDefFoundError e) {
-            // not loaded, skip
+        } catch (java.lang.NoSuchFieldError e) {
+            throw e;
+            // disable the "new" biomes in case of "old" BoP
+            //this.denseForest.biomeID().set(-1);
+            //this.eucalyptusForest.biomeID().set(-1);
+            //this.landOfLakes.biomeID().set(-1);
+            //this.landOfLakesMarsh.biomeID().set(-1);
+            //this.xericShrubland.biomeID().set(-1);
+
         }
 
     }

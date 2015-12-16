@@ -2,16 +2,20 @@
 package climateControl.api;
 
 import climateControl.*;
-import climateControl.ClimateDistribution.Incidence;
+import climateControl.api.ClimateDistribution.Incidence;
+import climateControl.biomeSettings.ArsMagicaPackage;
 import climateControl.utils.Acceptor;
 import climateControl.utils.Mutable;
 import climateControl.utils.Settings;
 import climateControl.biomeSettings.BoPSettings;
 import climateControl.biomeSettings.BopPackage;
 import climateControl.biomeSettings.EBXLController;
+import climateControl.biomeSettings.GrowthcraftPackage;
 import climateControl.biomeSettings.HighlandsPackage;
 import climateControl.biomeSettings.OceanBiomeSettings;
+import climateControl.biomeSettings.ReikasPackage;
 import climateControl.biomeSettings.ThaumcraftPackage;
+import climateControl.biomeSettings.VampirismPackage;
 import climateControl.biomeSettings.VanillaBiomeSettings;
 import climateControl.utils.Named;
 import java.io.DataInput;
@@ -49,6 +53,7 @@ public class ClimateControlSettings extends Settings {
     static final String vanillaStructure = "VanillaLandAndClimate";
     static final String mushroomIslandIncidenceName = "Mushroom Island Incidence";
     static final String percentageRiverReductionName = "PercentRiverReduction";
+    static final String widerRiversName = "WiderRivers";
     static final String oneSixCompatibilityName = "1.6Compatibility";
     static final String oneSixExpansionName = "1.6Expansions";
     static final String noBoPSubBiomesName = "NoBoPSubBiomes";
@@ -118,6 +123,9 @@ public class ClimateControlSettings extends Settings {
     public final Mutable<Integer> percentageRiverReduction  = climateControlCategory.intSetting(
             percentageRiverReductionName, 0, "Percentage of rivers prevented; changes cause chunk boundaries at some rivers");
 
+    public final Mutable<Boolean> widerRivers = climateControlCategory.booleanSetting(
+            widerRiversName, "True for triple-width rivers", false);
+
     public final Mutable<Boolean> controlVillageBiomes = climateControlCategory.booleanSetting(
             controlVillageBiomesName, "Have Climate Control set the biomes for village generation; may be incompatible with village mods", false);
 
@@ -167,10 +175,10 @@ public class ClimateControlSettings extends Settings {
         }
     };
     public final Mutable<Boolean> interveneInHighlandsWorlds = climateControlCategory.booleanSetting(
-            interveneInHighlandsName, false, "impose Climate Control generation on Highlands world types. WARNING: WILL MAKE CHUNK WALLS ALL OVER");
+            interveneInHighlandsName, false, "impose Climate Control generation on Highlands world types");
 
    public final Mutable<Boolean> noBoPSubBiomes = climateControlCategory.booleanSetting(
-            noBoPSubBiomesName, false, "suppress Bop sub-biome generation");
+            noBoPSubBiomesName, true, "suppress Bop sub-biome generation");
 
     public final Mutable<Boolean> interveneInBOPWorlds = climateControlCategory.booleanSetting(
             interveneInBOPName, false, "impose Climate Control generation on the Biomes o' Plenty world type");
@@ -181,6 +189,7 @@ public class ClimateControlSettings extends Settings {
    
 
     public ClimateControlSettings() {
+        this.registeredBiomeSettings = BiomePackageRegistry.instance.freshBiomeSettings();
         try {
             // see if highlands is there
             BiomePackageRegistry.instance.register(new HighlandsPackage());
@@ -208,6 +217,32 @@ public class ClimateControlSettings extends Settings {
         } catch (java.lang.NoClassDefFoundError e){
             // EBXL isn't installed
         }
+        try {
+            // see if ChromatiCraft is there
+            BiomePackageRegistry.instance.register(new ReikasPackage());
+
+        } catch (java.lang.NoClassDefFoundError e){
+            // ChromatiCraft isn't installed
+        }
+        try {
+            // see if ArsMagica is there
+            BiomePackageRegistry.instance.register(new ArsMagicaPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // ArsMagica isn't installed
+        }
+        try {
+            // see if Growthcraft is there
+            BiomePackageRegistry.instance.register(new GrowthcraftPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // Growthcraft isn't installed
+        }
+
+        try {
+            // see if Vampirism is there
+            BiomePackageRegistry.instance.register(new VampirismPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // Vampirism isn't installed
+        }
     }
         public boolean doFull() {return !halfSize.value() && !quarterSize.value();}
         public boolean doHalf() {return halfSize.value() && !quarterSize.value();}
@@ -233,14 +268,18 @@ public class ClimateControlSettings extends Settings {
         return result;
     }
 
+    private final Collection<Named<BiomeSettings>> registeredBiomeSettings;
+
     public Collection<Named<BiomeSettings>> registeredBiomeSettings() {
-        return BiomePackageRegistry.instance.biomeSettings();
+        return registeredBiomeSettings;
 
     }
 
     public void setDefaults(File configDirectory) {
+        //this.vanillaBiomeSettings.nameDefaultClimates();
         for (Named<BiomeSettings> registered: registeredBiomeSettings()) {
             registered.object.setNativeBiomeIDs(configDirectory);
+            //registered.object.nameDefaultClimates();
         }
     }
 

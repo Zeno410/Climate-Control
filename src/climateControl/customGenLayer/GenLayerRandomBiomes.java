@@ -2,6 +2,7 @@ package climateControl.customGenLayer;
 
 import climateControl.BiomeRandomizer;
 
+import climateControl.api.ClimateControlSettings;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
 import net.minecraft.world.WorldType;
@@ -34,7 +35,7 @@ public class GenLayerRandomBiomes extends GenLayer {
 
     private BiomeRandomizer biomeRandomizer;
 
-    public GenLayerRandomBiomes(long par1, GenLayer par3GenLayer){
+    public GenLayerRandomBiomes(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
         super(par1);
         this.parent = par3GenLayer;
 
@@ -46,7 +47,7 @@ public class GenLayerRandomBiomes extends GenLayer {
             BiomeGenBase.megaTaiga, BiomeGenBase.jungle, BiomeGenBase.jungle};*/
 
 
-        biomeRandomizer = BiomeRandomizer.instance;
+        biomeRandomizer = new BiomeRandomizer(settings.biomeSettings());
     }
 
     public int nextInt(int maximum) {

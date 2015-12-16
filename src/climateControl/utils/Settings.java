@@ -8,6 +8,7 @@ import net.minecraftforge.common.config.Property;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.DataOutput;
+import java.io.File;
 
 
 /**
@@ -59,6 +60,10 @@ abstract public class Settings implements Streamable, ConfigReader {
         result = new Category(name,description);
         categories.put(name, result);
         return result;
+    }
+
+    public void readForeignConfigs(File generalConfigDirectory) {
+
     }
 
     public Category general() {return category(Configuration.CATEGORY_GENERAL);}

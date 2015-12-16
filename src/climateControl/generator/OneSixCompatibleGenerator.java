@@ -89,9 +89,9 @@ public class OneSixCompatibleGenerator extends AbstractWorldGenerator {
         GenLayer object = null;
 
         if (settings().randomBiomes.value()) {
-            object = new GenLayerRandomBiomes(worldSeed,genlayer3);
+            object = new GenLayerRandomBiomes(worldSeed,genlayer3,settings());
         } else {
-            object = new GenLayerBiomeByClimate(worldSeed,genlayer3);
+            object = new GenLayerBiomeByClimate(worldSeed,genlayer3,settings());
         }
 
         object.initWorldGenSeed(worldSeed);

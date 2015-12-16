@@ -1,5 +1,5 @@
 
-package climateControl;
+package climateControl.api;
 
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -25,7 +25,7 @@ public class Climate {
     public static Climate OCEAN = new Climate("Ocean");
     public static Climate DEEP_OCEAN = new Climate("Deep.Ocean");
     public final String name;
-    private Climate(String name) {
+    public Climate(String name) {
         this.name = name;
     }
 }

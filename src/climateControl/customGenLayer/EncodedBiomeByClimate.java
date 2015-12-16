@@ -6,6 +6,7 @@ import climateControl.BiomeRandomizer;
 import climateControl.utils.IntRandomizer;
 import climateControl.ClimateControl;
 
+import climateControl.api.ClimateControlSettings;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -26,7 +27,7 @@ public abstract class EncodedBiomeByClimate extends GenLayer {
 
     //private PlaneLocated<Integer> biomes = new PlaneLocated<Integer>();
     //private PlaneLocated<Integer> climates = new PlaneLocated<Integer>();
-    public EncodedBiomeByClimate(long par1, GenLayer par3GenLayer){
+    public EncodedBiomeByClimate(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
 
         super(par1);
         this.parent = par3GenLayer;
@@ -39,7 +40,7 @@ public abstract class EncodedBiomeByClimate extends GenLayer {
             BiomeGenBase.megaTaiga, BiomeGenBase.jungle, BiomeGenBase.jungle};*/
 
 
-        biomeRandomizer = BiomeRandomizer.instance;
+        biomeRandomizer = new BiomeRandomizer(settings.biomeSettings());
         pickByClimate = biomeRandomizer.pickByClimate();
         randomCallback = new IntRandomizer() {
             public int nextInt(int maximum) {

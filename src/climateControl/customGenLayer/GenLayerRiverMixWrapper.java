@@ -36,6 +36,7 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
     public void setOriginal(GenLayer target) {
         if (original == null) {
             original = new LockableRiverMix(target);
+            redirect = original;
         }
     }
 
@@ -55,6 +56,7 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
         }
         logger.info("redirecting to "+target.toString());
         redirect = new LockableRiverMix(target);
+        logger.info("redirected");
     }
 
     @Override
@@ -73,9 +75,7 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
     public void initWorldGenSeed(long arg0) {
         super.initWorldGenSeed(arg0);
         redirect.generator.initWorldGenSeed(arg0);
-    }
-    public void replaceWorldSeed(long newSeed) {
-        voronoi.initWorldGenSeed(newSeed);
+        //voronoi.initWorldGenSeed(arg0);
     }
 
     public void clearRedirection() {
@@ -101,9 +101,10 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
 
     private class LockableRiverMix {
         boolean locked = false;
-        private GenLayer generator;
+        private final GenLayer generator;
         LockableRiverMix(GenLayer generator) {
             this.generator = generator;
+            logger.info("created");
         }
 
         void lock(int dimension, World world, ClimateControlSettings newSettings) {
@@ -126,7 +127,6 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
             try {
 
             } catch (java.lang.NoClassDefFoundError e){
-            // EBXL isn't installed
             }
             throw new Unlockable();
         }
