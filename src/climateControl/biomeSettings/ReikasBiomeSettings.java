@@ -66,6 +66,16 @@ public class ReikasBiomeSettings extends BiomeSettings {
 
     public final Mutable<Boolean> biomesFromConfig = climateControlCategory.booleanSetting(
                         biomesOnName, "", false);
+    
+    static final String configName = "Reikas";
+    public final Mutable<Boolean> biomesInNewWorlds = climateControlCategory.booleanSetting(
+                        this.startBiomesName(configName),
+                        "Use biome in new worlds and dimensions", true);
+
+    @Override
+    public void onNewWorld() {
+        biomesFromConfig.set(biomesInNewWorlds);
+    }
     @Override
     public boolean biomesAreActive() {
         return this.biomesFromConfig.value();

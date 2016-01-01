@@ -140,4 +140,9 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     public boolean biomesAreActive() {
         return this.biomesFromConfig.value();
     }
+
+    @Override
+    public void onNewWorld() {
+        // no action
+    }
 }

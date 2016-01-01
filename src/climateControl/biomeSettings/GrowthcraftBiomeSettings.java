@@ -46,7 +46,15 @@ public class GrowthcraftBiomeSettings extends BiomeSettings {
     public boolean biomesAreActive() {
         return this.biomesFromConfig.value();
     }
+    static final String configName = "Growthcraft";
+    public final Mutable<Boolean> biomesInNewWorlds = climateControlCategory.booleanSetting(
+                        this.startBiomesName(configName),
+                        "Use biome in new worlds and dimensions", true);
 
+    @Override
+    public void onNewWorld() {
+        biomesFromConfig.set(biomesInNewWorlds);
+    }
     private class GrowthcraftSettings extends Settings {
         public static final String biomeIDName = "biomes";
         public final Category biomeIDs = new Category(biomeIDName);

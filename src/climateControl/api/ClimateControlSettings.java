@@ -61,6 +61,7 @@ public class ClimateControlSettings extends Settings {
     static final String interveneInBOPName = "alterBoPWorlds";
     static final String interveneInHighlandsName = "alterHighlandsWorlds";
     static final String controlVillageBiomesName = "controlVillageBiomes";
+    static final String wideBeachesName = "wideBeaches";
 
     private final String subDirectoryName = "climateControl";
 
@@ -126,6 +127,9 @@ public class ClimateControlSettings extends Settings {
     public final Mutable<Boolean> widerRivers = climateControlCategory.booleanSetting(
             widerRiversName, "True for triple-width rivers", false);
 
+    public final Mutable<Boolean> wideBeaches = climateControlCategory.booleanSetting(
+            wideBeachesName, "True for double-width beaches", false);
+
     public final Mutable<Boolean> controlVillageBiomes = climateControlCategory.booleanSetting(
             controlVillageBiomesName, "Have Climate Control set the biomes for village generation; may be incompatible with village mods", false);
 
@@ -150,7 +154,7 @@ public class ClimateControlSettings extends Settings {
                     "That will largely fill the oceans after seed growth.");
 
     public final Mutable<Integer> largeContinentFrequency = oceanControlCategory.intSetting(
-            largeContinentFrequencyName, 8,"frequency of large continent seeds, about 8000x16000");
+            largeContinentFrequencyName, 0,"frequency of large continent seeds, about 8000x16000");
     public final Mutable<Integer> mediumContinentFrequency = oceanControlCategory.intSetting(
             mediumContinentFrequencyName, 12, "frequency of medium continent seeds, about 4000x8000");
     public final Mutable<Integer> smallContinentFrequency = oceanControlCategory.intSetting(
@@ -253,10 +257,10 @@ public class ClimateControlSettings extends Settings {
         if (this.vanillaBiomesOn.value()) result.add(vanillaBiomeSettings);
         for (Named<BiomeSettings> namedSettings: registeredBiomeSettings()) {
             ClimateControl.logger.info("Addon Settings "+namedSettings.name);
-            if (namedSettings.object.biomesAreActive()) {
+            //if (namedSettings.object.biomesAreActive()) {
                 result.add(namedSettings.object);
                 ClimateControl.logger.info("added");
-            }
+            //}
         }
         return result;
     }
@@ -275,6 +279,12 @@ public class ClimateControlSettings extends Settings {
 
     }
 
+    public void onNewWorld() {
+        for  (BiomeSettings settings: this.biomeSettings()) {
+            settings.onNewWorld();
+        }
+    }
+    
     public void setDefaults(File configDirectory) {
         //this.vanillaBiomeSettings.nameDefaultClimates();
         for (Named<BiomeSettings> registered: registeredBiomeSettings()) {

@@ -39,6 +39,7 @@ import climateControl.customGenLayer.GenLayerLessRiver;
 import climateControl.customGenLayer.GenLayerLowlandRiverMix;
 import climateControl.customGenLayer.GenLayerNoPlains;
 import climateControl.customGenLayer.GenLayerOceanicMushroomIsland;
+import climateControl.customGenLayer.GenLayerPrettyShore;
 import climateControl.customGenLayer.GenLayerRandomBiomes;
 
 import climateControl.customGenLayer.GenLayerRiverMixWrapper;
@@ -75,11 +76,11 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
 
         GenLayer emptyOcean = new GenLayerConstant(0);
         GenLayer genlayerisland = new GenLayerOceanicIslands(1L,emptyOcean,
-                settings().largeContinentFrequency.value(),settings().separateLandmasses.value());
+                settings().largeContinentFrequency.value(),settings().separateLandmasses.value(),"Large Continent");
         GenLayerFuzzyZoom genlayerfuzzyzoom = new GenLayerFuzzyZoom(2000L, genlayerisland);
         GenLayer genlayeraddisland = new GenLayerAddLand(1L, genlayerfuzzyzoom);
         GenLayer smallContinents = new GenLayerOceanicIslands(2L, genlayeraddisland,
-                settings().mediumContinentFrequency.value(),settings().separateLandmasses.value());
+                settings().mediumContinentFrequency.value(),settings().separateLandmasses.value(),"Medium Continent");
         try {
             DataOutputStream recording = new DataOutputStream(new FileOutputStream(new File("/StackedRecordedDim.txt")));
             smallContinents = new GenLayerCache(smallContinents,recording);
@@ -90,7 +91,7 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
         GenLayerZoom genlayerzoom = new GenLayerFuzzyZoom(2001L, genlayeraddisland);
         genlayeraddisland = new GenLayerAddLand(2L, smallContinents);
         smallContinents = new GenLayerOceanicIslands(2L, genlayerzoom,
-                settings().smallContinentFrequency.value(),settings().separateLandmasses.value());
+                settings().smallContinentFrequency.value(),settings().separateLandmasses.value(),"Small Continent");
         genlayeraddisland = new GenLayerAddLand(2L, smallContinents);
         if (settings().doFull()) {
             genlayeraddisland = new GenLayerDefineClimate(2L, genlayeraddisland,2,1,1,2);
@@ -105,10 +106,10 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
             // climates are already defined so the island creator has to use a climate definer;
             genlayeraddisland = new GenLayerOceanicIslands(
                     2L, genlayeraddisland,settings().largeIslandFrequency.value(),this.islandClimates()
-                    ,settings().separateLandmasses.value());
+                    ,settings().separateLandmasses.value(),"Large Island");
         } else {
             genlayeraddisland = new GenLayerOceanicIslands(2L, genlayeraddisland,
-                    settings().largeIslandFrequency.value(),settings().separateLandmasses.value());
+                    settings().largeIslandFrequency.value(),settings().separateLandmasses.value(),"Large Island");
         }
         genlayeraddisland = new GenLayerAddLand(3L, genlayeraddisland);
         if (settings().doHalf()) {
@@ -122,10 +123,10 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
             // climates are already defined so the island creator has to use a climate definer;
             genlayeraddisland = new GenLayerOceanicIslands(
                     3L, genlayeraddisland,settings().mediumIslandFrequency.value(),this.islandClimates()
-                    ,settings().separateLandmasses.value());
+                    ,settings().separateLandmasses.value(),"Medium Island");
         } else {
             genlayeraddisland = new GenLayerOceanicIslands(2L, genlayeraddisland,
-                    settings().mediumIslandFrequency.value(),settings().separateLandmasses.value());
+                    settings().mediumIslandFrequency.value(),settings().separateLandmasses.value(),"Medium Island");
         }
 
         genlayeraddisland = new GenLayerAddLand(3L, genlayeraddisland);
@@ -216,6 +217,26 @@ public class StackedContinentsGenerator extends AbstractWorldGenerator {
                 } catch (java.lang.NoClassDefFoundError e) {
                     object = new GenLayerShore(1000L, object);
                 }
+            }
+
+            if (settings.wideBeaches.value()) {
+                if (j==0) {
+                try {
+                        object = new HighlandsShoreGenGetter().shoreGen(object);
+                    } catch (java.lang.NoClassDefFoundError e) {
+                        object = new GenLayerShore(1000L, object);
+                    }
+                }
+
+            } else {
+                if (j==1) {
+                    try {
+                        object = new HighlandsShoreGenGetter().shoreGen(object);
+                    } catch (java.lang.NoClassDefFoundError e) {
+
+                    }
+                }
+
             }
         }
 

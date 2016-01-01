@@ -76,6 +76,17 @@ public class TaggedConfigManager<Type extends Settings> {
         specific.save();
     }
 
+    public void saveConfigs(File specificDirectory, Named<Settings> namedSettings) {
+        File specificModFile = new File(specificDirectory,modConfigName);
+        File specificAddOnDirectory = new File(specificDirectory,groupDirectoryName);
+        if (!specificAddOnDirectory.exists()) specificAddOnDirectory.mkdir();
+        if (!specificAddOnDirectory.exists()) throw new RuntimeException(specificAddOnDirectory.getAbsolutePath());
+        File specificAddonFile = new File(specificAddOnDirectory,namedSettings.name);
+        Configuration specific = new Configuration(specificAddonFile);
+        namedSettings.object.copyTo(specific);
+        specific.save();
+    }
+
     private boolean usable(File tested) {
         return tested != null;
     }

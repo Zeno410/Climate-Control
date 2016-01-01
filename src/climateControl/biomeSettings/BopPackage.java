@@ -15,6 +15,11 @@ public class BopPackage extends BiomePackage {
         super("biomesoplentyInCC.cfg");
         // confirm Highlands is there.
         Class biomesClass = BOPCBiomes.class;
+        try {
+            int throwaway = BOPCBiomes.alps.biomeID;
+        } catch (NullPointerException e) {
+            //not yet set is fine, this is testing for the field
+        }
     }
 
     @Override

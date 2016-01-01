@@ -4,9 +4,11 @@ import climateControl.utils.IntRandomizer;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.Numbered;
 import climateControl.utils.PlaneLocation;
+import climateControl.utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.logging.Logger;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 /**
@@ -15,6 +17,7 @@ import net.minecraft.world.gen.layer.IntCache;
  */
 public class GenLayerOceanicIslands extends GenLayerPack {
 
+    public static final Logger logger = new Zeno410Logger("OceanicIslands").logger();
     private final IntRandomizer passer = new IntRandomizer() {
         public int nextInt(int range) {
             return GenLayerOceanicIslands.this.nextInt(range);
@@ -24,9 +27,10 @@ public class GenLayerOceanicIslands extends GenLayerPack {
 
     private final int milleFill;
     private final RandomIntUser island;
+    private final String layerName;
 
-    public GenLayerOceanicIslands(long p_i45480_1_, GenLayer p_i45480_3_, int milleFill, final int islandValue,
-            boolean suppressDiagonals){
+    private GenLayerOceanicIslands(long p_i45480_1_, GenLayer p_i45480_3_, int milleFill, final int islandValue,
+            boolean suppressDiagonals,String layerName){
         super(p_i45480_1_);
         this.parent = p_i45480_3_;
         this.milleFill = milleFill;
@@ -37,19 +41,22 @@ public class GenLayerOceanicIslands extends GenLayerPack {
             }
         };
         this.suppressDiagonals = suppressDiagonals;
+        this.layerName = layerName;
     }
 
     public GenLayerOceanicIslands(long p_i45480_1_, GenLayer p_i45480_3_, int milleFill,
-                RandomIntUser island,boolean suppressDiagonals){
+                RandomIntUser island,boolean suppressDiagonals, String layerName){
         super(p_i45480_1_);
         this.parent = p_i45480_3_;
         this.milleFill = milleFill;
         this.island = island;
         this.suppressDiagonals = suppressDiagonals;
+        this.layerName = layerName;
     }
 
-    public GenLayerOceanicIslands(long p_i45480_1_, GenLayer p_i45480_3_, int percentFilled, boolean suppressDiagonals){
-        this( p_i45480_1_,  p_i45480_3_,  percentFilled,1,suppressDiagonals);
+    public GenLayerOceanicIslands(long p_i45480_1_,
+            GenLayer p_i45480_3_, int percentFilled, boolean suppressDiagonals, String layerName){
+        this( p_i45480_1_,  p_i45480_3_,  percentFilled,1,suppressDiagonals,layerName);
     }
 
     /**
@@ -203,8 +210,13 @@ public class GenLayerOceanicIslands extends GenLayerPack {
                 int k3 = parent[j2  + (i2) * k1];
                 // copy
                 aint1[j2-2  + (i2-2) * par3] = k3;
+                if (k3>0){
+                    //logger.info(layerName+" " + (j2-2+par1)+ ","+(i2-2+par2));
+                }
+
             }
         }
+
         return aint1;
     }
 

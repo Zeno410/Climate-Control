@@ -31,7 +31,7 @@ public class SubBiomeChooser {
 
     public void set(ArrayList<BiomeSettings> settings) {
         for (BiomeSettings setting: settings) {
-            setting.update(this);
+            if (setting.biomesAreActive()) setting.update(this);
         }
     }
 

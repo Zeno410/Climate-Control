@@ -26,7 +26,7 @@ public class BiomeSwapper {
 
     public void set(ArrayList<BiomeSettings> settings) {
         for (BiomeSettings setting: settings) {
-            setting.updateMBiomes(this);
+            if (setting.biomesAreActive()) setting.updateMBiomes(this);
         }
     }
 

@@ -11,7 +11,6 @@ import java.io.File;
 import java.util.ArrayList;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenBase.TempCategory;
-import climateControl.utils.ConcreteMutable;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
 
@@ -247,7 +246,7 @@ abstract public class BiomeSettings extends Settings {
     }
 
     protected ID externalBiome(String name,int biomeID){
-        return new ID(name, new ConcreteMutable<Integer>(biomeID));
+        return new ID(name, new Mutable.Concrete<Integer>(biomeID));
     }
 
     @Override
@@ -256,6 +255,11 @@ abstract public class BiomeSettings extends Settings {
     }
     abstract public void setRules(ClimateControlRules rules);
     abstract public void setNativeBiomeIDs(File configDirectory);
+    abstract public void onNewWorld();
+
+    public String startBiomesName(String configName) {
+        return configName+"InNewDimensons";
+    }
 
     public void setVillages(ClimateControlRules rules) {
         for (ID id: this.ids) {

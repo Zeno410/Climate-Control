@@ -6,6 +6,7 @@ import biomesoplenty.api.content.BOPCBiomes;
 import climateControl.api.Climate;
 import climateControl.api.ClimateControlRules;
 import climateControl.api.ClimateDistribution;
+import climateControl.utils.Acceptor;
 import climateControl.utils.Mutable;
 import java.io.File;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -133,117 +134,150 @@ public class BoPSettings extends BiomeSettings {
     public final Element wetland = new Element("Wetland",253,7,true,"WARM");
     public final Element woodland = new Element("Woodland",254,true,"WARM");
 
-    //public final Element denseForest = new Element("Dense Forest",56,false,"COOL");
-    //public final Element eucalyptusForest = new Element("Eucalyptus Forest",57,false,"WARM");
-    //public final Element landOfLakes = new Element("Land of Lakes",68,false,"COOL");
-    //public final ID landOfLakesMarsh = new Element("Land of Lakes Marsh",101,false,"COOL");
-    //public final Element xericShrubland = new Element("Xeric Shrubland",98,false,"HOT");
+    public final Element denseForest = new Element("Dense Forest",56,false,"COOL");
+    public final Element eucalyptusForest = new Element("Eucalyptus Forest",57,false,"WARM");
+    public final Element landOfLakes = new Element("Land of Lakes",68,false,"COOL");
+    public final ID landOfLakesMarsh = new Element("Land of Lakes Marsh",101,false,"COOL");
+    public final Element xericShrubland = new Element("Xeric Shrubland",98,false,"HOT");
 
     public BoPSettings() {
         super("BoP");
     }
+
+    Acceptor<Integer> crashOnZero = new Acceptor<Integer>() {
+
+        @Override
+        public void accept(Integer accepted) {
+            throw new RuntimeException("Thicket incidence "+accepted);
+        }
+    };
+    
+    Acceptor<Integer> crashOnNegative = new Acceptor<Integer>() {
+
+        @Override
+        public void accept(Integer accepted) {
+            throw new RuntimeException("Thicket ID "+accepted);
+        }
+    };
 
     //private setBoPID()
 
     @Override
     public void setNativeBiomeIDs(File configDirectory) {
         try{
-        this.alps.setIDFrom(BOPCBiomes.alps);
-        this.alpsForest.setIDFrom(BOPCBiomes.alpsForest);
-        this.arctic.setIDFrom(BOPCBiomes.arctic);
-        this.bambooForest.setIDFrom(BOPCBiomes.bambooForest);
-        this.bayou.setIDFrom(BOPCBiomes.bayou);
-        this.bog.setIDFrom(BOPCBiomes.bog);
-        this.boneyard.setIDFrom(BOPCBiomes.boneyard);
-        this.borealForest.setIDFrom(BOPCBiomes.borealForest);
-        this.brushland.setIDFrom(BOPCBiomes.brushland);
-        this.canyon.setIDFrom(BOPCBiomes.canyon);
-        this.canyonRavine.setIDFrom(BOPCBiomes.canyonRavine);
-        this.chaparral.setIDFrom(BOPCBiomes.chaparral);
-        this.cherryBlossomGrove.setIDFrom(BOPCBiomes.cherryBlossomGrove);
-        this.coniferousForest.setIDFrom(BOPCBiomes.coniferousForest);
-        this.coralReef.setIDFrom(BOPCBiomes.coralReef);
-        this.corruptedSands.setIDFrom(BOPCBiomes.corruptedSands);
-        this.crag.setIDFrom(BOPCBiomes.crag);
-        this.deadForest.setIDFrom(BOPCBiomes.deadForest);
-        this.deadSwamp.setIDFrom(BOPCBiomes.deadSwamp);
-        this.deciduousForest.setIDFrom(BOPCBiomes.deciduousForest);
-        this.dryRiver.setIDFrom(BOPCBiomes.dryRiver);
-        this.fen.setIDFrom(BOPCBiomes.fen);
-        this.flowerField.setIDFrom(BOPCBiomes.flowerField);
-        this.frostForest.setIDFrom(BOPCBiomes.frostForest);
-        this.fungiForest.setIDFrom(BOPCBiomes.fungiForest);
-        this.garden.setIDFrom(BOPCBiomes.garden);
-        this.grassland.setIDFrom(BOPCBiomes.grassland);
-        this.glacier.setIDFrom(BOPCBiomes.glacier);
-        this.grove.setIDFrom(BOPCBiomes.grove);
-        this.heathland.setIDFrom(BOPCBiomes.heathland);
-        this.highland.setIDFrom(BOPCBiomes.highland);
-        this.jadeCliffs.setIDFrom(BOPCBiomes.jadeCliffs);
-        this.kelpForest.setIDFrom(BOPCBiomes.kelpForest);
-        this.lavenderFields.setIDFrom(BOPCBiomes.lavenderFields);
-        this.lushDesert.setIDFrom(BOPCBiomes.lushDesert);
-        this.lushRiver.setIDFrom(BOPCBiomes.lushRiver);
-        this.lushSwamp.setIDFrom(BOPCBiomes.lushSwamp);
-        this.mangrove.setIDFrom(BOPCBiomes.mangrove);
-        this.mapleWoods.setIDFrom(BOPCBiomes.mapleWoods);
-        this.marsh.setIDFrom(BOPCBiomes.marsh);
-        this.meadow.setIDFrom(BOPCBiomes.meadow);
-        this.meadowForest.setIDFrom(BOPCBiomes.meadowForest);
-        this.mysticGrove.setIDFrom(BOPCBiomes.mysticGrove);
-        this.moor.setIDFrom(BOPCBiomes.moor);
-        this.mountain.setIDFrom(BOPCBiomes.mountain);
-        this.ominousWoods.setIDFrom(BOPCBiomes.ominousWoods);
-        this.oasis.setIDFrom(BOPCBiomes.oasis);
-        this.orchard.setIDFrom(BOPCBiomes.orchard);
-        this.originVally.setIDFrom(BOPCBiomes.originValley);
-        this.outback.setIDFrom(BOPCBiomes.outback);
-        this.phantasmagoricInferno.setIDFrom(BOPCBiomes.phantasmagoricInferno);
-        this.prairie.setIDFrom(BOPCBiomes.prairie);
-        this.quagmire.setIDFrom(BOPCBiomes.quagmire);
-        this.rainforest.setIDFrom(BOPCBiomes.rainforest);
-        this.redwoodForest.setIDFrom(BOPCBiomes.redwoodForest);
-        this.sacredSprings.setIDFrom(BOPCBiomes.sacredSprings);
-        this.savanna.setIDFrom(BiomeGenBase.savanna);
-        this.savannaPlateau.setIDFrom(BiomeGenBase.savannaPlateau);
-        this.scrubland.setIDFrom(BOPCBiomes.scrubland);
-        this.seasonalForest.setIDFrom(BOPCBiomes.seasonalForest);
-        this.shield.setIDFrom(BOPCBiomes.shield);
-        this.shrubland.setIDFrom(BOPCBiomes.shrubland);
-        this.sludgepit.setIDFrom(BOPCBiomes.sludgepit);
-        this.snowyConiferousForest.setIDFrom(BOPCBiomes.snowyConiferousForest);
-        this.silkglades.setIDFrom(BOPCBiomes.silkglades);
-        this.spruceWoods.setIDFrom(BOPCBiomes.spruceWoods);
-        this.steppe.setIDFrom(BOPCBiomes.steppe);
-        this.snowyConiferousForest.setIDFrom(BOPCBiomes.snowyConiferousForest);
-        this.temperateRainforest.setIDFrom(BOPCBiomes.temperateRainforest);
-        this.thicket.setIDFrom(BOPCBiomes.thicket);
-        this.tropicalRainforest.setIDFrom(BOPCBiomes.tropicalRainforest);
-        this.tropics.setIDFrom(BOPCBiomes.tropics);
-        this.tundra.setIDFrom(BOPCBiomes.tundra);
-        this.undergarden.setIDFrom(BOPCBiomes.undergarden);
-        this.visceralHeap.setIDFrom(BOPCBiomes.visceralHeap);
-        this.volcano.setIDFrom(BOPCBiomes.volcano);
-        this.wasteland.setIDFrom(BOPCBiomes.wasteland);
-        this.wetland.setIDFrom(BOPCBiomes.wetland);
-        this.woodland.setIDFrom(BOPCBiomes.woodland);
-        /*this.denseForest.setIDFrom(BOPCBiomes.denseForest);
-        this.eucalyptusForest.setIDFrom(BOPCBiomes.eucalyptusForest);
-        this.landOfLakes.setIDFrom(BOPCBiomes.landOfLakes);
-        this.landOfLakesMarsh.setIDFrom(BOPCBiomes.landOfLakesMarsh);
-        this.xericShrubland.setIDFrom(BOPCBiomes.xericShrubland);*/
-        } catch (java.lang.NoClassDefFoundError e) {
-        } catch (java.lang.NoSuchFieldError e) {
-            throw e;
-            // disable the "new" biomes in case of "old" BoP
-            //this.denseForest.biomeID().set(-1);
-            //this.eucalyptusForest.biomeID().set(-1);
-            //this.landOfLakes.biomeID().set(-1);
-            //this.landOfLakesMarsh.biomeID().set(-1);
-            //this.xericShrubland.biomeID().set(-1);
+            this.alps.setIDFrom(BOPCBiomes.alps);
+            this.alpsForest.setIDFrom(BOPCBiomes.alpsForest);
+            this.arctic.setIDFrom(BOPCBiomes.arctic);
+            this.bambooForest.setIDFrom(BOPCBiomes.bambooForest);
+            this.bayou.setIDFrom(BOPCBiomes.bayou);
+            this.bog.setIDFrom(BOPCBiomes.bog);
+            this.boneyard.setIDFrom(BOPCBiomes.boneyard);
+            this.borealForest.setIDFrom(BOPCBiomes.borealForest);
+            this.brushland.setIDFrom(BOPCBiomes.brushland);
+            this.canyon.setIDFrom(BOPCBiomes.canyon);
+            this.canyonRavine.setIDFrom(BOPCBiomes.canyonRavine);
+            this.chaparral.setIDFrom(BOPCBiomes.chaparral);
+            this.cherryBlossomGrove.setIDFrom(BOPCBiomes.cherryBlossomGrove);
+            this.coniferousForest.setIDFrom(BOPCBiomes.coniferousForest);
+            this.coralReef.setIDFrom(BOPCBiomes.coralReef);
+            this.corruptedSands.setIDFrom(BOPCBiomes.corruptedSands);
+            this.crag.setIDFrom(BOPCBiomes.crag);
+            this.deadForest.setIDFrom(BOPCBiomes.deadForest);
+            this.deadSwamp.setIDFrom(BOPCBiomes.deadSwamp);
+            this.deciduousForest.setIDFrom(BOPCBiomes.deciduousForest);
+            this.dryRiver.setIDFrom(BOPCBiomes.dryRiver);
+            this.fen.setIDFrom(BOPCBiomes.fen);
+            this.flowerField.setIDFrom(BOPCBiomes.flowerField);
+            this.frostForest.setIDFrom(BOPCBiomes.frostForest);
+            this.fungiForest.setIDFrom(BOPCBiomes.fungiForest);
+            this.garden.setIDFrom(BOPCBiomes.garden);
+            this.grassland.setIDFrom(BOPCBiomes.grassland);
+            this.glacier.setIDFrom(BOPCBiomes.glacier);
+            this.grove.setIDFrom(BOPCBiomes.grove);
+            this.heathland.setIDFrom(BOPCBiomes.heathland);
+            this.highland.setIDFrom(BOPCBiomes.highland);
+            this.jadeCliffs.setIDFrom(BOPCBiomes.jadeCliffs);
+            this.kelpForest.setIDFrom(BOPCBiomes.kelpForest);
+            this.lavenderFields.setIDFrom(BOPCBiomes.lavenderFields);
+            this.lushDesert.setIDFrom(BOPCBiomes.lushDesert);
+            this.lushRiver.setIDFrom(BOPCBiomes.lushRiver);
+            this.lushSwamp.setIDFrom(BOPCBiomes.lushSwamp);
+            this.mangrove.setIDFrom(BOPCBiomes.mangrove);
+            this.mapleWoods.setIDFrom(BOPCBiomes.mapleWoods);
+            this.marsh.setIDFrom(BOPCBiomes.marsh);
+            this.meadow.setIDFrom(BOPCBiomes.meadow);
+            this.meadowForest.setIDFrom(BOPCBiomes.meadowForest);
+            this.mysticGrove.setIDFrom(BOPCBiomes.mysticGrove);
+            this.moor.setIDFrom(BOPCBiomes.moor);
+            this.mountain.setIDFrom(BOPCBiomes.mountain);
+            this.ominousWoods.setIDFrom(BOPCBiomes.ominousWoods);
+            this.oasis.setIDFrom(BOPCBiomes.oasis);
+            this.orchard.setIDFrom(BOPCBiomes.orchard);
+            this.originVally.setIDFrom(BOPCBiomes.originValley);
+            this.outback.setIDFrom(BOPCBiomes.outback);
+            this.phantasmagoricInferno.setIDFrom(BOPCBiomes.phantasmagoricInferno);
+            this.prairie.setIDFrom(BOPCBiomes.prairie);
+            this.quagmire.setIDFrom(BOPCBiomes.quagmire);
+            this.rainforest.setIDFrom(BOPCBiomes.rainforest);
+            this.redwoodForest.setIDFrom(BOPCBiomes.redwoodForest);
+            this.sacredSprings.setIDFrom(BOPCBiomes.sacredSprings);
+            this.savanna.setIDFrom(BiomeGenBase.savanna);
+            this.savannaPlateau.setIDFrom(BiomeGenBase.savannaPlateau);
+            this.scrubland.setIDFrom(BOPCBiomes.scrubland);
+            this.seasonalForest.setIDFrom(BOPCBiomes.seasonalForest);
+            this.shield.setIDFrom(BOPCBiomes.shield);
+            this.shrubland.setIDFrom(BOPCBiomes.shrubland);
+            this.sludgepit.setIDFrom(BOPCBiomes.sludgepit);
+            this.snowyConiferousForest.setIDFrom(BOPCBiomes.snowyConiferousForest);
+            this.silkglades.setIDFrom(BOPCBiomes.silkglades);
+            this.spruceWoods.setIDFrom(BOPCBiomes.spruceWoods);
+            this.steppe.setIDFrom(BOPCBiomes.steppe);
+            this.snowyConiferousForest.setIDFrom(BOPCBiomes.snowyConiferousForest);
+            this.temperateRainforest.setIDFrom(BOPCBiomes.temperateRainforest);
+            this.thicket.setIDFrom(BOPCBiomes.thicket);
+            this.tropicalRainforest.setIDFrom(BOPCBiomes.tropicalRainforest);
+            this.tropics.setIDFrom(BOPCBiomes.tropics);
+            this.tundra.setIDFrom(BOPCBiomes.tundra);
+            this.undergarden.setIDFrom(BOPCBiomes.undergarden);
+            this.visceralHeap.setIDFrom(BOPCBiomes.visceralHeap);
+            this.volcano.setIDFrom(BOPCBiomes.volcano);
+            this.wasteland.setIDFrom(BOPCBiomes.wasteland);
+            this.wetland.setIDFrom(BOPCBiomes.wetland);
+            this.woodland.setIDFrom(BOPCBiomes.woodland);
+            try {
+                this.denseForest.setIDFrom(BOPCBiomes.denseForest);
+            } catch (java.lang.NoSuchFieldError e) {
+                // disable the "new" biomes in case of "old" BoP
+                this.denseForest.biomeID().set(-1);
+            }
+            try {
+                this.eucalyptusForest.setIDFrom(BOPCBiomes.eucalyptusForest);
+            } catch (java.lang.NoSuchFieldError e) {
+                // disable the "new" biomes in case of "old" BoP
+                this.eucalyptusForest.biomeID().set(-1);
+            }
+            try {
+                this.landOfLakes.setIDFrom(BOPCBiomes.landOfLakes);
+            } catch (java.lang.NoSuchFieldError e) {
+                // disable the "new" biomes in case of "old" BoP
+                this.landOfLakes.biomeID().set(-1);
+            }
+            try {
+                this.landOfLakesMarsh.setIDFrom(BOPCBiomes.landOfLakesMarsh);
+            } catch (java.lang.NoSuchFieldError e) {
+                // disable the "new" biomes in case of "old" BoP
+                this.landOfLakesMarsh.biomeID().set(-1);
+            }
+            try {
+                this.xericShrubland.setIDFrom(BOPCBiomes.xericShrubland);
+            } catch (java.lang.NoSuchFieldError e) {
+                // disable the "new" biomes in case of "old" BoP
+                this.xericShrubland.biomeID().set(-1);
+            }
 
         }
-
+    catch (java.lang.NoClassDefFoundError e) {
+        } 
     }
 
     @Override
@@ -257,6 +291,17 @@ public class BoPSettings extends BiomeSettings {
 
     public final Mutable<Boolean> biomesFromConfig = climateControlCategory.booleanSetting(
                         biomesOnName, "", false);
+
+    static final String configName = "BoP";
+    public final Mutable<Boolean> biomesInNewWorlds = climateControlCategory.booleanSetting(
+                        this.startBiomesName(configName),
+                        "Use biome in new worlds and dimensions", true);
+
+    @Override
+    public void onNewWorld() {
+        biomesFromConfig.set(biomesInNewWorlds);
+    }
+    
     @Override
     public boolean biomesAreActive() {
         return this.biomesFromConfig.value();

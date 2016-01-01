@@ -29,6 +29,8 @@ public class BiomeRandomizer {
         deepOcean = new BiomeRandomizer();
         nextIndex = 0;
         for (BiomeSettings setting: settings) {
+            // skip inactive settings
+            if (setting.biomesAreActive()==false) continue;
             ClimateControl.logger.info(setting.toString());
             for (ClimateDistribution.Incidence incidence: setting.incidences()) {
                 ClimateControl.logger.info("incidence "+incidence.biome + " rate "+incidence.incidence+" " +
@@ -44,24 +46,6 @@ public class BiomeRandomizer {
     private BiomeRandomizer snowy;
     private BiomeRandomizer ocean;
     private BiomeRandomizer deepOcean;
-
-    private void set(Collection<BiomeSettings> settings) {
-        hot = new BiomeRandomizer();
-        warm = new BiomeRandomizer();
-        cool = new BiomeRandomizer();
-        snowy = new BiomeRandomizer();
-        ocean = new BiomeRandomizer();
-        deepOcean = new BiomeRandomizer();
-        nextIndex = 0;
-        for (BiomeSettings setting: settings) {
-            ClimateControl.logger.info(setting.toString());
-            for (ClimateDistribution.Incidence incidence: setting.incidences()) {
-                ClimateControl.logger.info("incidence "+incidence.biome + " rate "+incidence.incidence+" " +
-                       incidence.climate.name);
-                add(incidence);
-            }
-        }
-    }
 
     private BiomeRandomizer randomizer(Climate climate) {
         if (climate == Climate.DEEP_OCEAN) return this.deepOcean;

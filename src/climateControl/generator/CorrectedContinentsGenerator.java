@@ -38,7 +38,6 @@ import climateControl.customGenLayer.GenLayerContinentalShelf;
 import climateControl.customGenLayer.GenLayerDefineClimate;
 import climateControl.customGenLayer.GenLayerLessRiver;
 import climateControl.customGenLayer.GenLayerLowlandRiverMix;
-import climateControl.customGenLayer.GenLayerNoPlains;
 import climateControl.customGenLayer.GenLayerOceanicMushroomIsland;
 import climateControl.customGenLayer.GenLayerPrettyShore;
 import climateControl.customGenLayer.GenLayerRandomBiomes;
@@ -71,16 +70,16 @@ public class CorrectedContinentsGenerator extends StackedContinentsGenerator {
 
         GenLayer emptyOcean = new GenLayerConstant(0);
         GenLayer genlayerisland = new GenLayerOceanicIslands(1L,emptyOcean,settings().largeContinentFrequency.value()
-                ,settings().separateLandmasses.value());
+                ,settings().separateLandmasses.value(),"Large Continent");
         GenLayer genlayerfuzzyzoom = new GenLayerFuzzyZoom(2000L, genlayerisland);        
         GenLayer genlayeraddisland = new GenLayerAddLand(3L, genlayerfuzzyzoom);
         GenLayer smallContinents = new GenLayerOceanicIslands(4L, genlayeraddisland,
-                settings().mediumContinentFrequency.value(),settings().separateLandmasses.value());
+                settings().mediumContinentFrequency.value(),settings().separateLandmasses.value(),"Medium Continent");
         genlayeraddisland = new GenLayerAddLand(5L, smallContinents);
         GenLayerZoom genlayerzoom = new GenLayerFuzzyZoom(2001L, genlayeraddisland);
         genlayeraddisland = new GenLayerAddLand(7L, smallContinents);
         smallContinents = new GenLayerOceanicIslands(8L, genlayerzoom,
-                settings().smallContinentFrequency.value(),settings().separateLandmasses.value());
+                settings().smallContinentFrequency.value(),settings().separateLandmasses.value(),"Small Continent");
         genlayeraddisland = new GenLayerAddLand(9L, smallContinents);
         if (settings().doFull()) {
             genlayeraddisland = new GenLayerDefineClimate(10L, genlayeraddisland,2,1,1,2);
@@ -95,10 +94,10 @@ public class CorrectedContinentsGenerator extends StackedContinentsGenerator {
             // climates are already defined so the island creator has to use a climate definer;
             genlayeraddisland = new GenLayerOceanicIslands(
                     11L, genlayeraddisland,settings().largeIslandFrequency.value(),this.islandClimates()
-                    ,settings().separateLandmasses.value());
+                    ,settings().separateLandmasses.value(),"Large Island");
         } else {
             genlayeraddisland = new GenLayerOceanicIslands(12L, genlayeraddisland,
-                    settings().largeIslandFrequency.value(),settings().separateLandmasses.value());
+                    settings().largeIslandFrequency.value(),settings().separateLandmasses.value(),"Large Island");
         }
         genlayeraddisland = new GenLayerAddLand(13L, genlayeraddisland);
         if (settings().doHalf()) {
@@ -112,10 +111,10 @@ public class CorrectedContinentsGenerator extends StackedContinentsGenerator {
             // climates are already defined so the island creator has to use a climate definer;
             genlayeraddisland = new GenLayerOceanicIslands(
                     17L, genlayeraddisland,settings().mediumIslandFrequency.value(),this.islandClimates()
-                    ,settings().separateLandmasses.value());
+                    ,settings().separateLandmasses.value(),"Medium Island");
         } else {
             genlayeraddisland = new GenLayerOceanicIslands(18L, genlayeraddisland,
-                    settings().mediumIslandFrequency.value(),settings().separateLandmasses.value());
+                    settings().mediumIslandFrequency.value(),settings().separateLandmasses.value(),"Medium Island");
         }
 
         genlayeraddisland = new GenLayerAddLand(19L, genlayeraddisland);
@@ -194,11 +193,14 @@ public class CorrectedContinentsGenerator extends StackedContinentsGenerator {
             if (j == 1)
             {
                 object  = new GenLayerSmoothCoast(100L,object);
-                object = new GenLayerPrettyShore(1000L, (GenLayer)object,1.0F,rules());
-                try {
-                    //object = new GenLayerShoreHL(1000L,object);
-                } catch (java.lang.NoClassDefFoundError e) {
-                    //object = new GenLayerShore(1000L, (GenLayer)object);
+            }
+            if (settings.wideBeaches.value()) {
+                if (j==0) {
+                    object = new GenLayerPrettyShore(1000L, (GenLayer)object,1.0F,rules());
+                }
+            } else {
+                if (j==1) {
+                    object = new GenLayerPrettyShore(1000L, (GenLayer)object,1.0F,rules());
                 }
             }
         }

@@ -154,6 +154,10 @@ public class HighlandsBiomeSettings extends BiomeSettings {
 		addSubBiome(birchHills, meadow);
 		addSubBiome(birchHills, birchHills);
 		addSubBiome(cliffs, valley);
+		addSubBiome(desertMountains, oasis);
+		addSubBiome(desertMountains, desertMountains);
+		addSubBiome(desertMountains, desertMountains);
+		addSubBiome(desertMountains, desertMountains);
 		addSubBiome(dunes, oasis);
 		addSubBiome(dunes, dunes);
 		addSubBiome(estuary, lake);
@@ -190,6 +194,10 @@ public class HighlandsBiomeSettings extends BiomeSettings {
 		addSubBiome(sahel, sahel);
 		addSubBiome(savannah, mesa);
 		addSubBiome(savannah, savannah);
+        addSubBiome(snowMountains,pinelands);
+        addSubBiome(snowMountains,snowMountains);
+        addSubBiome(snowMountains,snowMountains);
+        addSubBiome(snowMountains,snowMountains);
 		addSubBiome(steppe, canyon);
 		addSubBiome(steppe, steppe);
 		addSubBiome(tallPineForest, alps);
@@ -275,6 +283,7 @@ public class HighlandsBiomeSettings extends BiomeSettings {
         rules.disallowStoneBeach(this.desertMountains.biomeID().value());
         rules.disallowStoneBeach(this.dunes.biomeID().value());
         rules.disallowStoneBeach(this.desertIsland.biomeID().value());
+        rules.noBeaches(this.flyingMountains.biomeID().value());
         setVillages(rules);
     }
 
@@ -282,6 +291,15 @@ public class HighlandsBiomeSettings extends BiomeSettings {
 
     public final Mutable<Boolean> biomesFromConfig = climateControlCategory.booleanSetting(
                         biomesOnName, "", false);
+    static final String configName = "Highlands";
+    public final Mutable<Boolean> biomesInNewWorlds = climateControlCategory.booleanSetting(
+                        this.startBiomesName(configName),
+                        "Use biome in new worlds and dimensions", true);
+
+    @Override
+    public void onNewWorld() {
+        biomesFromConfig.set(biomesInNewWorlds);
+    }
     @Override
     public boolean biomesAreActive() {
         return this.biomesFromConfig.value();

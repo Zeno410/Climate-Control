@@ -14,7 +14,7 @@ public class ConcreteMutable<Type> implements Mutable<Type> {
 
     public ConcreteMutable() {this(null);}
     public void set(Type newValue) {
-        if ((data==null&&newValue != null)||(data.equals(value()))){
+        if ((data==null&&newValue != null)||(!data.equals(value()))){
             data = newValue;
             trackers.update(data);
         }
@@ -30,6 +30,10 @@ public class ConcreteMutable<Type> implements Mutable<Type> {
 
     public void stopInforming(Acceptor<Type> target) {
         trackers.stopInforming(target);
+    }
+
+    public void set(Mutable<Type> toCopy) {
+            set(toCopy.value());
     }
 
 

@@ -35,7 +35,8 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
 
     public void setOriginal(GenLayer target) {
         if (original == null) {
-            original = new LockableRiverMix(target);
+            //original = new LockableRiverMix(target);
+            original = new LockableRiverMix(new GenLayerConstant(0));
             redirect = original;
         }
     }

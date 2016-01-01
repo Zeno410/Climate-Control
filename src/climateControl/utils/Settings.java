@@ -105,6 +105,10 @@ abstract public class Settings implements Streamable, ConfigReader {
             output.writeBoolean(value);
             output.writeBoolean(defaultValue);
         }
+
+        public void set(Mutable<Boolean> toCopy) {
+            set(toCopy.value());
+        }
     }
 
     protected class IntSetting extends Setting<Integer> {
@@ -143,6 +147,10 @@ abstract public class Settings implements Streamable, ConfigReader {
             output.writeBoolean(set);
             output.writeInt(value);
             output.writeInt(defaultValue);
+        }
+
+        public void set(Mutable<Integer> toCopy) {
+            set(toCopy.value());
         }
     }
 
@@ -183,6 +191,10 @@ abstract public class Settings implements Streamable, ConfigReader {
             output.writeUTF(value);
             output.writeUTF(defaultValue);
         }
+
+        public void set(Mutable<String> toCopy) {
+            set(toCopy.value());
+        }
     }
 
     protected class DoubleSetting extends Setting<Double> {
@@ -221,6 +233,10 @@ abstract public class Settings implements Streamable, ConfigReader {
             output.writeBoolean(set);
             output.writeDouble(value);
             output.writeDouble(defaultValue);
+        }
+
+        public void set(Mutable<Double> toCopy) {
+            set(toCopy.value());
         }
     }
 

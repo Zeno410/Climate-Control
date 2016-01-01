@@ -8,6 +8,7 @@ import climateControl.api.BiomeSettings;
 import climateControl.api.CCDimensionSettings;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DimensionalSettingsRegistry;
+import climateControl.biomeSettings.BoPSettings;
 import climateControl.customGenLayer.GenLayerLowlandRiverMix;
 import climateControl.customGenLayer.GenLayerRiverMixWrapper;
 import climateControl.genLayerPack.GenLayerPack;
@@ -143,8 +144,8 @@ public class DimensionManager {
     private TaggedConfigManager addonConfigManager = 
             new TaggedConfigManager("climatecontrol.cfg","ClimateControl");
 
-    private ClimateControlSettings defaultSettings(MinecraftFilesAccess dimension) {
-        ClimateControlSettings result = defaultSettings();
+    private ClimateControlSettings defaultSettings(MinecraftFilesAccess dimension, boolean newWorld) {
+        ClimateControlSettings result = defaultSettings(newWorld);
         //logger.info(dimension.baseDirectory().getAbsolutePath());
         if (!dimension.baseDirectory().exists()) {
             dimension.baseDirectory().mkdir();
@@ -161,26 +162,31 @@ public class DimensionManager {
         for (Named<BiomeSettings> addonSetting: result.registeredBiomeSettings()) {
             addonConfigManager.initializeConfig(addonSetting, configDirectory);
             addonConfigManager.updateConfig(addonSetting, configDirectory, dimension.configDirectory());
+            if (newWorld) {
+                addonSetting.object.onNewWorld();
+                addonConfigManager.saveConfigs( dimension.configDirectory(), addonSetting);
+            }
         }
         return result;
     }
 
-    private ClimateControlSettings defaultSettings() {
+    private ClimateControlSettings defaultSettings(boolean newWorld) {
         ClimateControlSettings result = new ClimateControlSettings();
         Configuration workingConfig = new Configuration(suggestedConfigFile);
         workingConfig.load();
         result.readFrom(workingConfig);
         result.setDefaults(configDirectory);
         for (Named<BiomeSettings> addonSetting: result.registeredBiomeSettings()) {
+            if (newWorld) addonSetting.object.onNewWorld();
             addonConfigManager.initializeConfig(addonSetting, configDirectory);
         }
         return result;
     }
 
-    private ClimateControlSettings dimensionalSettings(DimensionAccess dimension) {
+    private ClimateControlSettings dimensionalSettings(DimensionAccess dimension, boolean newWorld) {
         ClimateControlSettings result = dimensionalSettings.get(dimension.dimension);
         if (result == null) {
-            result = defaultSettings(dimension);
+            result = defaultSettings(dimension,newWorld);
             DimensionalSettingsRegistry.instance.modify(dimension.dimension, result);
             dimensionalSettings.put(dimension.dimension,result);
         }
@@ -203,11 +209,15 @@ public class DimensionManager {
     public void onBiomeGenInit(WorldTypeEvent.InitBiomeGens event) {
         // skip if ignoring
 
-        ClimateControlSettings generationSettings = defaultSettings();
+        ClimateControlSettings generationSettings = defaultSettings(true);
+        // this only gets used for new worlds,
+        //when WorldServer is initializing and there are no spawn chunks yet
+        generationSettings.onNewWorld();
         if (this.ignore(event.worldType,this.newSettings)) return;
         logger.info("not ignored");
         MinecraftServer server = MinecraftServer.getServer();
         if (server== null) {
+            logger.info("blanked");
             original = event.originalBiomeGens[0];
             riverLayerWrapper(0).setOriginal(event.originalBiomeGens[0]);
             riverLayerWrapper(0).useOriginal();
@@ -271,6 +281,8 @@ public class DimensionManager {
         if (true) {
             if (considered.getWorldTypeName().equalsIgnoreCase("FWG")) return false;
         }
+
+        if (considered.getWorldTypeName().equalsIgnoreCase("RTG")) return false;
         return true;
     }
 
@@ -306,7 +318,12 @@ public class DimensionManager {
         long worldSeed = world.getSeed();
         if (world instanceof WorldServer&&worldSeed!=0)  {
             ClimateControlSettings currentSettings = null;
-            currentSettings = dimensionalSettings(dimensionAccess);
+            boolean newWorld = false;
+            if(world.getWorldInfo().getWorldTotalTime()<10) {
+                // new world
+                newWorld = true;
+            }
+            currentSettings = dimensionalSettings(dimensionAccess,newWorld);
             logger.info(""+dimension +" "+ currentSettings.snowyIncidence.value() +" "+ currentSettings.coolIncidence.value());
 
             riverLayerWrapper(dimension).setOriginal(original);
@@ -335,8 +352,11 @@ public class DimensionManager {
             // spawn rescue
             if (currentSettings.vanillaLandAndClimate.value() == false){
                 if (currentSettings.noGenerationChanges.value() == false) {
-                    logger.info(new ChunkGeneratorExtractor().extractFrom((WorldServer)world).toString());
-                    new ChunkGeneratorExtractor().impose((WorldServer)world, new MapGenVillage());
+                    //logger.info(new ChunkGeneratorExtractor().extractFrom((WorldServer)world).toString());
+                    try {
+                        new ChunkGeneratorExtractor().impose((WorldServer) world, new MapGenVillage());
+                    } catch (Exception e) {
+                    }
                     if(world.getWorldInfo().getWorldTotalTime()<10) {
                         ArrayList<PlaneLocation> existingChunks =
                         new ChunkLister().savedChunks(levelSavePath((WorldServer)world));

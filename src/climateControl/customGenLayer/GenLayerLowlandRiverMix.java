@@ -88,6 +88,7 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
             {
                 aint2[i1] = aint[i1];
             }
+            if (aint2[i1] >256) throw new RuntimeException();
         }
 
         return aint2;

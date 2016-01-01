@@ -34,6 +34,11 @@ public class OceanBiomeSettings extends BiomeSettings {
         // nothing yet
     }
 
+    @Override
+    public void onNewWorld() {
+        // no action
+    }
+
     protected class OceanElement extends Element {
         OceanElement(String name, int ID, int incidence) {
             super(name,ID,incidence);

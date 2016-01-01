@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 
 import climateControl.utils.Named;
+import climateControl.utils.PropertyManager;
 import climateControl.utils.TaggedConfigManager;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.World;
@@ -30,6 +31,7 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -118,7 +120,7 @@ public class ClimateControl {
     }
 
     private DimensionManager dimensionManager;
-    @SubscribeEvent
+    @SubscribeEvent(priority=EventPriority.LOWEST)
     public void onWorldLoad(WorldEvent.Load event) {
         DimensionalSettingsRegistry.instance.onWorldLoad(event);
         if (dimensionManager == null) {
@@ -142,13 +144,15 @@ public class ClimateControl {
         newSettings.setDefaults(configDirectory);
         newSettings.copyTo(config);
         DimensionalSettingsRegistry.instance.serverStarted(event);
-        String worldName = MinecraftServer.getServer().getFolderName();
         File worldSaveDirectory = null;
-        if (!worldName.equalsIgnoreCase("world")) {
+        String worldName = MinecraftServer.getServer().getFolderName();
+        if (MinecraftServer.getServer().isSinglePlayer()) {
             File saveDirectory = MinecraftServer.getServer().getFile("saves");
             worldSaveDirectory = new File(saveDirectory,worldName);
         } else {
-            worldSaveDirectory = MinecraftServer.getServer().getFile("world");
+            PropertyManager settings = new PropertyManager(MinecraftServer.getServer().getFile("server.properties"));
+            worldName = settings.getProperty("level-name", worldName);
+            worldSaveDirectory = MinecraftServer.getServer().getFile(worldName);
         }
         File worldConfigDirectory = new File(worldSaveDirectory,TaggedConfigManager.worldSpecificConfigFileName);
         addonConfigManager.updateConfig(dimensionSettings.named(), configDirectory, worldConfigDirectory);
