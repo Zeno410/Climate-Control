@@ -82,7 +82,9 @@ public class GenLayerDefineClimate extends GenLayerPack {
                 }
             }
         }
-
+        for (int i = 0; i < par3 * par4;i++) {
+            if (aint1[i]>255) throw new RuntimeException();
+        }
         return aint1;
     }
 }

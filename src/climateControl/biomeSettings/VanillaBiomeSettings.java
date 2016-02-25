@@ -7,6 +7,7 @@ import climateControl.api.ClimateControlRules;
 import climateControl.api.ClimateDistribution;
 import climateControl.utils.Mutable;
 import java.io.File;
+import net.minecraftforge.common.config.Configuration;
 
 /**
  *
@@ -135,7 +136,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     static final String biomesOnName = "VanillaBiomesOn";
 
     public final Mutable<Boolean> biomesFromConfig = climateControlCategory.booleanSetting(
-                        biomesOnName, "", false);
+                        biomesOnName, "", true);
     @Override
     public boolean biomesAreActive() {
         return this.biomesFromConfig.value();
@@ -145,4 +146,10 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     public void onNewWorld() {
         // no action
     }
+
+    @Override
+    public void stripIDsFrom(Configuration config) {
+        // no action
+    }
+
 }

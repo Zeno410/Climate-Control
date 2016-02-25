@@ -24,10 +24,12 @@ public class GenLayerSmooth extends GenLayerPack
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
+        taste(aint1,k1*l1);
+        poison(aint1,par3*par4);
 
-        for (int i2 = 0; i2 < par4; ++i2)
+        for (int i2 = 0; i2 < par4; i2++)
         {
-            for (int j2 = 0; j2 < par3; ++j2)
+            for (int j2 = 0; j2 < par3; j2++)
             {
                 int k2 = aint[j2 + 0 + (i2 + 1) * k1];
                 int l2 = aint[j2 + 2 + (i2 + 1) * k1];
@@ -65,6 +67,7 @@ public class GenLayerSmooth extends GenLayerPack
             }
         }
 
+        taste(aint1,par3*par4);
         return aint1;
     }
 }

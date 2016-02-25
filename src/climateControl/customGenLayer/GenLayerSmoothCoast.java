@@ -41,23 +41,25 @@ public class GenLayerSmoothCoast extends GenLayerPack {
         int k1 = par3 + 2;
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
+        taste(aint,k1*l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
+        poison(aint1,par3*par4);
 
         for (int i2 = 0; i2 < par4; ++i2){
             for (int j2 = 0; j2 < par3; ++j2){
 
                 int original = aint[j2 + 1 + (i2 + 1) * k1];
-                boolean isOceanic = this.isBiomeOceanic(original);
+                boolean isOceanic = this.isOceanic(original);
                 choices.setOriginal(original, isOceanic);
 
                 int up = aint[j2 + 0 + (i2 + 1) * k1];
                 int down = aint[j2 + 2 + (i2 + 1) * k1];
                 int left = aint[j2 + 1 + (i2 + 0) * k1];
                 int right = aint[j2 + 1 + (i2 + 2) * k1];
-                choices.add(up,isBiomeOceanic(up));
-                choices.add(down,isBiomeOceanic(down));
-                choices.add(right,isBiomeOceanic(right));
-                choices.add(left,isBiomeOceanic(left));
+                choices.add(up,isOceanic(up));
+                choices.add(down,isOceanic(down));
+                choices.add(right,isOceanic(right));
+                choices.add(left,isOceanic(left));
 
                 if (choices.equal()||(choices.isChoiceWater()==isOceanic)) {
                     aint1[j2 + i2 * par3] = original;
@@ -68,6 +70,7 @@ public class GenLayerSmoothCoast extends GenLayerPack {
                 if (nextInt(10) < trip) {
                     // not equal, not similar to what we've got, and we want to change
                     aint1[j2 + i2 * par3] = choices.mostCommon(this.passable);
+                    if (aint1[j2 + i2 * par3]==undefined) throw new RuntimeException();
                     //logger.info("changed "+original +  " to "+ aint1[j2 + i2 * par3]);
                 } else {
                     // keep what we've got
@@ -76,6 +79,10 @@ public class GenLayerSmoothCoast extends GenLayerPack {
             }
         }
 
+        for (int i =0; i <  par3*par4; i ++) {
+            if (aint1[i]>256) throw new RuntimeException();
+        }
+        taste(aint1,par3*par4);
         return aint1;
     }
 }

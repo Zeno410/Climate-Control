@@ -25,7 +25,7 @@ public class EBXLBiomeSettings extends BiomeSettings {
    public final Element  forestedisland = new Element("Forested Island", 65,ClimateDistribution.MEDIUM.name());
    public final Element  forestedhills = new Element("Forested Hills", 64,ClimateDistribution.MEDIUM.name());
    public final Element  glacier = new Element("Glacier", 66,Climate.SNOWY.name);
-   public final Element  greenhills = new Element("Highlands", 67,Climate.COOL.name);
+   public final Element  greenhills = new Element("Green Hills", 67,Climate.COOL.name);
    public final Element  icewasteland = new Element("Ice Wasteland", 41,Climate.SNOWY.name);
    public final Element  greenswamp = new Element("Green Swamp", 40,Climate.WARM.name);
    public final ID  marsh = new ID("Marsh",-1);

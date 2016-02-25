@@ -2,12 +2,13 @@
 package climateControl.customGenLayer;
 
 import climateControl.api.ClimateControlRules;
+import climateControl.genLayerPack.GenLayerPack;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenJungle;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
-public class GenLayerShoreCC extends GenLayer
+public class GenLayerShoreCC extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000568";
     private final ClimateControlRules rules;
@@ -19,7 +20,7 @@ public class GenLayerShoreCC extends GenLayer
         this.rules = rules;
     }
     private boolean waterBiome(int biomeID) {
-        if (isBiomeOceanic(biomeID)) return true;
+        if (isOceanic(biomeID)) return true;
         return rules.noBeachesAllowed(biomeID);
     }
     /**
@@ -167,7 +168,7 @@ public class GenLayerShoreCC extends GenLayer
 
     private boolean func_151631_c(int p_151631_1_)
     {
-        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID || p_151631_1_ == BiomeGenBase.taiga.biomeID || isBiomeOceanic(p_151631_1_);
+        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID || p_151631_1_ == BiomeGenBase.taiga.biomeID || isOceanic(p_151631_1_);
     }
 
     private boolean func_151633_d(int p_151633_1_){

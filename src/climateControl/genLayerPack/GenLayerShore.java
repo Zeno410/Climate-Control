@@ -4,7 +4,7 @@ import net.minecraft.world.biome.BiomeGenJungle;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
-public class GenLayerShore extends GenLayer
+public class GenLayerShore extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000568";
 
@@ -57,7 +57,7 @@ public class GenLayerShore extends GenLayer
 
                     if (this.func_151631_c(l1) && this.func_151631_c(i2) && this.func_151631_c(j2) && this.func_151631_c(k2))
                     {
-                        if (!isBiomeOceanic(l1) && !isBiomeOceanic(i2) && !isBiomeOceanic(j2) && !isBiomeOceanic(k2))
+                        if (!isOceanic(l1) && !isOceanic(i2) && !isOceanic(j2) && !isOceanic(k2))
                         {
                             aint1[j1 + i1 * par3] = k1;
                         }
@@ -86,7 +86,7 @@ public class GenLayerShore extends GenLayer
                             j2 = aint[j1 + 1 - 1 + (i1 + 1) * (par3 + 2)];
                             k2 = aint[j1 + 1 + (i1 + 1 + 1) * (par3 + 2)];
 
-                            if (!isBiomeOceanic(l1) && !isBiomeOceanic(i2) && !isBiomeOceanic(j2) && !isBiomeOceanic(k2))
+                            if (!isOceanic(l1) && !isOceanic(i2) && !isOceanic(j2) && !isOceanic(k2))
                             {
                                 aint1[j1 + i1 * par3] = k1;
                             }
@@ -107,7 +107,7 @@ public class GenLayerShore extends GenLayer
                         j2 = aint[j1 + 1 - 1 + (i1 + 1) * (par3 + 2)];
                         k2 = aint[j1 + 1 + (i1 + 1 + 1) * (par3 + 2)];
 
-                        if (!isBiomeOceanic(l1) && !isBiomeOceanic(i2) && !isBiomeOceanic(j2) && !isBiomeOceanic(k2))
+                        if (!isOceanic(l1) && !isOceanic(i2) && !isOceanic(j2) && !isOceanic(k2))
                         {
                             if (this.func_151633_d(l1) && this.func_151633_d(i2) && this.func_151633_d(j2) && this.func_151633_d(k2))
                             {
@@ -135,7 +135,7 @@ public class GenLayerShore extends GenLayer
 
     private void func_151632_a(int[] parentVals, int[] resultVals, int p_151632_3_, int p_151632_4_, int p_151632_5_, int originalBiome, int replacementBeach)
     {
-        if (isBiomeOceanic(originalBiome))
+        if (isOceanic(originalBiome))
         {
             resultVals[p_151632_3_ + p_151632_4_ * p_151632_5_] = originalBiome;
         }
@@ -146,7 +146,7 @@ public class GenLayerShore extends GenLayer
             int l1 = parentVals[p_151632_3_ + 1 - 1 + (p_151632_4_ + 1) * (p_151632_5_ + 2)];
             int i2 = parentVals[p_151632_3_ + 1 + (p_151632_4_ + 1 + 1) * (p_151632_5_ + 2)];
 
-            if (!isBiomeOceanic(j1) && !isBiomeOceanic(k1) && !isBiomeOceanic(l1) && !isBiomeOceanic(i2))
+            if (!isOceanic(j1) && !isOceanic(k1) && !isOceanic(l1) && !isOceanic(i2))
             {
                 resultVals[p_151632_3_ + p_151632_4_ * p_151632_5_] = originalBiome;
             }

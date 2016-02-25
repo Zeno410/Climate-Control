@@ -30,6 +30,11 @@ public class PlaneLocated<Type> implements SelfTrackable<PlaneLocated<Type>> {
         trackers.update(this);
     }
 
+    public final void remove(PlaneLocation location) {
+        storedVals.remove(location);
+        trackers.update(this);
+    }
+    
     public boolean confirm(PlaneLocation location, Type value) {
         Type existing = storedVals.get(location);
         if (existing == null) {

@@ -57,6 +57,10 @@ public class BiomeRandomizer {
         throw new RuntimeException("No such climate");
     }
 
+    public int size() {
+        return hot.biomes.length + ocean.biomes.length + deepOcean.biomes.length + snowy.biomes.length
+                +cool.biomes.length + warm.biomes.length;
+    }
 
     private void add(ClimateDistribution.Incidence incidence) {
         append(incidence.incidence, BiomeGenBase.getBiomeGenArray()[incidence.biome]);

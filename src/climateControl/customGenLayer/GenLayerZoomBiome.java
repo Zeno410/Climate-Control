@@ -30,6 +30,7 @@ public class GenLayerZoomBiome extends GenLayerPack
         int workingWidth = parentWidth - 1 << 1;
         int workingHeight = parentHeight - 1 << 1;
         int[] aint1 = IntCache.getIntCache(workingWidth * workingHeight);
+        poison(aint1,workingWidth * workingHeight);
         int l2;
 
         for (int parentZ = 0; parentZ < parentHeight - 1; ++parentZ)
@@ -60,6 +61,7 @@ public class GenLayerZoomBiome extends GenLayerPack
             System.arraycopy(aint1, (l2 + (par2 & 1)) * workingWidth + (par1 & 1), aint2, l2 * par3, par3);
         }
 
+        taste(aint2,par3*par4);
         return aint2;
     }
 

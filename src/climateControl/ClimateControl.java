@@ -5,6 +5,16 @@ import climateControl.api.BiomeSettings;
 import climateControl.api.CCDimensionSettings;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DimensionalSettingsRegistry;
+import climateControl.biomeSettings.ArsMagicaPackage;
+import climateControl.biomeSettings.BopPackage;
+import climateControl.biomeSettings.EBPackage;
+import climateControl.biomeSettings.EBXLController;
+import climateControl.biomeSettings.ExternalBiomePackage;
+import climateControl.biomeSettings.GrowthcraftPackage;
+import climateControl.biomeSettings.HighlandsPackage;
+import climateControl.biomeSettings.ReikasPackage;
+import climateControl.biomeSettings.ThaumcraftPackage;
+import climateControl.biomeSettings.VampirismPackage;
 import climateControl.customGenLayer.GenLayerRiverMixWrapper;
 import climateControl.utils.ConfigManager;
 import climateControl.utils.Zeno410Logger;
@@ -59,11 +69,17 @@ public class ClimateControl {
 
     private File configDirectory;
     private File suggestedConfigFile;
+
+    private ExternalBiomePackage externalBiomesPackage;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         addonConfigManager = new TaggedConfigManager("climatecontrol.cfg","ClimateControl");
         BiomePackageRegistry.instance = new BiomePackageRegistry(
                 event.getSuggestedConfigurationFile().getParentFile(),addonConfigManager);
+        externalBiomesPackage = new ExternalBiomePackage();
+        // trying to set it up in ClimateControlSettings instead
+        //BiomePackageRegistry.instance.register(externalBiomesPackage);
 
         DimensionalSettingsRegistry.instance= new DimensionalSettingsRegistry();
         
@@ -74,6 +90,7 @@ public class ClimateControl {
         //if (this.rescueOldCCMode) defaultSettings.set(config);
         //this.settings = defaultSettings.clone();
 
+        setupRegistry();
         newSettings.readFrom(config);
         
         // settings need to be reset so the mod-specific configs go into the CC file.
@@ -88,15 +105,6 @@ public class ClimateControl {
                 config,newSettings,event.getSuggestedConfigurationFile());
         config.save();
 
-    }
-
-    private ClimateControlSettings freshSettings() {
-        ClimateControlSettings result = new ClimateControlSettings();
-        Configuration workingConfig = new Configuration(suggestedConfigFile);
-        workingConfig.load();
-        result.readFrom(workingConfig);
-        result.setDefaults(configDirectory);
-        return result;
     }
 
     @EventHandler
@@ -128,8 +136,20 @@ public class ClimateControl {
                 dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
         }
         if (dimensionManager != null) {
-            dimensionManager.onWorldLoad(event);
+            dimensionManager.onWorldLoad(event.world);
         }
+    }
+
+    @SubscribeEvent
+    public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
+        if (dimensionManager == null) {
+            if (MinecraftServer.getServer()!=null)
+                dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
+        }
+        if (dimensionManager != null) {
+            dimensionManager.onCreateSpawn(event);
+        } 
+
     }
 
     @SubscribeEvent
@@ -219,6 +239,68 @@ public class ClimateControl {
         }
         if (dimensionManager != null) {
             dimensionManager.onBiomeGenInit(event);
+        }
+    }
+
+    public void setupRegistry() {
+                try {
+            // see if highlands is there
+            BiomePackageRegistry.instance.register(new HighlandsPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // Highlands isn't installed
+        }
+        try {
+            // see if BoP is there
+            BiomePackageRegistry.instance.register(new BopPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // BoP isn't installed
+        }
+        try {
+            // see if EB is there
+            BiomePackageRegistry.instance.register(new EBPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // EB isn't installed
+        }
+        try {
+            // see if thaumcraft is there
+            // attach a setting
+            BiomePackageRegistry.instance.register(new ThaumcraftPackage());
+
+        } catch (java.lang.NoClassDefFoundError e){
+            // thaumcraft isn't installed
+        }
+        try {
+            // see if EBXL is there
+            BiomePackageRegistry.instance.register(new EBXLController());
+
+        } catch (java.lang.NoClassDefFoundError e){
+            // EBXL isn't installed
+        }
+        try {
+            // see if ChromatiCraft is there
+            BiomePackageRegistry.instance.register(new ReikasPackage());
+
+        } catch (java.lang.NoClassDefFoundError e){
+            // ChromatiCraft isn't installed
+        }
+        try {
+            // see if ArsMagica is there
+            BiomePackageRegistry.instance.register(new ArsMagicaPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // ArsMagica isn't installed
+        }
+        try {
+            // see if Growthcraft is there
+            BiomePackageRegistry.instance.register(new GrowthcraftPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // Growthcraft isn't installed
+        }
+
+        try {
+            // see if Vampirism is there
+            BiomePackageRegistry.instance.register(new VampirismPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // Vampirism isn't installed
         }
     }
 

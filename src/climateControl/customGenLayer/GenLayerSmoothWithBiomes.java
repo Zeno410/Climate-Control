@@ -32,6 +32,7 @@ public class GenLayerSmoothWithBiomes extends GenLayerPack {
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, parentSpan, l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
+        poison(aint1,par3*par4);
 
         // not sure what's x and z but I need readable variable names
         for (int z = 0; z < par4; ++z)
@@ -52,14 +53,17 @@ public class GenLayerSmoothWithBiomes extends GenLayerPack {
                 if (left == right && up == down)
                 {
                     this.initChunkSeed((long)(x + par1), (long)(z + par2));
-
-                    if (this.nextInt(2) == 0)
-                    {
-                        center = left;
-                    }
-                    else
-                    {
-                        center = up;
+                    boolean island = ((!isOceanic(center))&&isOceanic(left)&&isOceanic(up));
+                    // we are losing too many islands
+                    if (!island) {
+                        if (this.nextInt(2) == 0)
+                        {
+                            center = left;
+                        }
+                        else
+                        {
+                            center = up;
+                        }
                     }
                 }
                 else
@@ -79,6 +83,7 @@ public class GenLayerSmoothWithBiomes extends GenLayerPack {
                 aint1[x + z * par3] = center;
             }
         }
+        taste(aint1,par3*par4);
 
         return aint1;
     }

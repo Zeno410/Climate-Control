@@ -1,6 +1,7 @@
-
 package climateControl.customGenLayer;
+
 import climateControl.ClimateControl;
+import climateControl.api.ClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.Numbered;
 import climateControl.utils.PlaneLocation;
@@ -13,21 +14,37 @@ import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
 /**
- * This is the new climate system.
- * @author Zeno410
+ * This class generates coded climates, combining the climate with 4* the previous ID
+ * The point is to allow the separation systems to continue working
+ * 
  *
- * Algorithm: set all the climates according to the user parameters. Then for all the extreme
- * climates change nearby temps to be acceptable. changes are made in an order based on a random derived
- * from the second call to the seed.
+ * @author Zeno410
  */
+public class GenLayerIdentifiedClimate extends GenLayerPack {
 
-public class GenLayerSmoothClimate extends GenLayerPack {
-    //public static Logger logger = new Zeno410Logger("GenLayerSmoothClimate").logger();
+    private final int hotLevel;
+    private final int warmLevel;
+    private final int coldLevel;
+    private final int totalLevel;
+    public static Logger logger = new Zeno410Logger("IdentifiedClimate").logger();
 
-
-    public GenLayerSmoothClimate(long par1, GenLayer par3GenLayer) {
+    private GenLayerIdentifiedClimate(long par1, GenLayer par3GenLayer,int hot, int warm, int cold, int snow)
+    {
         super(par1);
         this.parent = par3GenLayer;
+        this.hotLevel = hot;
+        this.warmLevel = hot + warm;
+        this.coldLevel = hot + warm + cold;
+        this.totalLevel = hot + warm + cold + snow;
+    }
+
+    public GenLayerIdentifiedClimate(long seed, GenLayer genLayer,ClimateControlSettings settings){
+        this(seed,
+                genLayer,
+                settings.hotIncidence.value(),
+                settings.warmIncidence.value(),
+                settings.coolIncidence.value(),
+                settings.snowyIncidence.value()) ;
     }
 
     public int[] getInts(int x0, int z0, int xSize, int zSize){
@@ -38,21 +55,9 @@ public class GenLayerSmoothClimate extends GenLayerPack {
         int parentZ0 = z0 - 2;
         int parentXSize = xSize + 4;
         int parentZSize = zSize + 4;
-        int[] parentVals = this.parent.getInts(parentX0, parentZ0, parentXSize, parentZSize);
-        int[] parentClimates = IntCache.getIntCache(parentXSize*parentZSize);
-        for (int parentZ = 0; parentZ < parentZSize; parentZ++){
-            for (int parentX = 0; parentX < parentXSize; ++parentX){
-                int k2 = parentVals[parentX  + (parentZ) * parentXSize];
-                int climate = 0;
-                if (isOceanic(k2)) {
-                    climate = k2;
-                } else {
-                    climate = k2%4;
-                    if (climate ==0) climate = 4;
-                }
-                parentClimates[parentX  + (parentZ) * parentXSize] = climate;
-            }
-        }
+        int[] parentVals ;
+        int[] parentIds = this.parent.getInts(parentX0, parentZ0, parentXSize, parentZSize);
+        parentVals = this.getRawClimates(parentIds, parentX0, parentZ0, parentXSize, parentZSize);
         int[] vals = IntCache.getIntCache(xSize * zSize);
 
         // we cover the entire parental layer, as parental changes can feed back to up to 2 away
@@ -60,7 +65,7 @@ public class GenLayerSmoothClimate extends GenLayerPack {
             for (int parentX = 0; parentX < parentXSize; ++parentX){
 
 
-                int k2 = parentClimates[parentX  + (parentZ) * parentXSize];
+                int k2 = parentVals[parentX  + (parentZ) * parentXSize];
                 setFromParentCoords(k2,parentX,parentZ,xSize,zSize,vals);
                 if (k2 > 4) {
                     if ((k2 != 24)&&(k2!=BiomeGenBase.mushroomIsland.biomeID)) {
@@ -79,16 +84,31 @@ public class GenLayerSmoothClimate extends GenLayerPack {
                 }
             }
         }
+
+        parentVals = null;
+
+        /* climate smoothing has been moved to the GenLayerSmoothClimate routine
         // sort the extreme temps by their priority
         // if priorities identical sort by location
         // a location only search would have some derpy effects
         // but 1 derpiness in a billion is tolerable
-        java.util.Collections.sort(changes,Numbered.comparator(PlaneLocation.topLefttoBottomRight()));
         // and adjust climates incompatible with that extremity
-        parentClimates = null;
+
+        //java.util.Collections.sort(changes,Numbered.comparator(PlaneLocation.topLefttoBottomRight()));
+
 
         for (ExtremeTemp temp: changes) {
-            temp.adjust(parentClimates,xSize, zSize, vals);
+            logger.info(""+temp.toString());
+            temp.adjust(parentVals,xSize, zSize, vals);
+        }
+         */
+        // now we add on 4*identifier for original values above 255. These are landmass IDs.
+        for (int parentZ = 2; parentZ < parentZSize-2; parentZ++){
+            for (int parentX = 2; parentX < parentXSize-2; ++parentX){
+                int k2 = parentIds[parentX  + (parentZ) * parentXSize];
+                if (k2<256) continue;
+                vals[parentX-2  + (parentZ-2) * xSize] += k2*4;
+            }
         }
         return vals;
     }
@@ -107,6 +127,9 @@ public class GenLayerSmoothClimate extends GenLayerPack {
         Hot(Prioritizer prioritizer,int x, int z) {
             super(prioritizer,x,z);
         }
+
+        public String toString() {return "Hot  "+x()+","+z();}
+
         void adjust(int [] parentVals, int xSize, int zSize, int [] vals) {
 
             // seems logical to skip if already eliminated but that sets up possible
@@ -135,6 +158,9 @@ public class GenLayerSmoothClimate extends GenLayerPack {
         Cold(Prioritizer prioritizer,int x, int z) {
             super(prioritizer,x,z);
         }
+
+        public String toString() {return "Cold "+x()+","+z();}
+
         void adjust(int [] parentVals,int xSize, int zSize, int [] vals) {
 
             // seems logical to skip if already eliminated but that sets up possible
@@ -207,4 +233,47 @@ public class GenLayerSmoothClimate extends GenLayerPack {
         if (value == 3) vals[px-2+(pz-2)*xSize] = 2;
     }
 
+
+    private int[] getRawClimates(int [] parent,int par1, int par2, int par3, int par4) {
+        int[] aint1 = IntCache.getIntCache(par3 * par4);
+
+        for (int i2 = 0; i2 < par4; ++i2)
+        {
+            for (int j2 = 0; j2 < par3; ++j2)
+            {
+                int k2 = parent[j2 + (i2) * par3];
+                this.initChunkSeed((long)(j2 + par1), (long)(i2 + par2));
+
+                if (k2 == 0)
+                {
+                    aint1[j2 + i2 * par3] = 0;
+                }
+                else
+                {
+                    int l2 = this.nextInt(totalLevel);
+                    byte b0;
+
+                    if (l2 < hotLevel)
+                    {
+                        b0 = 1;
+                    }
+                    else if (l2 < warmLevel)
+                    {
+                        b0 = 2;
+                    }
+                    else if (l2 < coldLevel) {
+                        b0 = 3;
+                    } else {
+                        b0 = 4;
+                    }
+
+                    aint1[j2 + i2 * par3] = b0;
+                }
+            }
+        }
+        for (int i = 0; i < par3 * par4;i++) {
+            if (aint1[i]>255) throw new RuntimeException();
+        }
+        return aint1;
+    }
 }

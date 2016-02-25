@@ -48,7 +48,7 @@ public class GenLayerBiome extends GenLayerPack
                 int l1 = (k1 & 3840) >> 8;
                 k1 &= -3841;
 
-                if (isBiomeOceanic(k1))
+                if (isOceanic(k1))
                 {
                     aint1[j1 + i1 * par3] = k1;
                 }

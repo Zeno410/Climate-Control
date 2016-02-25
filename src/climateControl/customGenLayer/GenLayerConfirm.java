@@ -20,6 +20,7 @@ public class GenLayerConfirm extends GenLayerPack{
     public static Logger logger = new Zeno410Logger("Cache").logger();
 
     private PlaneLocated<Integer> storedVals  = new PlaneLocated<Integer>();
+    public boolean testing;
 
     public GenLayerConfirm(GenLayer parent, int exclusion) {
         super(0L);
@@ -31,6 +32,13 @@ public class GenLayerConfirm extends GenLayerPack{
         this(parent,0);
     }
 
+
+    @Override
+    public void initWorldGenSeed(long par1) {
+        super.initWorldGenSeed(par1);
+        if (testing)
+        throw new RuntimeException(""+par1);
+    }
     public int [] getInts(int x0, int z0, int xSize, int zSize) {
         //logger.info("location " + x0 + " " + z0 + " " + xSize + " " + zSize);
         PlaneLocation.Probe probe = new PlaneLocation.Probe(x0,z0);
@@ -52,7 +60,8 @@ public class GenLayerConfirm extends GenLayerPack{
                     //logger.info("hit "+probe.toString()+locked.intValue());
                     // already stored
                     if (result[(z)*xSize+x] !=locked) {
-                        problems += new PlaneLocation(x,z).toString();
+                        problems += new PlaneLocation(x,z).toString()+
+                                "["+result[(z)*(xSize)+x]+"->"+locked+"]";
                     };
                 }
             }

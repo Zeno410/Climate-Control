@@ -4,6 +4,9 @@ package climateControl.customGenLayer;
 
 import climateControl.api.ClimateControlRules;
 import climateControl.genLayerPack.GenLayerPack;
+import climateControl.utils.Receiver;
+import climateControl.utils.StringWriter;
+import java.io.File;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
@@ -56,6 +59,9 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
         int[] aint1 = this.riverPatternGeneratorChain.getInts(par1, par2, par3, par4);
         int[] aint2 = IntCache.getIntCache(par3 * par4);
 
+        for (int i = 0; i < par3 * par4;i++) {
+            if (aint[i]>255) throw new RuntimeException();
+        }
         for (int i1 = 0; i1 < par3 * par4; ++i1)
         {
             if (aint[i1] != BiomeGenBase.ocean.biomeID && aint[i1] != BiomeGenBase.deepOcean.biomeID)
@@ -63,6 +69,7 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
                 if (aint1[i1] == BiomeGenBase.river.biomeID)
                 {
                     int biomeID = aint[i1];
+                    if (biomeID>255) throw new RuntimeException();
                     BiomeGenBase biome = BiomeGenBase.getBiome(biomeID);
                     float height = biome.rootHeight + biome.heightVariation;
                     if ((height>maxChasm)||rules.riversDisallowed(biomeID)) {
@@ -73,7 +80,7 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
                             aint2[i1] = BiomeGenBase.frozenRiver.biomeID;
                         } else if (aint[i1] != BiomeGenBase.mushroomIsland.biomeID
                                 && aint[i1] != BiomeGenBase.mushroomIslandShore.biomeID){
-                                aint2[i1] = aint1[i1] & 255;
+                                aint2[i1] = aint1[i1];
                         } else {
                             aint2[i1] = BiomeGenBase.mushroomIslandShore.biomeID;
                         }
@@ -88,9 +95,13 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
             {
                 aint2[i1] = aint[i1];
             }
-            if (aint2[i1] >256) throw new RuntimeException();
+            //if (aint2[i1] >256) throw new RuntimeException();
         }
 
+        for (int i = 0; i < par3 * par4;i++) {
+            if (aint2[i]>255) throw new RuntimeException();
+        }
         return aint2;
     }
+
 }

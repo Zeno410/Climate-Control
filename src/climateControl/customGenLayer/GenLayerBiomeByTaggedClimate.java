@@ -15,7 +15,7 @@ import net.minecraft.world.gen.layer.IntCache;
  *
  * @author MasterCaver modified by Zeno410
  */
-public class GenLayerBiomeByClimate extends GenLayerPack {
+public class GenLayerBiomeByTaggedClimate extends GenLayerPack {
     //public static Logger logger = new Zeno410Logger("GenLayerBiomeByClimate").logger();
 
     private BiomeRandomizer biomeRandomizer;
@@ -24,7 +24,7 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
 
     private BiomeRandomizer.PickByClimate pickByClimate;
 
-    public GenLayerBiomeByClimate(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
+    public GenLayerBiomeByTaggedClimate(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
         super(par1);
         this.parent = par3GenLayer;
 
@@ -32,7 +32,7 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
         pickByClimate = biomeRandomizer.pickByClimate();
         randomCallback = new IntRandomizer() {
             public int nextInt(int maximum) {
-                return GenLayerBiomeByClimate.this.nextInt(maximum);
+                return GenLayerBiomeByTaggedClimate.this.nextInt(maximum);
             }
         };
     }
@@ -52,14 +52,10 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
             {
                 this.initChunkSeed((long)(j1 + par1), (long)(i1 + par2));
                 int k1 = aint[j1 + i1 * par3];
-                k1 &= -3841;
-                    if (k1 > 256) {
-                        if (ClimateControl.testing) {
-                        ClimateControl.logger.info(parent.toString());
-                        ClimateControl.logger.info("number "+k1+ " from "+aint[j1 + i1 * par3]);
-                    throw new RuntimeException();
-                    }
-                }
+                int climate = k1%4;
+                if (climate == 0) climate = 4;
+                if (k1 == BiomeGenBase.deepOcean.biomeID) climate = k1;
+                if (k1 == BiomeGenBase.mushroomIsland.biomeID) climate = k1;
                 //ClimateControl.logger.info(""+k1);
 
                 if ((isOceanic(k1))&&(k1 != BiomeGenBase.deepOcean.biomeID)){
@@ -69,7 +65,7 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
                     aint1[j1 + i1 * par3] = k1;
                 }
                 else {
-                    aint1[j1 + i1 * par3] = pickByClimate.biome(k1, randomCallback);
+                    aint1[j1 + i1 * par3] = pickByClimate.biome(climate, randomCallback);
                     //logger.info("("+(i1+par2)+","+(j1+par1)+") Climate "+k1 + " " + aint[j1 + i1 * par3]+" Biome " + aint1[j1 + i1 * par3]);
 
                 }

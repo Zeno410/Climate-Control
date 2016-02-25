@@ -11,12 +11,13 @@ import climateControl.generator.BiomeSwapper;
 import climateControl.generator.SubBiomeChooser;
 import climateControl.biomeSettings.BiomeReplacer;
 import climateControl.biomeSettings.BoPSubBiomeReplacer;
+import climateControl.genLayerPack.GenLayerPack;
 import java.util.logging.Logger;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
-public class GenLayerSubBiome extends GenLayer{
+public class GenLayerSubBiome extends GenLayerPack{
     public static Logger logger = new Zeno410Logger("GenLayerSubBiome").logger();
     private GenLayer rivers;
     private final SubBiomeChooser subBiomeChooser;
@@ -59,6 +60,10 @@ public class GenLayerSubBiome extends GenLayer{
         int[] biomeVals = this.parent.getInts(par1 - 1, par2 - 1, par3 + 2, par4 + 2);
         int[] riverVals = this.rivers.getInts(par1 - 1, par2 - 1, par3 + 2, par4 + 2);
         int[] aint2 = IntCache.getIntCache(par3 * par4);
+        poison(aint2,par3 * par4);
+        for (int i =0; i <  par3*par4; i ++) {
+            if (biomeVals[i]>256) throw new RuntimeException();
+        }
 
         for (int i1 = 0; i1 < par4; ++i1)
         {
@@ -141,6 +146,7 @@ public class GenLayerSubBiome extends GenLayer{
             }
         }
 
+        taste(aint2,par3 * par4);
         return aint2;
     }
 }

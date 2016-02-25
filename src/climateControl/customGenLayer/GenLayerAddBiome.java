@@ -32,6 +32,7 @@ public class GenLayerAddBiome extends GenLayerPack
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
+        poison(aint1,par3*par4);
 
         for (int i2 = 0; i2 < par4 ; i2++)
         {
@@ -48,20 +49,20 @@ public class GenLayerAddBiome extends GenLayerPack
                     int l3 = 1;
                     int i4 = 0;
 
-                    if (!isBiomeOceanic(k2) && this.nextInt(l3++) == 0) i4 = k2;
+                    if (!isOceanic(k2) && this.nextInt(l3++) == 0) i4 = k2;
 
-                    if (!isBiomeOceanic(l2) && this.nextInt(l3++) == 0) i4 = l2;
+                    if (!isOceanic(l2) && this.nextInt(l3++) == 0) i4 = l2;
 
-                    if (!isBiomeOceanic(i3) && this.nextInt(l3++) == 0) i4 = i3;
+                    if (!isOceanic(i3) && this.nextInt(l3++) == 0) i4 = i3;
 
-                    if (!isBiomeOceanic(j3) && this.nextInt(l3++) == 0) i4 = j3;
+                    if (!isOceanic(j3) && this.nextInt(l3++) == 0) i4 = j3;
 
                     if (this.nextInt(3) == 0){
                         aint1[j2 + (i2) * par3] = i4;
                     } else {
                         aint1[j2 + (i2) * par3] = 0;
                     }
-                } else if (!isBiomeOceanic(k3) && (k2 == 0 || l2 == 0 || i3 == 0 || j3 == 0)) {
+                } else if (!isOceanic(k3) && (k2 == 0 || l2 == 0 || i3 == 0 || j3 == 0)) {
                     if (this.nextInt(5) == 0){
                         if (k3 == 4) {
                             aint1[j2 + i2 * par3] = 0;
@@ -77,6 +78,7 @@ public class GenLayerAddBiome extends GenLayerPack
             }
         }
 
+        taste(aint1,par3*par4);
         return aint1;
     }
 }

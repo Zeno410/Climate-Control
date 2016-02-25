@@ -3,6 +3,7 @@ package climateControl;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.customGenLayer.GenLayerBiomeByClimate;
+import climateControl.customGenLayer.GenLayerBiomeByTaggedClimate;
 import climateControl.customGenLayer.GenLayerRandomBiomes;
 import climateControl.customGenLayer.GenLayerSmoothClimate;
 import climateControl.genLayerPack.GenLayerAddMushroomIsland;
@@ -104,6 +105,7 @@ public class LockGenLayers {
                 if (tested instanceof GenLayerOneSixBiome) return true;
                 if (tested.getClass().getCanonicalName().contains("BiomeLayerBiomes")) return true;
                 if (tested.getClass().getCanonicalName().contains("GenLayerBiomeEdgeHL")) return true;
+                if (tested.getClass().getCanonicalName().contains("GenLayerBiomeByTaggedClimate")) return true;
                 return false;
             }
 
@@ -128,12 +130,12 @@ public class LockGenLayers {
     
     private Filter<GenLayer> smoothClimateParent() {
         return new Filter<GenLayer>() {
-            private GenLayerSmoothClimate smoothClimateLayer = null;
+            private GenLayer smoothClimateLayer = null;
             public boolean accepts(GenLayer tested) {
                 if (tested == null) return false;
                 //LockGenLayer.logger.info(tested.toString());
-                if (tested instanceof GenLayerSmoothClimate) {
-                    smoothClimateLayer = (GenLayerSmoothClimate)tested;
+                if (tested instanceof GenLayerSmoothClimate||tested instanceof GenLayerBiomeByTaggedClimate) {
+                    smoothClimateLayer = tested;
                     //LockGenLayer.logger.info("smooth climate is "+tested.toString());
                     //LockGenLayer.logger.info("parent is "+parent(tested).toString());
                     return false; // obviously not the parent

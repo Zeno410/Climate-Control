@@ -63,7 +63,7 @@ public class HighlandsBiomeSettings extends BiomeSettings {
    public final ID oasis = new ID("Oasis",241);
    public final Element rockIsland = new Element("Rock Island",235,1,"DEEP_OCEAN");
    public final Element shrublands = new Element("Shrublands",243);
-   public final ID snowIsland = new ID("Snow Island",234);
+   public final Element snowIsland = new Element("Snow Island",234,1,"DEEP_OCEAN");
    public final ID valley = new ID("Valley",240);
    public final Element volcanoIsland = new Element("Volcano Island",233,1,"DEEP_OCEAN");
    public final Element windyIsland = new Element("Windy Island",236,1,true,"DEEP_OCEAN");
@@ -244,8 +244,10 @@ public class HighlandsBiomeSettings extends BiomeSettings {
             this.highlandsb.biomeID().set(Config.highlandsbID);
             this.lowlands.biomeID().set(Config.lowlandsID);
             this.jungleIsland.biomeID().set(Config.jungleIslandID);
+            this.lake.biomeID().set(Config.lakeID);
             this.meadow.biomeID().set(Config.meadowID);
             this.mesa.biomeID().set(Config.mesaID);
+            this.oasis.biomeID().set(Config.oasisID);
             this.ocean2.biomeID().set(Config.ocean2ID);
             this.outback.biomeID().set(Config.outbackID);
             this.pinelands.biomeID().set(Config.pinelandsID);

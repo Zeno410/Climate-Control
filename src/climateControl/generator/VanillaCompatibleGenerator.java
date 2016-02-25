@@ -6,6 +6,7 @@ import climateControl.api.ClimateControlRules;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.BiomeSettings;
 import climateControl.customGenLayer.GenLayerBiomeByClimate;
+import climateControl.customGenLayer.GenLayerLessRiver;
 import climateControl.customGenLayer.GenLayerRandomBiomes;
 import climateControl.customGenLayer.GenLayerShoreCC;
 import climateControl.customGenLayer.GenLayerSubBiome;
@@ -43,11 +44,11 @@ public class VanillaCompatibleGenerator extends AbstractWorldGenerator {
     }
 
     @Override
-    public GenLayerRiverMix fromSeed(long worldSeed) {
-        return likeVanilla(worldSeed);
+    public GenLayerRiverMix fromSeed(long worldSeed, WorldType worldType) {
+        return likeVanilla(worldSeed,worldType);
     }
 
-    public GenLayerRiverMix likeVanilla(long worldSeed) {
+    public GenLayerRiverMix likeVanilla(long worldSeed, WorldType worldType) {
         this.subBiomeChooser.clear();
         this.subBiomeChooser.set(settings().biomeSettings());
         setOceanSubBiomes();
@@ -72,7 +73,7 @@ public class VanillaCompatibleGenerator extends AbstractWorldGenerator {
         genlayerzoom = new GenLayerZoom(2003L, genlayerzoom);
         genlayeraddisland = new GenLayerAddIsland(4L, genlayerzoom);
         // smooth climates for worlds with mixed climate settings
-        genlayeraddisland = this.smoothClimates(settings(), worldSeed, genlayeraddisland);
+        genlayeraddisland = this.smoothClimates(settings(), worldSeed, genlayeraddisland,0L);
         genlayeraddisland.initWorldGenSeed(worldSeed);
 
         GenLayerAddMushroomIsland genlayeraddmushroomisland = new GenLayerAddMushroomIsland(5L, genlayeraddisland);
@@ -82,7 +83,9 @@ public class VanillaCompatibleGenerator extends AbstractWorldGenerator {
         ClimateControl.logger.info("biome size "+b0);
 
         GenLayer genlayer = GenLayerZoom.magnify(1000L, genlayer3, 0);
-        GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, genlayer);
+        // this statement is to make older CC generators suppress rivers in RTG
+        GenLayer genlayerriverinit = new GenLayerLessRiver(100L, genlayer,
+                rtgAwareRiverReduction(0, worldType));
         GenLayer object = null;
 
         if (settings().randomBiomes.value()) {

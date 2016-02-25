@@ -41,19 +41,19 @@ public class GenLayerCoastalClimate extends GenLayerPack {
                     continue;
                 }
                 int k2 = aint[j2 + 0 + (i2 + 1) * k1];
-                if (!isBiomeOceanic(k2)) {
+                if (!isOceanic(k2)) {
                     adjacencies[numberAdjacent++] = k2;
                 }
                 k2 = aint[j2 + 2 + (i2 + 1) * k1];
-                if (!isBiomeOceanic(k2)) {
+                if (!isOceanic(k2)) {
                     adjacencies[numberAdjacent++] = k2;
                 }
                 k2 = aint[j2 + 1 + (i2 + 0) * k1];
-                if (!isBiomeOceanic(k2)) {
+                if (!isOceanic(k2)) {
                     adjacencies[numberAdjacent++] = k2;
                 }
                 k2 = aint[j2 + 1 + (i2 + 2) * k1];
-                if (!isBiomeOceanic(k2)) {
+                if (!isOceanic(k2)) {
                     adjacencies[numberAdjacent++] = k2;
                 }
 

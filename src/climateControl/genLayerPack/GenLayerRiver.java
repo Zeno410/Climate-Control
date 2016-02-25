@@ -3,9 +3,10 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
-public class GenLayerRiver extends GenLayer
+public class GenLayerRiver extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000566";
+    public static final int noRiver = -1;
 
     public GenLayerRiver(long par1, GenLayer par3GenLayer)
     {
@@ -38,7 +39,7 @@ public class GenLayerRiver extends GenLayer
 
                 if (k3 == k2 && k3 == i3 && k3 == l2 && k3 == j3)
                 {
-                    aint1[j2 + i2 * par3] = -1;
+                    aint1[j2 + i2 * par3] = noRiver;
                 }
                 else
                 {

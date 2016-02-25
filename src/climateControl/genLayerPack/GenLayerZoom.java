@@ -27,6 +27,7 @@ public class GenLayerZoom extends GenLayerPack
         int i2 = k1 - 1 << 1;
         int j2 = l1 - 1 << 1;
         int[] aint1 = IntCache.getIntCache(i2 * j2);
+        poison(aint1,i2*j2);
         int l2;
 
         for (int k2 = 0; k2 < l1 - 1; ++k2)
@@ -49,13 +50,16 @@ public class GenLayerZoom extends GenLayerPack
             }
         }
 
+
         int[] aint2 = IntCache.getIntCache(par3 * par4);
+        poison(aint2,par3*par4);
 
         for (l2 = 0; l2 < par4; ++l2)
         {
             System.arraycopy(aint1, (l2 + (par2 & 1)) * i2 + (par1 & 1), aint2, l2 * par3, par3);
         }
 
+        taste(aint2,par3*par4);
         return aint2;
     }
 

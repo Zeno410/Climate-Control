@@ -8,13 +8,11 @@ import climateControl.api.BiomeSettings;
 import climateControl.api.CCDimensionSettings;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DimensionalSettingsRegistry;
-import climateControl.biomeSettings.BoPSettings;
 import climateControl.customGenLayer.GenLayerLowlandRiverMix;
 import climateControl.customGenLayer.GenLayerRiverMixWrapper;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.generator.CorrectedContinentsGenerator;
 import climateControl.generator.OneSixCompatibleGenerator;
-import climateControl.generator.StackedContinentsGenerator;
 import climateControl.generator.TestGeneratorPair;
 import climateControl.generator.VanillaCompatibleGenerator;
 import climateControl.utils.ChunkGeneratorExtractor;
@@ -28,8 +26,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.logging.Logger;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -37,11 +36,16 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.gen.feature.WorldGeneratorBonusChest;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
 import net.minecraft.world.gen.layer.IntCache;
 import net.minecraft.world.gen.structure.MapGenVillage;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.ChestGenHooks;
+import static net.minecraftforge.common.ChestGenHooks.BONUS_CHEST;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.terraingen.WorldTypeEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -83,7 +87,7 @@ public class DimensionManager {
         if (ignore(worldType,settings)) return null;
         if (settings.noGenerationChanges.value()) {
             if (settings.oneSixCompatibility.value()) {
-                return new OneSixCompatibleGenerator(settings).fromSeed(worldSeed);
+                return new OneSixCompatibleGenerator(settings).fromSeed(worldSeed,worldType);
             } else {
                 return null;
             }
@@ -93,14 +97,9 @@ public class DimensionManager {
         GenLayerRiverMix newMix = null;
         //logger.info("world seed " + worldSeed);
         if (settings.vanillaLandAndClimate.value()) {
-             newMix = new VanillaCompatibleGenerator(settings).fromSeed(worldSeed);
+             newMix = new VanillaCompatibleGenerator(settings).fromSeed(worldSeed,worldType);
         } else {
-            if (settings.zeroPointFive.value()) {
-                newMix = new CorrectedContinentsGenerator(settings).fromSeed(worldSeed);
-            } else {
-                StackedContinentsGenerator generator = new StackedContinentsGenerator(settings);
-                newMix = generator.fromSeed(worldSeed);
-            }
+             newMix = new CorrectedContinentsGenerator(settings,this.configDirectory.getParentFile()).fromSeed(worldSeed,worldType);
         }
         GenLayer oldGen = null;//riverMixBiome.get(activeRiverMix);
         GenLayer newGen = riverMixBiome.get(newMix);
@@ -164,7 +163,7 @@ public class DimensionManager {
             addonConfigManager.updateConfig(addonSetting, configDirectory, dimension.configDirectory());
             if (newWorld) {
                 addonSetting.object.onNewWorld();
-                addonConfigManager.saveConfigs( dimension.configDirectory(), addonSetting);
+                addonConfigManager.saveConfigs(this.configDirectory, dimension.configDirectory(), addonSetting);
             }
         }
         return result;
@@ -179,6 +178,8 @@ public class DimensionManager {
         for (Named<BiomeSettings> addonSetting: result.registeredBiomeSettings()) {
             if (newWorld) addonSetting.object.onNewWorld();
             addonConfigManager.initializeConfig(addonSetting, configDirectory);
+            if (newWorld) addonSetting.object.onNewWorld();
+            addonSetting.object.setNativeBiomeIDs(configDirectory);
         }
         return result;
     }
@@ -246,7 +247,8 @@ public class DimensionManager {
             // continue below
         }
         if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-            riverLayerWrapper(0).setRedirection(patchedGenLayer(generationSettings, event.worldType, event.seed));
+            GenLayerRiverMix patched = patchedGenLayer(generationSettings, event.worldType, event.seed);
+            riverLayerWrapper(0).setRedirection(patched);
             event.newBiomeGens = riverLayerWrapper(0).modifiedGenerators();
             event.setResult(WorldTypeEvent.Result.ALLOW);
         } else {
@@ -262,12 +264,14 @@ public class DimensionManager {
 
     private boolean ignore(WorldType considered, ClimateControlSettings settings) {
         if (considered == null) return true;
-        if (considered.equals(WorldType.AMPLIFIED)) return false;
-        if (considered.equals(WorldType.DEFAULT)) {
-            return false;
+        if (!settings.suppressInStandardWorlds.value()) {
+            if (considered.equals(WorldType.AMPLIFIED)) return false;
+            if (considered.equals(WorldType.DEFAULT)) {
+                return false;
+            }
+            if (considered.equals(WorldType.DEFAULT_1_1)) return false;
+            if (considered.equals(WorldType.LARGE_BIOMES)) return false;
         }
-        if (considered.equals(WorldType.DEFAULT_1_1)) return false;
-        if (considered.equals(WorldType.LARGE_BIOMES)) return false;
         if (considered.equals(WorldType.FLAT)) return true;
         if (settings.interveneInBOPWorlds.value()) {
             if (considered.getWorldTypeName().equalsIgnoreCase("BIOMESOP")) return false;
@@ -286,12 +290,49 @@ public class DimensionManager {
         return true;
     }
 
-    public void onWorldLoad(WorldEvent.Load event) {
-        logger.info(event.world.provider.terrainType.getWorldTypeName()+ " "+ event.world.provider.dimensionId);
-        if (ignore(event.world.provider.terrainType,this.newSettings)) {
+    public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
+        WorldServer world = (WorldServer)(event.world);
+        if (ignore(world.provider.terrainType,this.newSettings)) {
             return;
         }
-        World world = event.world;
+        int dimension = world.provider.dimensionId;
+        logger.info(""+this.dimensionSettings.ccOnIn(dimension));
+        if (!this.dimensionSettings.ccOnIn(dimension)) {
+            if (!DimensionalSettingsRegistry.instance.useCCIn(dimension)) {
+                return;
+            }
+        }// only change dimensions we're supposed to;
+        onWorldLoad(event.world);
+        salvageSpawn(event.world);
+        if (event.settings.isBonusChestEnabled()) {
+            Random rand = new Random(world.getSeed());
+            WorldGeneratorBonusChest worldgeneratorbonuschest =
+                    new WorldGeneratorBonusChest(ChestGenHooks.getItems(BONUS_CHEST, rand), ChestGenHooks.getCount(BONUS_CHEST, rand));
+;
+
+            for (int i = 0; i < 100; ++i){
+                int j = world.getWorldInfo().getSpawnX() + rand.nextInt(6+i/10) - rand.nextInt(6+i/10);
+                int k = world.getWorldInfo().getSpawnZ() + rand.nextInt(6+i/10) - rand.nextInt(6+i/10);
+
+                int l = world.getTopSolidOrLiquidBlock(j, k)+1;
+
+                if (world.getBlock(j, l, k).equals(Blocks.air)){
+                    if (worldgeneratorbonuschest.generate(world, rand, j, l, k)) break;
+                }
+            }
+        }
+        event.setCanceled(true);
+    }
+
+    private HashSet<Integer> dimensionsDone = new HashSet<Integer>();
+
+    public void onWorldLoad(World world) {
+        logger.info(world.provider.terrainType.getWorldTypeName()+ " "+ world.provider.dimensionId);
+        if (dimensionsDone.contains(world.provider.dimensionId)) return;
+        dimensionsDone.add(world.provider.dimensionId);
+        if (ignore(world.provider.terrainType,this.newSettings)) {
+            return;
+        }
         int dimension = world.provider.dimensionId;
         logger.info(""+this.dimensionSettings.ccOnIn(dimension));
         if (!this.dimensionSettings.ccOnIn(dimension)) {
@@ -312,14 +353,17 @@ public class DimensionManager {
 
         if (!(world instanceof WorldServer)) return;
 
-        WorldServer worldServer = (WorldServer)(event.world);
+        WorldServer worldServer = (WorldServer)(world);
         DimensionAccess dimensionAccess = new DimensionAccess(dimension,worldServer);
 
         long worldSeed = world.getSeed();
+        logger.info(world.toString());
+        logger.info("seed "+worldSeed);
         if (world instanceof WorldServer&&worldSeed!=0)  {
             ClimateControlSettings currentSettings = null;
             boolean newWorld = false;
-            if(world.getWorldInfo().getWorldTotalTime()<10) {
+            logger.info("time "+world.getWorldInfo().getWorldTotalTime());
+            if(world.getWorldInfo().getWorldTotalTime()<100) {
                 // new world
                 newWorld = true;
             }
@@ -356,13 +400,14 @@ public class DimensionManager {
                     try {
                         new ChunkGeneratorExtractor().impose((WorldServer) world, new MapGenVillage());
                     } catch (Exception e) {
+                    } catch (NoClassDefFoundError e) {
                     }
-                    if(world.getWorldInfo().getWorldTotalTime()<10) {
+                    if(world.getWorldInfo().getWorldTotalTime()<40000) {
                         ArrayList<PlaneLocation> existingChunks =
                         new ChunkLister().savedChunks(levelSavePath((WorldServer)world));
                         logger.info("existing chunks:"+existingChunks.size());
                         //world.provider.worldChunkMgr.
-                        salvageSpawn(world);
+                        //salvageSpawn(world);
                     }
                 }
             }
@@ -398,8 +443,8 @@ public class DimensionManager {
 
     private void salvageSpawn(World world) {
         WorldInfo info = world.getWorldInfo();
-        int x= info.getSpawnX();
-        int z= info.getSpawnZ();
+        int x= info.getSpawnX()/16*16;
+        int z= info.getSpawnZ()/16*16;
         //x = x/16;
         //z = z/16;
         int move = 0;
@@ -411,19 +456,38 @@ public class DimensionManager {
         int spawnY = 0;
         BiomeGenBase checkSpawn = world.getBiomeGenForCoords(x, z);
         int nextTry = 50;
-        int nextTryIncrement = 50;
+        int nextTryIncrement = 80;
+        int nextTryStretch = 20;
+        IChunkProvider chunkManager = world.getChunkProvider();
+        ChunkProviderServer chunkServer = null;
+        try {
+            chunkServer = (ChunkProviderServer)chunkManager;
+        } catch (ClassCastException e) {
+            throw e;
+        }
+        int checked = 0;
         while(spawnY < 64) {
             //while (isSea(checkSpawn)) {
                 //spiral out around spawn;
+            if (checked > 50) {
+                if (chunkServer != null) {
+                    chunkServer.unloadAllChunks();
+                    //chunkServer.unloadQueuedChunks();
+                }
+                checked = 0;
+            }
+            if (chunkServer != null) {
+                //chunkServer.unloadChunksIfNotNearSpawn(checked, checked);
+            }
+            checked++;
                 move ++;
                 if (move>((ring)*(ring+1)*4)) {
                     ring ++;
                 }
                 // do 1 in 1000
                 if (move<nextTry) continue;
-                nextTryIncrement += 50;
+                nextTryIncrement += nextTryStretch++;
                 nextTry += nextTryIncrement;
-                world.getChunkProvider().unloadQueuedChunks();
                 int inRing = move - (ring-1)*(ring)*4;
                 // find which side of the ring we are on;
                 // note inRing is 1-based not 0-base
@@ -443,7 +507,8 @@ public class DimensionManager {
                 }
                 IntCache.resetIntCache();
                 logger.info("checking for spawn at "+ (x+xMove*16) + ","+ (z+zMove*16) + "move " + move
-                        + " ring "+ ring + " inRing " + inRing+ " caches " + IntCache.getCacheSizes());
+                        + " ring "+ ring + " inRing " + inRing+ " caches " + IntCache.getCacheSizes()
+                        + " dimension " + world.provider.dimensionId);
                 checkSpawn = world.getBiomeGenForCoords(x+xMove*16, z+zMove*16);
             //}
             //int spawnY = checkSpawn.getHeightValue(8,8);

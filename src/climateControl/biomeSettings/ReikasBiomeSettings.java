@@ -28,10 +28,10 @@ public class ReikasBiomeSettings extends BiomeSettings {
     public ReikasBiomeSettings() {
         super(biomeCategory);
         enderForest.biomeIncidences().set(3);
-        island.biomeIncidences().set(3);
-        plains.biomeIncidences().set(3);
+        island.biomeIncidences().set(0);
+        plains.biomeIncidences().set(0);
         rainbowForest.biomeIncidences().set(3);
-        skyland.biomeIncidences().set(4);
+        skyland.biomeIncidences().set(0);
     }
 
 

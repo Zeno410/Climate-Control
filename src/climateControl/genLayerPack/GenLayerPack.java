@@ -5,6 +5,9 @@ package climateControl.genLayerPack;
  * also run Climate Control in an altered form of Amidst by just changing imports
  * I can also fiddle with the parent layer, which is sometimes useful.
  */
+import climateControl.utils.Receiver;
+import climateControl.utils.StringWriter;
+import java.io.File;
 import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -18,6 +21,7 @@ import net.minecraftforge.event.terraingen.*;
 
 public abstract class GenLayerPack extends GenLayer
 {
+    public static final int undefined = -2;
     /**
      * seed from World#getWorldSeed that is used in the LCG prng
      */
@@ -56,7 +60,6 @@ public abstract class GenLayerPack extends GenLayer
         this.baseSeed *= this.baseSeed * 6364136223846793005L + 1442695040888963407L;
         this.baseSeed += par1;
     }
-
     /**
      * Initialize layer's local worldGenSeed based on its own baseSeed and the world's global seed (passed in as an
      * argument).
@@ -170,9 +173,16 @@ public abstract class GenLayerPack extends GenLayer
     /**
      * returns true if the biomeId is one of the various ocean biomes.
      */
-    protected static boolean isBiomeOceanic(int p_151618_0_)
+    protected static boolean isBiomeOceanic(int id)
     {
-        return p_151618_0_ == BiomeGenBase.ocean.biomeID || p_151618_0_ == BiomeGenBase.deepOcean.biomeID || p_151618_0_ == BiomeGenBase.frozenOcean.biomeID;
+        if (id>255) return false;// oddly the below returns true for all id>255
+        return id == BiomeGenBase.ocean.biomeID || id == BiomeGenBase.deepOcean.biomeID || id == BiomeGenBase.frozenOcean.biomeID;
+    }
+    protected static boolean isOceanic(int id)
+    {
+        if (id>255) return false;// oddly the below returns true for all id>255
+        return id == BiomeGenBase.ocean.biomeID || id == BiomeGenBase.deepOcean.biomeID || id == BiomeGenBase.frozenOcean.biomeID;
+        //throw new RuntimeException();
     }
 
     /**
@@ -196,5 +206,51 @@ public abstract class GenLayerPack extends GenLayer
         WorldTypeEvent.BiomeSize event = new WorldTypeEvent.BiomeSize(worldType, original);
         MinecraftForge.TERRAIN_GEN_BUS.post(event);
         return event.newSize;
+    }
+
+    public void report(File file, int [] toReport, int length, int width) {
+        Receiver<String> reportee = StringWriter.from(file);
+        for (int i = 0; i < width;i++) {
+            String report = "";
+            for (int j = 0; j < length;j++) {
+                int value = toReport[i*(length)+j];
+                if (value == 24) value =0;// deep ocean
+                report += value+ " ";
+            }
+            reportee.accept(report);
+        }
+        reportee.accept("");
+        for (int i = 0; i < width;i++) {
+            String report = "";
+            for (int j = 0; j < length;j++) {
+                int value = i;//toReport[i*(2*distanceFromOrigin+1)+j];
+                report += value+ " ";
+            }
+            reportee.accept(report);
+        }
+        reportee.accept("");
+        for (int i = 0; i < width;i++) {
+            String report = "";
+            for (int j = 0; j < length;j++) {
+                int value = j;//toReport[i*(2*distanceFromOrigin+1)+j];
+                report += value+ " ";
+            }
+            reportee.accept(report);
+        }
+        reportee.done();
+    }
+
+    // debugging
+
+    public void poison(int [] toPoison, int length) {
+        for (int i = 0 ; i<length;i++) {
+            toPoison[i]=-2;
+        }
+    }
+
+    public void taste(int [] toPoison, int length) {
+        for (int i = 0 ; i<length;i++) {
+            if (toPoison[i]==-2) throw new RuntimeException(""+i);
+        }
     }
 }

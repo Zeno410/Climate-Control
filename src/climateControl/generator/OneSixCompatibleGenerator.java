@@ -46,7 +46,7 @@ public class OneSixCompatibleGenerator extends AbstractWorldGenerator {
     }
 
     @Override
-    public GenLayerRiverMix fromSeed(long worldSeed) {
+    public GenLayerRiverMix fromSeed(long worldSeed, WorldType worldType) {
         return strictVanilla(worldSeed);
     }
 
@@ -75,7 +75,7 @@ public class OneSixCompatibleGenerator extends AbstractWorldGenerator {
         genlayerzoom = new GenLayerZoom(2003L, genlayerzoom);
         genlayeraddisland = new GenLayerAddIsland(4L, genlayerzoom);
         // smooth climates for worlds with mixed climate settings
-        genlayeraddisland = this.smoothClimates(settings(), worldSeed, genlayeraddisland);
+        genlayeraddisland = this.smoothClimates(settings(), worldSeed, genlayeraddisland,0L);
         genlayeraddisland.initWorldGenSeed(worldSeed);
 
         GenLayerAddMushroomIsland genlayeraddmushroomisland = new GenLayerAddMushroomIsland(5L, genlayeraddisland);

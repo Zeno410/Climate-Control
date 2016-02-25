@@ -27,8 +27,8 @@ public class GenLayerTestClimateSmooth extends GenLayerPack{
                 int first = parentInts[x+(xSize)*(z)];
                 int second = parentInts[x+(xSize)*(z+1)];
 
-                if (isBiomeOceanic(first)) continue;
-                if (isBiomeOceanic(second)) continue;
+                if (isOceanic(first)) continue;
+                if (isOceanic(second)) continue;
                 if (Math.abs(first-second)>2) {
                     logger.info("first "+first + " to " +second);
                     for (int i=0; i<xSize;i++) {
@@ -48,8 +48,8 @@ public class GenLayerTestClimateSmooth extends GenLayerPack{
                 int second =  (parentInts[x+1+(xSize)*(z)]) ;
 
 
-                if (isBiomeOceanic(first)) continue;
-                if (isBiomeOceanic(second)) continue;
+                if (isOceanic(first)) continue;
+                if (isOceanic(second)) continue;
                 if (Math.abs(first-second)>2) {
                     logger.info("first "+first + " to " +second);
                     throw new RuntimeException();

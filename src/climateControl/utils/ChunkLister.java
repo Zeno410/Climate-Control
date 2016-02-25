@@ -13,10 +13,13 @@ import climateControl.utils.PlaneLocation;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.minecraft.world.chunk.storage.RegionFile;
 //import net.minecraft.world.chunk.storage.;
 
@@ -94,7 +97,11 @@ public class ChunkLister {
                     }
 
                }
-               regionFile.close();
+            try {
+                regionFile.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ChunkLister.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return result;
         }
        }

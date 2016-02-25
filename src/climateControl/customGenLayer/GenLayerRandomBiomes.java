@@ -3,6 +3,7 @@ package climateControl.customGenLayer;
 import climateControl.BiomeRandomizer;
 
 import climateControl.api.ClimateControlSettings;
+import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
 import net.minecraft.world.WorldType;
@@ -28,7 +29,7 @@ import net.minecraft.world.gen.layer.IntCache;
  *
  * @author MasterCaver modified by Zeno410
  */
-public class GenLayerRandomBiomes extends GenLayer {
+public class GenLayerRandomBiomes extends GenLayerPack {
 
 
     public static Logger logger = new Zeno410Logger("RandomBiomes").logger();
@@ -74,7 +75,7 @@ public class GenLayerRandomBiomes extends GenLayer {
                 var9 &= -3841;
 
                 // Random biome distribution
-                if (isBiomeOceanic(var9)){
+                if (isOceanic(var9)){
                     var6[var8 + var7 * par3] = var9;
                 } else if (var9 == BiomeGenBase.mushroomIsland.biomeID){
                     var6[var8 + var7 * par3] = var9;

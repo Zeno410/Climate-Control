@@ -27,11 +27,23 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
     
     private LockGenLayers biomeLocker = new LockGenLayers();
 
+    private static GenLayer dummyGenLayer() {
+        return new GenLayer(0L) {
+
+            @Override
+            public int[] getInts(int var1, int var2, int var3, int var4) {
+                return new int [var3*var4];
+            }
+
+        };
+    }
+
 
     public GenLayerRiverMixWrapper(long baseSeed) {
-        super(baseSeed,null,null);
+        super(baseSeed,dummyGenLayer(),dummyGenLayer());
         voronoi = new GenLayerVoronoiZoom(baseSeed,this);
     }
+
 
     public void setOriginal(GenLayer target) {
         if (original == null) {

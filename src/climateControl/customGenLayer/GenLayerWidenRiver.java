@@ -7,12 +7,13 @@ package climateControl.customGenLayer;
  * @author Zeno410
  */
 
+import climateControl.genLayerPack.GenLayerPack;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiver;
 import net.minecraft.world.gen.layer.IntCache;
 
-public class GenLayerWidenRiver extends GenLayer
+public class GenLayerWidenRiver extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000566";
 

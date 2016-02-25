@@ -1,11 +1,9 @@
-
 package climateControl.api;
 
 import climateControl.biomeSettings.*;
 import climateControl.utils.Mutable;
 import climateControl.utils.Settings;
 import climateControl.generator.BiomeSwapper;
-import climateControl.api.ClimateDistribution;
 import climateControl.generator.SubBiomeChooser;
 import java.io.File;
 import java.util.ArrayList;
@@ -13,6 +11,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenBase.TempCategory;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
+import net.minecraftforge.common.config.ConfigCategory;
+import net.minecraftforge.common.config.Configuration;
 
 /**
  *
@@ -247,6 +247,24 @@ abstract public class BiomeSettings extends Settings {
 
     protected ID externalBiome(String name,int biomeID){
         return new ID(name, new Mutable.Concrete<Integer>(biomeID));
+    }
+
+    private void stripCategory(Category category, Configuration config) {
+        ConfigCategory toRemove = config.getCategory(category.name.toLowerCase());
+        config.removeCategory(toRemove);
+        if (config.hasCategory(category.name.toLowerCase())) throw new RuntimeException();
+    }
+
+    private void stripFrom(Configuration config) {
+        stripCategory(this.idCategory,config);
+        stripCategory(this.incidenceCategory,config);
+        stripCategory(this.villagesCategory,config);
+        stripCategory(this.climateControlCategory,config);
+        stripCategory(this.climateCategory,config);
+    }
+
+    public void stripIDsFrom(Configuration config) {
+        stripCategory(this.idCategory,config);
     }
 
     @Override

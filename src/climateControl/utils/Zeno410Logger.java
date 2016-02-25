@@ -58,7 +58,7 @@ public class Zeno410Logger {
        // if logging is off make the loggers do nothing
        if (suppress) return;
         try {
-            fileTxt = new FileHandler("/"+name+".txt");
+            fileTxt = new FileHandler(name+".txt");
             formatterTxt = new SimpleFormatter();
             fileTxt.setFormatter(formatterTxt);
             logger.addHandler(fileTxt);

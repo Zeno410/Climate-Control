@@ -29,7 +29,7 @@ public class GenLayerPrettyShore extends GenLayerPack
      */
 
     private boolean waterBiome(int biomeID) {
-        if (isBiomeOceanic(biomeID)) return true;
+        if (isOceanic(biomeID)) return true;
         return rules.noBeachesAllowed(biomeID);
     }
     public int[] getInts(int par1, int par2, int par3, int par4)
@@ -90,7 +90,7 @@ public class GenLayerPrettyShore extends GenLayerPack
                 }
                 else if (k1 != BiomeGenBase.extremeHills.biomeID && k1 != BiomeGenBase.extremeHillsPlus.biomeID && k1 != BiomeGenBase.extremeHillsEdge.biomeID)
                 {
-                    if (biomegenbase != null && biomegenbase.func_150559_j())
+                    if (biomegenbase != null && biomegenbase.func_150559_j()&&!biomegenbase.biomeName.equalsIgnoreCase("Dead Forest"))
                     {
                         this.func_151632_a(aint, aint1, j1, i1, par3, k1, BiomeGenBase.coldBeach.biomeID);
                     }
@@ -190,7 +190,7 @@ public class GenLayerPrettyShore extends GenLayerPack
 
     private boolean func_151631_c(int p_151631_1_)
     {
-        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID || p_151631_1_ == BiomeGenBase.taiga.biomeID || isBiomeOceanic(p_151631_1_);
+        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID || p_151631_1_ == BiomeGenBase.taiga.biomeID || isOceanic(p_151631_1_);
     }
 
     private boolean func_151633_d(int p_151633_1_)

@@ -51,17 +51,17 @@ abstract public class AbstractWorldGenerator {
         setRules();
     }
     
-    protected GenLayer smoothClimates(ClimateControlSettings settings, long worldSeed, GenLayer parent) {
+    protected GenLayer smoothClimates(ClimateControlSettings settings, long worldSeed, GenLayer parent,long masterSeed) {
         if (false) {//if (settings.climateControlcompatibility.value()) {
             // old climate smoothing
-            GenLayer genlayeraddisland = new GenLayerCache(new GenLayerTemperClimate(0L,parent));
+            GenLayer genlayeraddisland = new GenLayerCache(new GenLayerTemperClimate(masterSeed,parent));
             GenLayerEdge genlayeredge = new GenLayerEdge(2L, genlayeraddisland, GenLayerEdge.Mode.COOL_WARM);
             genlayeredge = new GenLayerEdge(2L, genlayeredge, GenLayerEdge.Mode.HEAT_ICE);
             genlayeredge = new GenLayerEdge(3L, genlayeraddisland, GenLayerEdge.Mode.SPECIAL);
             return genlayeredge;
         } else {
             //new climate smoothing
-            return new GenLayerSmoothClimate(0L,parent);
+            return new GenLayerSmoothClimate(masterSeed,parent);
         }
     }
 
@@ -87,8 +87,13 @@ abstract public class AbstractWorldGenerator {
         rules = newRules;
     }
 
-    abstract GenLayerRiverMix fromSeed(long worldSeed);
+    abstract GenLayerRiverMix fromSeed(long worldSeed, WorldType worldType);
 
+    public int rtgAwareRiverReduction(int baseReduction, WorldType worldType) {
+        if (worldType.getWorldTypeName().equalsIgnoreCase("RTG")) return 100;
+        return baseReduction;
+    }
+    
     public GenLayerRiverMix vanillaExpansion(long worldSeed, WorldType par2WorldType,
         GenLayer genlayer3,ClimateControlSettings settings){
         if (settings.oneSixCompatibility.value()) {
