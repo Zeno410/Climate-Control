@@ -11,7 +11,7 @@ import net.minecraft.world.gen.layer.IntCache;
  * add any islands, it add *to* existing land.
  * @author Zeno410
  */
-public class GenLayerAddLand extends GenLayerPack
+public class GenLayerAddLand extends GenLayerNeighborTesting
 {
     private static final String __OBFID = "CL_00000551";
     private final boolean separate;
@@ -37,6 +37,7 @@ public class GenLayerAddLand extends GenLayerPack
         taste(aint,k1*l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
         poison(aint1,par3*par4);
+        taste(aint,k1*l1);
 
         for (int i2 = 0; i2 < par4 ; i2++)
         {
@@ -49,7 +50,7 @@ public class GenLayerAddLand extends GenLayerPack
                 int k3 = aint[j2 + 1 + (i2 + 1) * k1];
                 this.initChunkSeed((long)(j2 + par1), (long)(i2 + par2));
 
-                if (k3 == 0 && (k2 != 0 || l2 != 0 || i3 != 0 || j3 != 0))
+                if (isOceanic(k3) && (!isOceanic(k2) || !isOceanic(l2) || !isOceanic(i3) || !isOceanic(j3)))
                 {
                     int l3 = 1;
                     int i4 = 0;
@@ -83,21 +84,17 @@ public class GenLayerAddLand extends GenLayerPack
                         aint1[j2 + (i2) * par3] = i4;
                     }
                     else {
-                        aint1[j2 + (i2) * par3] = 0;
+                        aint1[j2 + (i2) * par3] = k3;
                     }
                 }
-                else if (!isOceanic(k3) && (k2 == 0 || l2 == 0 || i3 == 0 || j3 == 0))
+                else if (!isOceanic(k3) && (isOceanic(k2) || isOceanic(l2) || isOceanic(i3) || isOceanic(j3)))
                 {
                     if (this.nextInt(5) == 0)
                     {
-                        if (k3 == 4)
-                        {
-                            aint1[j2 + i2 * par3] = 0;
-                        }
-                        else
-                        {
-                            aint1[j2 + i2 * par3] = 0;
-                        }
+                        if (isOceanic(k2)) aint1[j2 + i2 * par3] = k2;
+                        if (isOceanic(l2)) aint1[j2 + i2 * par3] = l2;
+                        if (isOceanic(i3)) aint1[j2 + i2 * par3] = i3;
+                        if (isOceanic(j3)) aint1[j2 + i2 * par3] = j3;
                     }
                     else
                     {
@@ -108,57 +105,13 @@ public class GenLayerAddLand extends GenLayerPack
                 {
                     aint1[j2 + i2 * par3] = k3;
                 }
+
+                if (aint1[j2 + i2 * par3]<0) throw new RuntimeException("i2 "+i2 + " j2 "+j2 + " k2 " + k2 + " l2 " + l2 +
+                        " i3 " + i3 + " j3 " + j3 + " k3 " + k3 + " orig "+ aint[j2 + 1 + (i2 + 1) * k1]);
             }
         }
         taste(aint1,par3*par4);
         return aint1;
     }
 
-    public final boolean acceptableNeighbors(int newValue, int[] array, int i2,int j2,int k1) {
-        if (newValue == 0) return true;
-        int upper = newValue +1;
-        int lower = newValue -1;
-        int neighbor;
-        neighbor = array[j2 + 0 + (i2 + 0) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 1 + (i2 + 0) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 2 + (i2 + 0) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 0 + (i2 + 1) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 2 + (i2 + 1) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 0 + (i2 + 2) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 1 + (i2 + 2) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        neighbor = array[j2 + 2 + (i2 + 2) * k1];
-        if (neighbor !=0) {
-            if (neighbor<lower) return false;
-            if (neighbor>upper) return false;
-        }
-        return true;
-    }
 }

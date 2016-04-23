@@ -1,6 +1,7 @@
 
 package climateControl;
 
+import climateControl.api.BiomeRandomizer;
 import climateControl.api.Climate;
 import climateControl.api.ClimateControlSettings;
 import climateControl.utils.GuiChoice;
@@ -86,9 +87,7 @@ public class SettingsTester {
             if (testClimatePicker.hasBiomes(BiomeGenBase.deepOcean.biomeID) == false)
                 activeWithoutBiomes = activeWithoutBiomes.concat(Climate.DEEP_OCEAN.name+" ");
             for (int i = 1; i < 5; i ++) {
-                ClimateControl.logger.info("climate "+i+ " " +active[i]);
                 if (active[i]) {
-                    ClimateControl.logger.info("hasBiomes "+testClimatePicker.hasBiomes(i));
                     if (testClimatePicker.hasBiomes(i) == false){
                         activeWithoutBiomes = activeWithoutBiomes.concat(climates[i].name+" ");
                     }

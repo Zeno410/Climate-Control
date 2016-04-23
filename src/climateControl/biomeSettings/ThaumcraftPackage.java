@@ -13,8 +13,9 @@ public class ThaumcraftPackage extends BiomePackage {
 
     public ThaumcraftPackage() {
         super("ThaumcraftInCC.cfg");
-        // confirm Highlands is there.
+        // confirm Thaumcraft is there.
         Class nodesClass = NodeType.class;
+        NodeType type = NodeType.DARK;
     }
 
     @Override

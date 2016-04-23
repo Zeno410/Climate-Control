@@ -1,5 +1,4 @@
 package climateControl.customGenLayer;
-import climateControl.genLayerPack.GenLayerPack;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 /**
@@ -35,43 +34,18 @@ public class GenLayerAdjustIsland extends GenLayerNeighborTesting {
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
 
-        int tries = 0;
-        int possibles = 0;
-        int oceans = 0;
-        int lefts = 0;
-        int rights = 0;
-        int ups = 0;
-        int downs = 0;
-        String list = "";
         for (int i2 = 0; i2 < par4; i2++)
         {
             for (int j2 = 0; j2 < par3; j2++)
             {
-                tries += 1;
                 int up = aint[j2 + 0 + (i2 + 1) * k1];
                 int left = aint[j2 + 1 + (i2 + 0) * k1];
                 int right = aint[j2 + 1 + (i2 + 2) * k1];
                 int down = aint[j2 + 2 + (i2 + 1) * k1];
                 int k3 = aint[j2 + 1 + (i2 + 1) * k1];
                 this.initChunkSeed((long)(j2 + par1), (long)(i2 + par2));
-                String message = "";
-                if (j2==8&&i2==9) { // 9,10 = 1020
-
-                    int upleft = aint[j2 + 0 + (i2 + 0) * k1];
-                    int downleft = aint[j2 + 2 + (i2 + 0) * k1];
-                    int upright = aint[j2 + 0 + (i2 + 2) * k1];
-                    int downright = aint[j2 + 2 + (i2 + 2) * k1];
-                    message = ""+acceptableNeighbors(left, aint, i2, j2, k1);
-                    message +=" " + upleft + " " + up + " " + upright;
-                    message +=" " + left + " " + k3 + " " + right;
-                    message += " " + downleft + " " + down + " " + downright;
-                    //throw new RuntimeException(message);
-                }
-
 
                 if (isOceanic(k3) && ((!isOceanic(up)) || (!isOceanic(left)) || (!isOceanic(right)) || (!isOceanic(down)))) {
-                    possibles +=1;
-                    list += "("+i2+","+j2+")";
                     int i4 = k3;
                     int hits = 0;
                     long savedSeed = savedChunkSeed();
@@ -183,9 +157,6 @@ public class GenLayerAdjustIsland extends GenLayerNeighborTesting {
             }
         }
 
-        //if (1>0) throw new RuntimeException(""+isOceanic(257));
-        //if (1>0) throw new RuntimeException(""+oceans + " " + ups + " "+
-                //downs + " " + lefts + " " + rights+ " " + possibles+ " " + par3*par4+ list);
         return aint1;
     }
 

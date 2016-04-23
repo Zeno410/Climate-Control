@@ -89,9 +89,9 @@ public class GenLayerSmoothWithBiomes extends GenLayerPack {
     }
 
     private final int climateSmoothed(int i1,int j1,int k1,int l1,int k2,int l2,int i3,int j3,int k3, int par1, int par2, int z, int x) {
-        if (k2>0&& l2>0&&k2!=deepOcean&&l2!=deepOcean){
+        if (!isOceanic(k2)&& !isOceanic(l2)){
             this.initChunkSeed((long)(x + par1), (long)(z + par2));
-            if (i3>0&& j3>0&&i3!=deepOcean&&j3!=deepOcean) {
+            if (!isOceanic(i3)&& !isOceanic(j3)) {
                 int pick = this.nextInt(4);
                 if (pick ==0) {k3 = k2;}
                 else if (pick ==1) {k3 = l2;}
@@ -105,7 +105,7 @@ public class GenLayerSmoothWithBiomes extends GenLayerPack {
                 }
             }
         } else {
-            if (i3>0&& j3>0&&i3!=deepOcean&&j3!=deepOcean) {
+            if (!isOceanic(i3)&& !isOceanic(j3)) {
                 this.initChunkSeed((long)(x + par1), (long)(z + par2));
                 if (this.nextInt(2) == 0) {
                     k3 = i3;

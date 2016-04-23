@@ -1,12 +1,14 @@
 package climateControl.customGenLayer;
 
-import climateControl.BiomeRandomizer;
+import climateControl.api.BiomeRandomizer;
 import climateControl.utils.IntRandomizer;
 import climateControl.ClimateControl;
 
 import climateControl.api.ClimateControlSettings;
+import climateControl.api.DistributionPartitioner;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.Zeno410Logger;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
@@ -24,6 +26,8 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
 
     private BiomeRandomizer.PickByClimate pickByClimate;
 
+    private ArrayList<DistributionPartitioner> partitioners;
+
     public GenLayerBiomeByClimate(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
         super(par1);
         this.parent = par3GenLayer;
@@ -35,6 +39,16 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
                 return GenLayerBiomeByClimate.this.nextInt(maximum);
             }
         };
+        partitioners = settings.partitioners();
+    }
+
+    // world gen inits have to be passed to the partitioners
+    @Override
+    public void initWorldGenSeed(long par1) {
+        super.initWorldGenSeed(par1);
+        for (DistributionPartitioner partitioner: partitioners) {
+            partitioner.initWorldGenSeed(par1);
+        }
     }
 
     /**
@@ -60,16 +74,18 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
                     throw new RuntimeException();
                     }
                 }
-                //ClimateControl.logger.info(""+k1);
-
-                if ((isOceanic(k1))&&(k1 != BiomeGenBase.deepOcean.biomeID)){
+                if (k1 == BiomeGenBase.frozenOcean.biomeID){
                     aint1[j1 + i1 * par3] = k1;
-                }
-                else if (k1 == BiomeGenBase.mushroomIsland.biomeID){
+                }else if (k1 == BiomeGenBase.mushroomIsland.biomeID){
                     aint1[j1 + i1 * par3] = k1;
                 }
                 else {
-                    aint1[j1 + i1 * par3] = pickByClimate.biome(k1, randomCallback);
+                    BiomeRandomizer.PickByClimate picker= pickByClimate;
+                    if (partitioners.size() <1) throw new RuntimeException();
+                    for (DistributionPartitioner partitioner: partitioners) {
+                        picker = partitioner.partitioned(picker, j1 + par1, i1 + par2);
+                    }
+                    aint1[j1 + i1 * par3] = picker.biome(k1, randomCallback);
                     //logger.info("("+(i1+par2)+","+(j1+par1)+") Climate "+k1 + " " + aint[j1 + i1 * par3]+" Biome " + aint1[j1 + i1 * par3]);
 
                 }

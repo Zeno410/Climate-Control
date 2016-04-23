@@ -208,23 +208,9 @@ public class ClimateControl {
     @EventHandler
     public void onServerStarting(FMLServerStartingEvent event) {
 
-
-        logger.info("starting server");
         File directory = event.getServer().worldServerForDimension(0).getChunkSaveLocation();
         directory = new File(directory,"worldSpecificConfig");
         directory.mkdir();
-            logger.info("Managing configs");
-            //addonConfigManager.updateConfig(this.dimensionSettings.named(), configDirectory, directory);
-            /*
-            configManager.setWorldFile(worldConfigDirectory.getParentFile());
-            logger.info(worldConfigDirectory.getParentFile().getName());
-            this.newSettings.setDefaults(configDirectory);
-
-
-            configManager.saveWorldSpecific();
-            for (Named<BiomeSettings> addonSetting: newSettings.registeredBiomeSettings()) {
-               this.addonConfigManager.updateConfig(addonSetting, configDirectory, worldConfigDirectory);
-            }*/
         if (dimensionManager == null) {
             if (event.getServer()!=null)
                 dimensionManager = new DimensionManager(newSettings,dimensionSettings,event.getServer());
@@ -233,6 +219,17 @@ public class ClimateControl {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBiomeGenInit(WorldTypeEvent.InitBiomeGens event) {
+        if (dimensionManager == null) {
+            if (MinecraftServer.getServer()!= null)
+            dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
+        }
+        if (dimensionManager != null) {
+            dimensionManager.onBiomeGenInit(event);
+        }
+    }
+
+    //@SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void earlyOnBiomeGenInit(WorldTypeEvent.InitBiomeGens event) {
         if (dimensionManager == null) {
             if (MinecraftServer.getServer()!= null)
             dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());

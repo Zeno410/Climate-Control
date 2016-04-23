@@ -1,16 +1,16 @@
 
 package climateControl.api;
 
-import climateControl.*;
+//import climateControl.*;
 import climateControl.api.ClimateDistribution.Incidence;
 import climateControl.utils.Acceptor;
 import climateControl.utils.Mutable;
 import climateControl.utils.Settings;
 import climateControl.biomeSettings.BoPSettings;
 import climateControl.biomeSettings.ExternalBiomePackage;
-import climateControl.biomeSettings.ExternalBiomePackage.ExternalBiomeSettings;
 import climateControl.biomeSettings.OceanBiomeSettings;
 import climateControl.biomeSettings.VanillaBiomeSettings;
+import climateControl.generator.MountainFormer;
 import climateControl.utils.Named;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -60,6 +60,13 @@ public class ClimateControlSettings extends Settings {
     private static final String forceStartContinentName = "forceStartContinent";
     private static final String cacheSizeName = "cacheSize";
     private static final String externalBiomesListName = "externalBiomeNames";
+    private static final String rescueLimitName = "rescueLimit";
+    private static final String bandedClimateWidthName = "bandedClimateWidth";
+    private static final String bandedClimateOffsetName = "bandedClimateOffset";
+    private static final String xSpawnOffsetName = "xSpawnOffset";
+    private static final String zSpawnOffsetName = "zSpawnOffset";
+    private static final String mountainsChains = "Mountains in Mountain Chains";
+    private static final String frozenIcecapName = "Frozen Icecaps";
 
     private final String subDirectoryName = "climateControl";
 
@@ -77,6 +84,23 @@ public class ClimateControlSettings extends Settings {
     public final Mutable<Boolean> randomBiomes = climateZoneCategory.booleanSetting(
             randomBiomesName, false,"ignore climate zones altogether");
 
+    public final Mutable<Boolean> mountainChains = climateZoneCategory.booleanSetting(mountainsChains, false,
+                    "Place mountains in chains");
+
+    public final Mutable<Integer> bandedClimateWidth = climateZoneCategory.intSetting(bandedClimateWidthName,
+            -1, "Width of banded climates (climate depends on latitude). 0 or less for normal rules. Width is in terms of climate zones, whatever they are");
+
+    public final Mutable<Integer> bandedClimateOffset = climateZoneCategory.intSetting(bandedClimateOffsetName,
+            0, "Number of climate zones to shift the band from the default of the warm - to - cool transition at 0. Positive numbers shift the bands up.");
+
+    public final Mutable<Integer> xSpawnOffset = climateZoneCategory.intSetting(
+            xSpawnOffsetName, 0, "X offset for initial spawn search in blocks");
+
+    public final Mutable<Integer> zSpawnOffset = climateZoneCategory.intSetting(
+            zSpawnOffsetName, 0, "Z offset for initial spawn search in blocks");
+
+    public final Mutable<Boolean> frozenIcecaps = climateZoneCategory.booleanSetting(
+            frozenIcecapName, false, "True freezes oceans in snowy latitudes. Only used with latitudinal climates.");
 
     private final Category climateControlCategory = category("Assorted Parameters");
 
@@ -133,6 +157,9 @@ public class ClimateControlSettings extends Settings {
     
     private final Mutable<Integer> cacheSize = climateControlCategory.intSetting(
             cacheSizeName, 0, "Number of Chunk Biome layouts cached. Above 500 is ignored. 0 or below shuts off chunk info caching");
+
+    public final Mutable<Integer> rescueSearchLimit  = climateControlCategory.intSetting(
+            rescueLimitName,-1,"Maximum Number of Rescue attempts. Negative numbers mean no limit");
     
     public boolean cachingOn() {return true;}// {return cacheSize.value()> 0;}
     public int cacheSize() {
@@ -192,7 +219,7 @@ public class ClimateControlSettings extends Settings {
     public final Mutable<Boolean> interveneInHighlandsWorlds = climateControlCategory.booleanSetting(
             interveneInHighlandsName, false, "impose Climate Control generation on Highlands world types");
 
-   public final Mutable<Boolean> noBoPSubBiomes = climateControlCategory.booleanSetting(
+    public final Mutable<Boolean> noBoPSubBiomes = climateControlCategory.booleanSetting(
             noBoPSubBiomesName, true, "suppress Bop sub-biome generation");
 
     public final Mutable<Boolean> interveneInBOPWorlds = climateControlCategory.booleanSetting(
@@ -228,10 +255,8 @@ public class ClimateControlSettings extends Settings {
         if (this.vanillaBiomesOn.value()) result.add(vanillaBiomeSettings);
         if (this.externalBiomeSettings != null) result.add(externalBiomeSettings);
         for (Named<BiomeSettings> namedSettings: registeredBiomeSettings()) {
-            ClimateControl.logger.info("Addon Settings "+namedSettings.name);
             //if (namedSettings.object.biomesAreActive()) {
                 result.add(namedSettings.object);
-                ClimateControl.logger.info("added");
             //}
         }
         return result;
@@ -251,6 +276,16 @@ public class ClimateControlSettings extends Settings {
 
     }
 
+    private ArrayList<DistributionPartitioner> partitioners = new ArrayList<DistributionPartitioner>();
+
+    public ArrayList<DistributionPartitioner> partitioners() {
+        ArrayList<DistributionPartitioner> result = new ArrayList<DistributionPartitioner>();
+        for (DistributionPartitioner partitioner: partitioners) {
+            result.add(partitioner);
+        }
+        return result;
+    }
+    
     public void onNewWorld() {
         for  (BiomeSettings settings: this.biomeSettings()) {
             settings.onNewWorld();
@@ -287,13 +322,16 @@ public class ClimateControlSettings extends Settings {
                 }
             }
             setting.readFrom(source);
-            ClimateControl.logger.info(setting.toString());
             if (setting instanceof BoPSettings) {
                 ArrayList<Incidence> incidences  = ((BoPSettings)setting).incidences();
                 for (Incidence incidence: incidences) {
                     //ClimateControl.logger.info("Vanilla "+incidence.biome + " " + incidence.incidence);
                 }
             }
+        }
+        partitioners= new ArrayList<DistributionPartitioner>();
+        if (mountainChains.value()) {
+            this.partitioners.add(new MountainFormer());
         }
     }
 

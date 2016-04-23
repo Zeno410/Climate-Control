@@ -1,6 +1,8 @@
 
-package climateControl.genLayerPack;
+package climateControl.customGenLayer;
 
+import climateControl.genLayerPack.*;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -26,8 +28,8 @@ public class GenLayerBreakMergers extends GenLayerPack {
         for (int i2 = 0; i2 < par4; i2++){
             for (int j2 = 0; j2 < par3; j2++){
                 int k3 = aint[j2 + 1 + (i2 + 1) * k1];
-                if (k3 == 0) {
-                    aint1[j2 + i2 * par3]=0;
+                if (isOceanic(k3)) {
+                    aint1[j2 + i2 * par3]=k3;
                     continue;
                 }
                 int up = aint[j2 + 0 + (i2 + 1) * k1];
@@ -55,7 +57,7 @@ public class GenLayerBreakMergers extends GenLayerPack {
     }
 
     boolean tooDifferent(int compare, int result){
-        if (compare!=0&&((compare<result-2)||(compare>result+2))) return true;
+        if (!isOceanic(compare)&&!isOceanic(result)&&((compare<result-2)||(compare>result+2))) return true;
         return false;
     }
 }

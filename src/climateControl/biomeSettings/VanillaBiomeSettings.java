@@ -68,7 +68,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     ID desertHills = new ID("Desert Hills",17);
     ID forestHills = new ID("Forest Hills",18);
     ID taigaHills = new ID("Taiga Hills",19);
-    ID jungleHills = new ID("Jungle Hills",21);
+    ID jungleHills = new ID("Jungle Hills",22);
     ID birchForestHills = new ID("Birch Forest Hills",28);
     ID coldTaigaHills = new ID("Cold Taiga Hills",31);
     ID megaTaigaHills = new ID("Mega Taiga Hills",33);

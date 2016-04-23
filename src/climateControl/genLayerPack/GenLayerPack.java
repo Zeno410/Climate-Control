@@ -180,6 +180,7 @@ public abstract class GenLayerPack extends GenLayer
     }
     protected static boolean isOceanic(int id)
     {
+        if (id==BiomeGenBase.frozenOcean.biomeID) return true;
         if (id>255) return false;// oddly the below returns true for all id>255
         return id == BiomeGenBase.ocean.biomeID || id == BiomeGenBase.deepOcean.biomeID || id == BiomeGenBase.frozenOcean.biomeID;
         //throw new RuntimeException();

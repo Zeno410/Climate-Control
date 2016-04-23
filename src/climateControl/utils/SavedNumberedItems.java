@@ -36,10 +36,10 @@ abstract public class SavedNumberedItems<Type extends SelfTrackable<Type>> {
         try {
             return saver.savee(saveName(index), world, maker(index), saveOnNew(index)).data();
         } catch (Exception e) {
-            ConfigManager.logger.info(saveName(index).toString());
-            ConfigManager.logger.info(world.toString());
-            ConfigManager.logger.info(maker(index).toString());
-            ConfigManager.logger.info(saver.savee(saveName(index), world, maker(index), saveOnNew(index)).toString());
+            //ConfigManager.logger.info(saveName(index).toString());
+            //ConfigManager.logger.info(world.toString());
+            //ConfigManager.logger.info(maker(index).toString());
+            //ConfigManager.logger.info(saver.savee(saveName(index), world, maker(index), saveOnNew(index)).toString());
             throw new RuntimeException();
         }
     }

@@ -285,7 +285,6 @@ public class HighlandsBiomeSettings extends BiomeSettings {
         rules.disallowStoneBeach(this.desertMountains.biomeID().value());
         rules.disallowStoneBeach(this.dunes.biomeID().value());
         rules.disallowStoneBeach(this.desertIsland.biomeID().value());
-        rules.noBeaches(this.flyingMountains.biomeID().value());
         setVillages(rules);
     }
 

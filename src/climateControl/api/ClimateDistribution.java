@@ -1,8 +1,10 @@
 
 package climateControl.api;
 
+import climateControl.utils.Numbered;
 import java.util.ArrayList;
 import java.util.Collection;
+import net.minecraft.world.biome.BiomeGenBase;
 
 /**
  *

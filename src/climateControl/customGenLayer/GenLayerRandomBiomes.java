@@ -1,29 +1,14 @@
 package climateControl.customGenLayer;
 
-import climateControl.BiomeRandomizer;
+import climateControl.api.BiomeRandomizer;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
+import climateControl.utils.IntRandomizer;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
-import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.GenLayerAddIsland;
-import net.minecraft.world.gen.layer.GenLayerAddMushroomIsland;
-import net.minecraft.world.gen.layer.GenLayerAddSnow;
-import net.minecraft.world.gen.layer.GenLayerEdge;
-import net.minecraft.world.gen.layer.GenLayerFuzzyZoom;
-import net.minecraft.world.gen.layer.GenLayerHills;
-import net.minecraft.world.gen.layer.GenLayerIsland;
-import net.minecraft.world.gen.layer.GenLayerRemoveTooMuchOcean;
-import net.minecraft.world.gen.layer.GenLayerRiver;
-import net.minecraft.world.gen.layer.GenLayerRiverInit;
-import net.minecraft.world.gen.layer.GenLayerRiverMix;
-import net.minecraft.world.gen.layer.GenLayerShore;
-import net.minecraft.world.gen.layer.GenLayerSmooth;
-import net.minecraft.world.gen.layer.GenLayerVoronoiZoom;
-import net.minecraft.world.gen.layer.GenLayerZoom;
 import net.minecraft.world.gen.layer.IntCache;
 /**
  *
@@ -36,19 +21,18 @@ public class GenLayerRandomBiomes extends GenLayerPack {
 
     private BiomeRandomizer biomeRandomizer;
 
+    private IntRandomizer randomCallback;
+
     public GenLayerRandomBiomes(long par1, GenLayer par3GenLayer, ClimateControlSettings settings){
         super(par1);
         this.parent = par3GenLayer;
 
-        /*this.randomBiomeList = new BiomeGenBase[] {BiomeGenBase.desert, BiomeGenBase.desert, BiomeGenBase.savanna,
-            BiomeGenBase.plains, BiomeGenBase.plains, BiomeGenBase.forest, BiomeGenBase.forest,
-            BiomeGenBase.roofedForest, BiomeGenBase.extremeHills, BiomeGenBase.extremeHills,
-            BiomeGenBase.birchForest, BiomeGenBase.swampland, BiomeGenBase.swampland, BiomeGenBase.taiga,
-            BiomeGenBase.icePlains, BiomeGenBase.coldTaiga, BiomeGenBase.mesaPlateau, BiomeGenBase.mesaPlateau_F,
-            BiomeGenBase.megaTaiga, BiomeGenBase.jungle, BiomeGenBase.jungle};*/
-
-
         biomeRandomizer = new BiomeRandomizer(settings.biomeSettings());
+        randomCallback = new IntRandomizer() {
+            public int nextInt(int maximum) {
+                return GenLayerRandomBiomes.this.nextInt(maximum);
+            }
+        };
     }
 
     public int nextInt(int maximum) {
@@ -80,7 +64,7 @@ public class GenLayerRandomBiomes extends GenLayerPack {
                 } else if (var9 == BiomeGenBase.mushroomIsland.biomeID){
                     var6[var8 + var7 * par3] = var9;
                 }else if (var9 >= 1 && var9 <= 4) {
-                    var6[var8 + var7 * par3] = biomeRandomizer.randomBiome(this).biomeID;
+                    var6[var8 + var7 * par3] = biomeRandomizer.global.choose(this.randomCallback).biomeID;
                 }else{
                     var6[var8 + var7 * par3] = BiomeGenBase.mushroomIsland.biomeID;
                 }

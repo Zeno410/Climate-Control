@@ -21,6 +21,10 @@ public class Numbered<Type> {
     public int count() {return count;}
     public Type item() {return item;}
 
+    public static <T> Numbered<T> from(int count, T object) {
+        return new Numbered<T>(count,object);
+    }
+
     public static <StreamType> Streamer<Numbered<StreamType>> streamer(
             final Streamer<StreamType> substreamer) {
 

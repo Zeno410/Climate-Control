@@ -63,7 +63,7 @@ public class GenLayerSmoothClimate extends GenLayerPack {
                 int k2 = parentClimates[parentX  + (parentZ) * parentXSize];
                 setFromParentCoords(k2,parentX,parentZ,xSize,zSize,vals);
                 if (k2 > 4) {
-                    if ((k2 != 24)&&(k2!=BiomeGenBase.mushroomIsland.biomeID)) {
+                    if ((k2 != 24)&&(k2!=BiomeGenBase.mushroomIsland.biomeID)&&(k2!=BiomeGenBase.frozenOcean.biomeID)) {
                         if (ClimateControl.testing) {
                             ClimateControl.logger.info("GenLayerSmoothClimate "+k2);
                             throw new RuntimeException("GenLayerSmoothClimate "+k2);

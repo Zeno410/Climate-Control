@@ -24,6 +24,10 @@ public class StringWriter extends Receiver<String> {
         catch (IOException e) {throw new RuntimeException();}
     }
 
+    public static StringWriter from(String fileName) {
+        return StringWriter.from(new File(fileName));
+    }
+
     public void accept(String written) {
         try {
             if (started) output.write('\r');

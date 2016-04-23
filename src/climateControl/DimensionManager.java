@@ -80,7 +80,7 @@ public class DimensionManager {
             WorldType worldType,
             long worldSeed) {
 
-        logger.info("patching GenLayer: world seed "+worldSeed+"world type "+worldType.getWorldTypeName());
+        //logger.info("patching GenLayer: world seed "+worldSeed+"world type "+worldType.getWorldTypeName());
         for (BiomeSettings biomeSettings: settings.biomeSettings()) {
             //biomeSettings.report();
         }
@@ -215,10 +215,8 @@ public class DimensionManager {
         //when WorldServer is initializing and there are no spawn chunks yet
         generationSettings.onNewWorld();
         if (this.ignore(event.worldType,this.newSettings)) return;
-        logger.info("not ignored");
         MinecraftServer server = MinecraftServer.getServer();
         if (server== null) {
-            logger.info("blanked");
             original = event.originalBiomeGens[0];
             riverLayerWrapper(0).setOriginal(event.originalBiomeGens[0]);
             riverLayerWrapper(0).useOriginal();
@@ -281,7 +279,6 @@ public class DimensionManager {
             if (considered.getWorldTypeName().equalsIgnoreCase("Highlands")) return false;
             if (considered.getWorldTypeName().equalsIgnoreCase("HighlandsLB")) return false;
         }
-        logger.info(considered.getWorldTypeName());
         if (true) {
             if (considered.getWorldTypeName().equalsIgnoreCase("FWG")) return false;
         }
@@ -296,7 +293,6 @@ public class DimensionManager {
             return;
         }
         int dimension = world.provider.dimensionId;
-        logger.info(""+this.dimensionSettings.ccOnIn(dimension));
         if (!this.dimensionSettings.ccOnIn(dimension)) {
             if (!DimensionalSettingsRegistry.instance.useCCIn(dimension)) {
                 return;
@@ -327,14 +323,14 @@ public class DimensionManager {
     private HashSet<Integer> dimensionsDone = new HashSet<Integer>();
 
     public void onWorldLoad(World world) {
-        logger.info(world.provider.terrainType.getWorldTypeName()+ " "+ world.provider.dimensionId);
+        //logger.info(world.provider.terrainType.getWorldTypeName()+ " "+ world.provider.dimensionId);
         if (dimensionsDone.contains(world.provider.dimensionId)) return;
         dimensionsDone.add(world.provider.dimensionId);
         if (ignore(world.provider.terrainType,this.newSettings)) {
             return;
         }
         int dimension = world.provider.dimensionId;
-        logger.info(""+this.dimensionSettings.ccOnIn(dimension));
+        //logger.info(""+this.dimensionSettings.ccOnIn(dimension));
         if (!this.dimensionSettings.ccOnIn(dimension)) {
             if (!DimensionalSettingsRegistry.instance.useCCIn(dimension)) {
                 return;
@@ -357,18 +353,16 @@ public class DimensionManager {
         DimensionAccess dimensionAccess = new DimensionAccess(dimension,worldServer);
 
         long worldSeed = world.getSeed();
-        logger.info(world.toString());
-        logger.info("seed "+worldSeed);
         if (world instanceof WorldServer&&worldSeed!=0)  {
             ClimateControlSettings currentSettings = null;
             boolean newWorld = false;
-            logger.info("time "+world.getWorldInfo().getWorldTotalTime());
+            //logger.info("time "+world.getWorldInfo().getWorldTotalTime());
             if(world.getWorldInfo().getWorldTotalTime()<100) {
                 // new world
                 newWorld = true;
             }
             currentSettings = dimensionalSettings(dimensionAccess,newWorld);
-            logger.info(""+dimension +" "+ currentSettings.snowyIncidence.value() +" "+ currentSettings.coolIncidence.value());
+            //logger.info(""+dimension +" "+ currentSettings.snowyIncidence.value() +" "+ currentSettings.coolIncidence.value());
 
             riverLayerWrapper(dimension).setOriginal(original);
 
@@ -393,7 +387,6 @@ public class DimensionManager {
                         toLock = riverMixBiome.get((GenLayerRiverMix)toLock);
                     biomeLocker.lock(toLock, dimension, world, currentSettings);
                 }
-            // spawn rescue
             if (currentSettings.vanillaLandAndClimate.value() == false){
                 if (currentSettings.noGenerationChanges.value() == false) {
                     //logger.info(new ChunkGeneratorExtractor().extractFrom((WorldServer)world).toString());
@@ -443,8 +436,8 @@ public class DimensionManager {
 
     private void salvageSpawn(World world) {
         WorldInfo info = world.getWorldInfo();
-        int x= info.getSpawnX()/16*16;
-        int z= info.getSpawnZ()/16*16;
+        int x= info.getSpawnX()/16*16 + this.newSettings().xSpawnOffset.value();
+        int z= info.getSpawnZ()/16*16 + this.newSettings().zSpawnOffset.value();
         //x = x/16;
         //z = z/16;
         int move = 0;
@@ -466,7 +459,12 @@ public class DimensionManager {
             throw e;
         }
         int checked = 0;
+        int rescueTries = 0;
         while(spawnY < 64) {
+            if (newSettings.rescueSearchLimit.value() == rescueTries++) {
+                // limit reached, give up and quit
+                return;
+            }
             //while (isSea(checkSpawn)) {
                 //spiral out around spawn;
             if (checked > 50) {

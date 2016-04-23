@@ -5,10 +5,13 @@ import climateControl.api.BiomeSettings;
 import biomesoplenty.api.content.BOPCBiomes;
 import climateControl.api.Climate;
 import climateControl.api.ClimateControlRules;
+import climateControl.api.ClimateControlSettings;
 import climateControl.api.ClimateDistribution;
 import climateControl.utils.Acceptor;
 import climateControl.utils.Mutable;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.minecraft.world.biome.BiomeGenBase;
 
 /**
@@ -278,6 +281,38 @@ public class BoPSettings extends BiomeSettings {
         }
     catch (java.lang.NoClassDefFoundError e) {
         } 
+    }
+
+    private HashMap<ID,BiomeReplacer.Variable> subBiomeSets;
+
+    private BiomeReplacer.Variable subBiomeSet(ID biome) {
+        BiomeReplacer.Variable result = subBiomeSets.get(biome);
+        if (result == null) {
+            result = new BiomeReplacer.Variable();
+            subBiomeSets.put(biome, result);
+        }
+        return result;
+    }
+
+    private void addSubBiome(ID biome, ID subBiome){
+        if (subBiome.active()) {
+            //BiomeSettings.logger.info("adding "+subBiome + " to "+ biome);
+
+            subBiomeSet(biome).add(subBiome, 1);
+            biome.setSubBiomeChooser(subBiomeSet(biome));
+        }
+    }
+
+    public void setSubBiomes(ClimateControlSettings settings) {
+        subBiomeSets = new HashMap<ID,BiomeReplacer.Variable>();
+        ArrayList<BiomeSettings> biomeSettings = settings.biomeSettings();
+        for (BiomeSettings biomeSetting: biomeSettings) {
+            if (biomeSetting instanceof OceanBiomeSettings) {
+                OceanBiomeSettings oceanSettings = (OceanBiomeSettings)biomeSetting;
+                addSubBiome(oceanSettings.coastalOcean,this.coralReef);
+                addSubBiome(oceanSettings.coastalOcean,this.kelpForest);
+            }
+        }
     }
 
     @Override

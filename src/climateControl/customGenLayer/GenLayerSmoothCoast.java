@@ -45,8 +45,8 @@ public class GenLayerSmoothCoast extends GenLayerPack {
         int[] aint1 = IntCache.getIntCache(par3 * par4);
         poison(aint1,par3*par4);
 
-        for (int i2 = 0; i2 < par4; ++i2){
-            for (int j2 = 0; j2 < par3; ++j2){
+        for (int i2 = 0; i2 < par4; i2++){
+            for (int j2 = 0; j2 < par3; j2++){
 
                 int original = aint[j2 + 1 + (i2 + 1) * k1];
                 boolean isOceanic = this.isOceanic(original);

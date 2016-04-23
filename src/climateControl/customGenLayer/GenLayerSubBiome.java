@@ -61,8 +61,8 @@ public class GenLayerSubBiome extends GenLayerPack{
         int[] riverVals = this.rivers.getInts(par1 - 1, par2 - 1, par3 + 2, par4 + 2);
         int[] aint2 = IntCache.getIntCache(par3 * par4);
         poison(aint2,par3 * par4);
-        for (int i =0; i <  par3*par4; i ++) {
-            if (biomeVals[i]>256) throw new RuntimeException();
+        for (int i =0; i <  (par3+2)*(par4+2); i ++) {
+            if (biomeVals[i]>256) throw new RuntimeException(""+biomeVals[i]);
         }
 
         for (int i1 = 0; i1 < par4; ++i1)

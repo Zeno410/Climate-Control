@@ -23,7 +23,7 @@ public class Climate {
     public static Climate WARM = new Climate("Warm");
     public static Climate HOT = new Climate("Hot");
     public static Climate OCEAN = new Climate("Ocean");
-    public static Climate DEEP_OCEAN = new Climate("Deep.Ocean");
+    public static Climate DEEP_OCEAN = new Climate("Deep_Ocean");
     public final String name;
     public Climate(String name) {
         this.name = name;
