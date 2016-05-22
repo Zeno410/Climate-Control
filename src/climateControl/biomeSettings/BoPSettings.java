@@ -84,7 +84,7 @@ public class BoPSettings extends BiomeSettings {
     public final Element meadow = new Element("Meadow",219,true,"COOL");
     //public final ID mesa = new ID("Mesa",220);
     public final Element moor = new Element("Moor",221,true,"COOL");
-    public final Element mountain = new Element("Mountain",222,"MEDIUM");
+    public final Element mountain = new Element("Mountain",222,"WARM");
     public final Element mysticGrove = new Element("Mystic Grove",223,3,"MEDIUM");
     public final ID oasis = new ID("Oasis",224);
     //public final ID oceanicAbyss = new ID("Oceanic Abyss (Ocean)",72);

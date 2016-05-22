@@ -101,6 +101,7 @@ public class LockGenLayers {
                 //if (tested.getClass().getCanonicalName().contains("GenLayerBiome")) return true; BiomeLayerBiomes
                 if (tested instanceof GenLayerBiome) return true;
                 if (tested instanceof GenLayerBiomeByClimate) return true;
+                if (tested instanceof GenLayerBiomeByTaggedClimate) return true;
                 if (tested instanceof GenLayerRandomBiomes) return true;
                 if (tested instanceof GenLayerOneSixBiome) return true;
                 if (tested.getClass().getCanonicalName().contains("BiomeLayerBiomes")) return true;

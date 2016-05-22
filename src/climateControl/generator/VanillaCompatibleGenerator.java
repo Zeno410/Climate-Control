@@ -21,15 +21,15 @@ import net.minecraft.world.gen.layer.GenLayerFuzzyZoom;
 import net.minecraft.world.gen.layer.GenLayerHills;
 import net.minecraft.world.gen.layer.GenLayerIsland;
 import climateControl.genLayerPack.GenLayerPack;
+import climateControl.genLayerPack.GenLayerShore;
+import climateControl.genLayerPack.GenLayerZoom;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.gen.layer.GenLayerRareBiome;
 import net.minecraft.world.gen.layer.GenLayerRemoveTooMuchOcean;
 import net.minecraft.world.gen.layer.GenLayerRiver;
 import net.minecraft.world.gen.layer.GenLayerRiverInit;
-import net.minecraft.world.gen.layer.GenLayerShore;
 import net.minecraft.world.gen.layer.GenLayerSmooth;
 import net.minecraft.world.gen.layer.GenLayerVoronoiZoom;
-import net.minecraft.world.gen.layer.GenLayerZoom;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
 
@@ -102,7 +102,8 @@ public class VanillaCompatibleGenerator extends AbstractWorldGenerator {
         GenLayer genlayerhills = new GenLayerSubBiome(1000L, object, genlayer1,subBiomeChooser,mBiomeChooser,
                 settings().doBoPSubBiomes());
 
-        genlayerhills.initWorldGenSeed(worldSeed);        genlayer = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
+        genlayerhills.initWorldGenSeed(worldSeed);
+        genlayer = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         genlayer = GenLayerZoom.magnify(1000L, genlayer, b0);
         GenLayerRiver genlayerriver = new GenLayerRiver(1L, genlayer);
         GenLayerSmooth genlayersmooth = new GenLayerSmooth(1000L, genlayerriver);
@@ -110,7 +111,7 @@ public class VanillaCompatibleGenerator extends AbstractWorldGenerator {
 
         for (int j = 0; j < b0; ++j)
         {
-            object = new GenLayerZoom((long)(1000 + j), (GenLayer)object);
+            object = new GenLayerZoom((long)(1000 + j), (GenLayer)object,true);
 
             if (j == 0)
             {

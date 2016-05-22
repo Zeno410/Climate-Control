@@ -73,7 +73,7 @@ public class GenLayerRiverMixWrapper extends GenLayerRiverMix{
     }
 
     @Override
-    public int[] getInts(int arg0, int arg1, int arg2, int arg3) {
+    public synchronized int[] getInts(int arg0, int arg1, int arg2, int arg3) {
         //logger.info("generating ");
         return redirect.generator.getInts(arg0, arg1, arg2, arg3);
     }

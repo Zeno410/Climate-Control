@@ -1,7 +1,6 @@
 
 package climateControl.customGenLayer;
-import climateControl.genLayerPack.GenLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import climateControl.utils.IntPad;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -15,11 +14,15 @@ public class GenLayerAddLand extends GenLayerNeighborTesting
 {
     private static final String __OBFID = "CL_00000551";
     private final boolean separate;
+    private final GenLayer realParent;
+    private IntPad output = new IntPad();
+
 
     public GenLayerAddLand(long par1, GenLayer par3GenLayer,boolean separate)
     {
         super(par1);
         this.parent = par3GenLayer;
+        realParent = par3GenLayer;
         this.separate = separate;
     }
 
@@ -34,10 +37,13 @@ public class GenLayerAddLand extends GenLayerNeighborTesting
         int k1 = par3 + 2;
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
-        taste(aint,k1*l1);
-        int[] aint1 = IntCache.getIntCache(par3 * par4);
+        int[] aint1 = output.pad(par3*par4);
         poison(aint1,par3*par4);
+        try {
         taste(aint,k1*l1);
+        } catch (Exception e) {
+            throw new RuntimeException(realParent.toString());
+        }
 
         for (int i2 = 0; i2 < par4 ; i2++)
         {

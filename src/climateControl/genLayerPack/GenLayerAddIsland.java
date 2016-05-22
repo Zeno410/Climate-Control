@@ -1,10 +1,11 @@
 package climateControl.genLayerPack;
+import climateControl.utils.IntPad;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerAddIsland extends GenLayer
 {
     private static final String __OBFID = "CL_00000551";
+    private IntPad output = new IntPad();
 
     public GenLayerAddIsland(long par1, GenLayer par3GenLayer)
     {
@@ -23,11 +24,11 @@ public class GenLayerAddIsland extends GenLayer
         int k1 = par3 + 2;
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
-        int[] aint1 = IntCache.getIntCache(par3 * par4);
+        int[] aint1 = output.pad(par3 * par4);
 
-        for (int i2 = 0; i2 < par4; ++i2)
+        for (int i2 = 0; i2 < par4; i2++)
         {
-            for (int j2 = 0; j2 < par3; ++j2)
+            for (int j2 = 0; j2 < par3; j2++)
             {
                 int k2 = aint[j2 + 0 + (i2 + 0) * k1];
                 int l2 = aint[j2 + 2 + (i2 + 0) * k1];

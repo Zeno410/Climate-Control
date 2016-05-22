@@ -33,6 +33,7 @@ public class StringWriter extends Receiver<String> {
             if (started) output.write('\r');
             started = true;
             output.write(written);
+            output.flush();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

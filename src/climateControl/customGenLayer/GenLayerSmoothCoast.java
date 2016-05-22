@@ -1,11 +1,11 @@
 
 package climateControl.customGenLayer;
 import climateControl.genLayerPack.GenLayerPack;
+import climateControl.utils.IntPad;
 import climateControl.utils.IntRandomizer;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerSmoothCoast extends GenLayerPack {
 
@@ -14,7 +14,7 @@ public class GenLayerSmoothCoast extends GenLayerPack {
     private static final String __OBFID = "CL_00000569";
     private static int sinkLand = 7;
     private static int raiseWater = 10;
-    private LandWaterChoices choices = new LandWaterChoices();
+    private IntPad output = new IntPad();
     private IntRandomizer passable = new IntRandomizer() {
 
         @Override
@@ -36,13 +36,17 @@ public class GenLayerSmoothCoast extends GenLayerPack {
      */
     public int[] getInts(int par1, int par2, int par3, int par4)
     {
+        LandWaterChoices choices = new LandWaterChoices();
         int i1 = par1 - 1;
         int j1 = par2 - 1;
         int k1 = par3 + 2;
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
+        for (int i = 0; i < k1*l1;i ++) {
+            if (aint[i] >255) throw new RuntimeException();
+        }
         taste(aint,k1*l1);
-        int[] aint1 = IntCache.getIntCache(par3 * par4);
+        int[] aint1 = output.pad(par3 * par4);
         poison(aint1,par3*par4);
 
         for (int i2 = 0; i2 < par4; i2++){
@@ -63,6 +67,7 @@ public class GenLayerSmoothCoast extends GenLayerPack {
 
                 if (choices.equal()||(choices.isChoiceWater()==isOceanic)) {
                     aint1[j2 + i2 * par3] = original;
+                    if (aint1[j2 + i2 * par3] == -2) throw new RuntimeException(""+i2 + " " + j2);
                     continue;
                 }
                 this.initChunkSeed((long)(j2 + par1), (long)(i2 + par2));
@@ -70,11 +75,13 @@ public class GenLayerSmoothCoast extends GenLayerPack {
                 if (nextInt(10) < trip) {
                     // not equal, not similar to what we've got, and we want to change
                     aint1[j2 + i2 * par3] = choices.mostCommon(this.passable);
+                    if (aint1[j2 + i2 * par3] == -2) throw new RuntimeException(""+i2 + " " + j2);
                     if (aint1[j2 + i2 * par3]==undefined) throw new RuntimeException();
                     //logger.info("changed "+original +  " to "+ aint1[j2 + i2 * par3]);
                 } else {
                     // keep what we've got
                     aint1[j2 + i2 * par3] = original;
+                    if (aint1[j2 + i2 * par3] == -2) throw new RuntimeException(""+i2 + " " + j2);
                 }
             }
         }

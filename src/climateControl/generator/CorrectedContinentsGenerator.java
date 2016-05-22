@@ -9,14 +9,10 @@ import climateControl.customGenLayer.GenLayerOceanicIslands;
 import climateControl.utils.IntRandomizer;
 import climateControl.utils.RandomIntUser;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.GenLayerAddIsland;
-import net.minecraft.world.gen.layer.GenLayerFuzzyZoom;
-import net.minecraft.world.gen.layer.GenLayerRareBiome;
 import net.minecraft.world.gen.layer.GenLayerRiver;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
 import climateControl.genLayerPack.GenLayerSmooth;
 import net.minecraft.world.gen.layer.GenLayerVoronoiZoom;
-import net.minecraft.world.gen.layer.GenLayerZoom;
 import climateControl.customGenLayer.GenLayerAddLand;
 import climateControl.customGenLayer.GenLayerAdjustIsland;
 import climateControl.customGenLayer.GenLayerBandedClimate;
@@ -46,7 +42,12 @@ import climateControl.customGenLayer.GenLayerSmoothClimate;
 import climateControl.customGenLayer.GenLayerWidenRiver;
 import climateControl.customGenLayer.GenLayerZoomBiome;
 import climateControl.customGenLayer.GenLayerBreakMergers;
+import climateControl.genLayerPack.GenLayerAddIsland;
+import climateControl.genLayerPack.GenLayerFuzzyZoom;
+import climateControl.genLayerPack.GenLayerPack;
+import climateControl.genLayerPack.GenLayerRareBiome;
 import climateControl.genLayerPack.GenLayerShore;
+import climateControl.genLayerPack.GenLayerZoom;
 import climateControl.utils.StringWriter;
 import java.io.File;
 import java.io.IOException;
@@ -99,13 +100,13 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         boolean climatesAssigned = false;
 
         GenLayer emptyOcean = new GenLayerConstant(0);
-        GenLayer genlayerisland = new GenLayerOceanicIslands(1L,emptyOcean,settings().largeContinentFrequency.value()
+        GenLayerPack genlayerisland = new GenLayerOceanicIslands(1L,emptyOcean,settings().largeContinentFrequency.value()
                 ,this.landmassIdentifier(),settings().separateLandmasses.value(),"Large Continent");
-        GenLayer genlayeraddisland = growRound(genlayerisland,2L,3L,climatesAssigned);
+        GenLayerPack genlayeraddisland = growRound(genlayerisland,2L,3L,climatesAssigned);
 
         genlayeraddisland = new GenLayerFuzzyZoom(2000L, genlayeraddisland);
         genlayeraddisland = new GenLayerSmooth(2004L,genlayeraddisland);
-        GenLayer mediumContinents = new GenLayerOceanicIslands(4L, genlayeraddisland,
+        GenLayerPack mediumContinents = new GenLayerOceanicIslands(4L, genlayeraddisland,
                 settings().mediumContinentFrequency.value(),this.landmassIdentifier(),
                 settings().separateLandmasses.value(),"Medium Continent");
 
@@ -118,7 +119,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         if (settings().separateLandmasses.value()) {
             genlayeraddisland = new GenLayerBreakMergers(5L+1000,genlayeraddisland);
         }
-        GenLayer smallContinents = new GenLayerOceanicIslands(8L, genlayerzoom,
+        GenLayerPack smallContinents = new GenLayerOceanicIslands(8L, genlayerzoom,
                 settings().smallContinentFrequency.value(),this.landmassIdentifier(),
                 settings().separateLandmasses.value(),"Small Continent");
         if (settings().forceStartContinent.value()) {
@@ -222,7 +223,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         return this.vanillaExpansion(worldSeed,worldType,genlayer3,settings());
     }
 
-    private GenLayer growRound(GenLayer genlayeraddisland,long firstSeed,long secondSeed, boolean climatesAssigned) {
+    private GenLayerPack growRound(GenLayerPack genlayeraddisland,long firstSeed,long secondSeed, boolean climatesAssigned) {
                 // add land without merging if separating and just add otherwise
         if (settings().separateLandmasses.value()||climatesAssigned) {
             genlayeraddisland = new GenLayerAddLand(firstSeed, genlayeraddisland,true);
@@ -237,7 +238,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         return genlayeraddisland;
     }
 
-    private GenLayer separatedGrowth(GenLayer genlayeraddisland,long secondSeed, boolean climatesAssigned) {
+    private GenLayerPack separatedGrowth(GenLayerPack genlayeraddisland,long secondSeed, boolean climatesAssigned) {
                 // add land without merging if separating and just add otherwise
             genlayeraddisland = new GenLayerAddLand(secondSeed, genlayeraddisland,true);
             genlayeraddisland = new GenLayerBreakMergers(secondSeed+1000,genlayeraddisland);
@@ -262,7 +263,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         return settings().separateLandmasses.value()? this.identifiedClimate() : this.islandClimates();
     }
 
-    GenLayer reportOn(GenLayer reportedOn, String fileName) {
+    GenLayerPack reportOn(GenLayerPack reportedOn, String fileName) {
         if (this.serverDirectoryFile!= null) {
             try {
                 StringWriter target = new StringWriter(new File(serverDirectoryFile, fileName));
@@ -275,7 +276,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         return reportedOn;
     }
 
-    private GenLayer climateLayer(long seed, GenLayer parent, ClimateControlSettings settings) {
+    private GenLayerPack climateLayer(long seed, GenLayer parent, ClimateControlSettings settings) {
         if (settings.bandedClimateWidth.value()>0) {
             return new GenLayerBandedClimate(seed,parent,settings,1);
         }
@@ -316,7 +317,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         GenLayer genlayer = GenLayerZoom.magnify(1003L, genlayer3, 0);
         GenLayer genlayerriverinit = new GenLayerLessRiver(102L, genlayer,
                 rtgAwareRiverReduction(settings().percentageRiverReduction.value(), par2WorldType));
-        GenLayer biomes = null;
+        GenLayerPack biomes = null;
         if (settings.randomBiomes.value()) {
             biomes = new GenLayerRandomBiomes(par0,genlayer3,settings);
         } else {
@@ -331,9 +332,9 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         object = new GenLayerZoomBiome(1006L, object);
         object = new GenLayerAddBiome(1007L, object);
         object  = new GenLayerSmoothCoast(104L,object);
-        //object = biomes; //this is to shrink maps for viewing in AMIDST
-        GenLayer genlayer1 = GenLayerZoom.magnify(1008L, genlayerriverinit, 2);
-        GenLayer genlayerhills = null;
+        GenLayer genlayer1 = new GenLayerZoom(1008L, genlayerriverinit);
+        genlayer1 = new GenLayerZoom(1009L, genlayerriverinit);
+        GenLayerPack genlayerhills = null;
             genlayerhills = new GenLayerSubBiome(1009L, object, genlayer1,subBiomeChooser,mBiomeChooser,
                 settings().doBoPSubBiomes());
         genlayer = GenLayerZoom.magnify(1010L, genlayerriverinit, 2);
@@ -344,11 +345,12 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         }
         GenLayer genlayersmooth = new GenLayerSmoothCoast(1000L, genlayerriver);
         object = new GenLayerRareBiome(1001L, genlayerhills);
-        object = new ConfirmBiome(object);
+        //object = new ConfirmBiome(object);
 
         for (int j = 0; j < b0; ++j)
         {
-            object = new GenLayerZoom((long)(1000 + j), (GenLayer)object);
+            object = new GenLayerZoom((long)(1000 + j), (GenLayer)object,true);
+            //object = new ConfirmBiome(object);
 
             if (j == 0)
             {
@@ -372,8 +374,9 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         }
 
         GenLayer genlayersmooth1 = new GenLayerSmooth(1000L, (GenLayer)object);
+        genlayersmooth1 = new ConfirmBiome(genlayersmooth1);
         if (settings().cachingOn()) {
-           genlayersmooth1 = new GenLayerLimitedCache(genlayersmooth1,16*settings().cacheSize());
+           //genlayersmooth1 = new GenLayerLimitedCache(genlayersmooth1,16*settings().cacheSize());
         }
         GenLayerRiverMix genlayerrivermix = new GenLayerLowlandRiverMix(100L, genlayersmooth1, genlayersmooth,
                 (settings().maxRiverChasm.value().floatValue()),rules());

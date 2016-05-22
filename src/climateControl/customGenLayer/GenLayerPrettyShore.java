@@ -3,17 +3,18 @@ package climateControl.customGenLayer;
 
 import climateControl.api.ClimateControlRules;
 import climateControl.genLayerPack.GenLayerPack;
+import climateControl.utils.IntPad;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenJungle;
 import net.minecraft.world.biome.BiomeGenMesa;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerPrettyShore extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000568";
     private float maxChasm;
     private ClimateControlRules rules;
+    private IntPad output = new IntPad();
 
     public GenLayerPrettyShore(long par1, GenLayer par3GenLayer, float maxChasm, ClimateControlRules rules)
     {
@@ -35,7 +36,7 @@ public class GenLayerPrettyShore extends GenLayerPack
     public int[] getInts(int par1, int par2, int par3, int par4)
     {
         int[] aint = this.parent.getInts(par1 - 1, par2 - 1, par3 + 2, par4 + 2);
-        int[] aint1 = IntCache.getIntCache(par3 * par4);
+        int[] aint1 = output.pad(par3 * par4);
 
         for (int i1 = 0; i1 < par4; ++i1)
         {

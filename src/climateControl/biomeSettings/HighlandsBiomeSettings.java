@@ -41,7 +41,7 @@ public class HighlandsBiomeSettings extends BiomeSettings {
    public final Element  pinelands = new Element("Pinelands", 215,true,"COOL");
    public final Element  rainforest = new Element("Rainforest", 216,"WARM");
    public final Element  redwoodForest = new Element("Redwood Forest", 217,"COOL");
-   public final Element  rockMountains = new Element("Rock Mountains", 218,ClimateDistribution.PLAINS.name());
+   public final Element  rockMountains = new Element("Rock Mountains", 218,Climate.WARM.name);
    public final Element  sahel = new Element("Sahel", 219,true,Climate.HOT.name);
    public final Element  savannah = new Element("Savannah", 220,true,Climate.HOT.name);
    public final Element  steppe = new Element("Steppe", 221,true,Climate.COOL.name);

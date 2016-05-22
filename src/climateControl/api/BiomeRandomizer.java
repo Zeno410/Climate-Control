@@ -63,7 +63,9 @@ public class BiomeRandomizer {
     }
 
     private void add(ClimateDistribution.Incidence incidence) {
-        global.append(incidence.incidence, BiomeGenBase.getBiomeGenArray()[incidence.biome]);
+        if (incidence.climate !=Climate.DEEP_OCEAN&&incidence.climate !=Climate.OCEAN) {
+            global.append(incidence.incidence, BiomeGenBase.getBiomeGenArray()[incidence.biome]);
+        }
         //if (ClimateControl.testing) {
             //int checkBiome = BiomeGenBase.getBiomeGenArray()[incidence.biome].biomeID;
         //}

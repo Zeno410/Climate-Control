@@ -3,6 +3,7 @@ package climateControl.customGenLayer;
 import climateControl.ClimateControl;
 import climateControl.api.ClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
+import climateControl.utils.IntPad;
 import climateControl.utils.Numbered;
 import climateControl.utils.PlaneLocation;
 import climateControl.utils.Zeno410Logger;
@@ -26,6 +27,7 @@ public class GenLayerIdentifiedClimate extends GenLayerPack {
     private final int warmLevel;
     private final int coldLevel;
     private final int totalLevel;
+    private final IntPad output = new IntPad();
     public static Logger logger = new Zeno410Logger("IdentifiedClimate").logger();
 
     private GenLayerIdentifiedClimate(long par1, GenLayer par3GenLayer,int hot, int warm, int cold, int snow)
@@ -58,7 +60,8 @@ public class GenLayerIdentifiedClimate extends GenLayerPack {
         int[] parentVals ;
         int[] parentIds = this.parent.getInts(parentX0, parentZ0, parentXSize, parentZSize);
         parentVals = this.getRawClimates(parentIds, parentX0, parentZ0, parentXSize, parentZSize);
-        int[] vals = IntCache.getIntCache(xSize * zSize);
+        int[] vals = output.pad(xSize * zSize);
+        poison(vals,xSize*zSize);
 
         // we cover the entire parental layer, as parental changes can feed back to up to 2 away
         for (int parentZ = 0; parentZ < parentZSize; parentZ++){
@@ -110,6 +113,8 @@ public class GenLayerIdentifiedClimate extends GenLayerPack {
                 vals[parentX-2  + (parentZ-2) * xSize] += k2*4;
             }
         }
+
+        taste(vals,xSize*zSize);
         return vals;
     }
 

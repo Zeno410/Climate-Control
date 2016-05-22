@@ -52,7 +52,7 @@ public class MountainFormer extends DistributionPartitioner {
         result = new GenLayerMountainChains(3005L,result);
         result = new GenLayerLimitedCache(result,64);
 
-        result = reportOn(result, "mountains.txt");
+        //result = reportOn(result, "mountains.txt");
         return result;
     }
 
