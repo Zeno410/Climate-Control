@@ -77,23 +77,6 @@ public class HighlandsBiomeSettings extends BiomeSettings {
 
     public HighlandsBiomeSettings() {
         super(biomeCategory);
-        alps.setDistribution(ClimateDistribution.COOL);
-        autumnForest.setDistribution(ClimateDistribution.COOL);
-        badlands.setDistribution(ClimateDistribution.WARM);
-        desertMountains.setDistribution(ClimateDistribution.HOT);
-        estuary.setDistribution(ClimateDistribution.WARM);
-        pinelands.setDistribution(ClimateDistribution.COOL);
-        rainforest.setDistribution(ClimateDistribution.WARM);
-        redwoodForest.setDistribution(ClimateDistribution.COOL);
-        //ocean2.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        tropicalIslands.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        tropics.setDistribution(ClimateDistribution.HOT);
-        desertIsland.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        forestIsland.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        jungleIsland.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        rockIsland.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        volcanoIsland.setDistribution(ClimateDistribution.DEEP_OCEAN);
-        windyIsland.setDistribution(ClimateDistribution.DEEP_OCEAN);
         //this.biomesFromConfig.informOnChange(catchFalse);
     }
     

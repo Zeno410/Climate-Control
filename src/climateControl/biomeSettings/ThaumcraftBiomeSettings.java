@@ -17,9 +17,6 @@ public class ThaumcraftBiomeSettings extends BiomeSettings {
 
     public ThaumcraftBiomeSettings() {
         super(biomeCategory);
-        tainted.setDistribution(ClimateDistribution.PLAINS);
-        magicalForest.setDistribution(ClimateDistribution.PLAINS);
-        eerie.setDistribution(ClimateDistribution.PLAINS);
     }
 
     public final Element tainted = new Element("Tainted", 192,1);
