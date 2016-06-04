@@ -192,13 +192,13 @@ public class ClimateControlSettings extends Settings {
     public final Mutable<Integer> largeContinentFrequency = oceanControlCategory.intSetting(
             largeContinentFrequencyName, 0,"frequency of large continent seeds, about 8000x16000");
     public final Mutable<Integer> mediumContinentFrequency = oceanControlCategory.intSetting(
-            mediumContinentFrequencyName, 30, "frequency of medium continent seeds, about 4000x8000");
+            mediumContinentFrequencyName, 60, "frequency of medium continent seeds, about 4000x8000");
     public final Mutable<Integer> smallContinentFrequency = oceanControlCategory.intSetting(
-            smallContinentFrequencyName, 80,"frequency of small continent seeds, about 2000x4000");
+            smallContinentFrequencyName, 120,"frequency of small continent seeds, about 2000x4000");
     public final Mutable<Integer> largeIslandFrequency = oceanControlCategory.intSetting(
             largeIslandFrequencyName, 60,"frequency of large island seeds, about 500x1000");
     public final Mutable<Integer> mediumIslandFrequency = oceanControlCategory.intSetting(
-            mediumIslandFrequencyName, 40,"frequency of medium island seeds, about 250x500, but they tend to break up into archipelagos");
+            mediumIslandFrequencyName, 30,"frequency of medium island seeds, about 250x500, but they tend to break up into archipelagos");
     public final Mutable<Boolean> separateLandmasses = oceanControlCategory.booleanSetting(
             separateLandmassesName, true, "True mostly stops landmasses merging." +
             "With default settings you will get an oceanic world if true and " +
@@ -229,7 +229,7 @@ public class ClimateControlSettings extends Settings {
             suppressInStandardWorldsName, false, "suppress Climate Control generation in default, large biomes, and amplified worlds");
 
     public final Mutable<Boolean> forceStartContinent = climateControlCategory.booleanSetting(
-            forceStartContinentName,false,"force small continent near origin");
+            forceStartContinentName,true,"force small continent near origin");
 
     public final boolean doBoPSubBiomes() {
         return noBoPSubBiomes.value()==false;
