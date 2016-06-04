@@ -317,6 +317,7 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         GenLayer genlayer = GenLayerZoom.magnify(1003L, genlayer3, 0);
         GenLayer genlayerriverinit = new GenLayerLessRiver(102L, genlayer,
                 rtgAwareRiverReduction(settings().percentageRiverReduction.value(), par2WorldType));
+        GenLayer subBiomeFlags = new GenLayerLessRiver(102L, genlayer,0);
         GenLayerPack biomes = null;
         if (settings.randomBiomes.value()) {
             biomes = new GenLayerRandomBiomes(par0,genlayer3,settings);
@@ -332,10 +333,9 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         object = new GenLayerZoomBiome(1006L, object);
         object = new GenLayerAddBiome(1007L, object);
         object  = new GenLayerSmoothCoast(104L,object);
-        GenLayer genlayer1 = new GenLayerZoom(1008L, genlayerriverinit);
-        genlayer1 = new GenLayerZoom(1009L, genlayerriverinit);
+        subBiomeFlags = GenLayerZoom.magnify(1008L,subBiomeFlags,2);
         GenLayerPack genlayerhills = null;
-            genlayerhills = new GenLayerSubBiome(1009L, object, genlayer1,subBiomeChooser,mBiomeChooser,
+            genlayerhills = new GenLayerSubBiome(1009L, object, subBiomeFlags,subBiomeChooser,mBiomeChooser,
                 settings().doBoPSubBiomes());
         genlayer = GenLayerZoom.magnify(1010L, genlayerriverinit, 2);
         genlayer = GenLayerZoom.magnify(1010L, genlayer, b0);
