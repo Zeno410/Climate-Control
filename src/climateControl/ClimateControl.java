@@ -46,7 +46,7 @@ import java.util.HashMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 
-@Mod(modid = "climatecontrol", name = "Climate Control", version = "0.6.beta59",acceptableRemoteVersions = "*")
+@Mod(modid = "climatecontrol", name = "Climate Control", version = "0.8.2.1",acceptableRemoteVersions = "*")
 
 public class ClimateControl {
     public static Logger logger = new Zeno410Logger("ClimateControl").logger();

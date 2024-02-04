@@ -14,14 +14,16 @@ public class GenLayerPrettyShore extends GenLayerPack
     private static final String __OBFID = "CL_00000568";
     private float maxChasm;
     private ClimateControlRules rules;
+    private boolean mesaMesaBorders;
     private IntPad output = new IntPad();
 
-    public GenLayerPrettyShore(long par1, GenLayer par3GenLayer, float maxChasm, ClimateControlRules rules)
+    public GenLayerPrettyShore(long par1, GenLayer par3GenLayer, float maxChasm, ClimateControlRules rules,boolean mesaMesaBorders)
     {
         super(par1);
         this.parent = par3GenLayer;
         this.maxChasm = maxChasm;
         this.rules = rules;
+        this.mesaMesaBorders = mesaMesaBorders;
     }
 
     /**
@@ -146,7 +148,11 @@ public class GenLayerPrettyShore extends GenLayerPack
                             }
                             else
                             {
-                                aint1[j1 + i1 * par3] = BiomeGenBase.desert.biomeID;
+                                if (this.mesaMesaBorders) {
+                                    aint1[j1 + i1 * par3] = BiomeGenBase.mesa.biomeID;
+                                } else {
+                                    aint1[j1 + i1 * par3] = BiomeGenBase.desert.biomeID;
+                                }
                             }
                         }
                         else

@@ -44,7 +44,7 @@ public class GenLayerBandedClimate extends GenLayerPack implements IslandClimate
      */
     public int[] getInts(int par1, int par2, int par3, int par4){
         int[] aint = this.parent.getInts(par1, par2, par3, par4);
-        int[] aint1 = IntCache.getIntCache(par3 * par4);
+        int[] aint1 = new int[par3 * par4];
 
         for (int i1 = 0; i1 < par4; ++i1)
         {

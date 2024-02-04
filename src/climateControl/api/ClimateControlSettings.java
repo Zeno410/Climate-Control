@@ -67,6 +67,10 @@ public class ClimateControlSettings extends Settings {
     private static final String zSpawnOffsetName = "zSpawnOffset";
     private static final String mountainsChains = "Mountains in Mountain Chains";
     private static final String frozenIcecapName = "Frozen Icecaps";
+    private static final String landExpansionRoundsName = "Land Expansion Rounds";
+    private static final String forceIceMountainsName = "Ice Mountains in Mountain Chains";
+    private static final String forceMoutainMesasName = "Mesas in Mountain Chains";
+    private static final String mesaMesaBordersName = "Mesas for mesa borders";
 
     private final String subDirectoryName = "climateControl";
 
@@ -86,6 +90,12 @@ public class ClimateControlSettings extends Settings {
 
     public final Mutable<Boolean> mountainChains = climateZoneCategory.booleanSetting(mountainsChains, false,
                     "Place mountains in chains");
+
+    public final Mutable<Boolean> forceIceMountains = climateZoneCategory.booleanSetting(forceIceMountainsName, true,
+                    "Use Ice Mountains instead of Ice Plains in mountain chain areas");
+
+    public final Mutable<Boolean> MesaMountains = climateZoneCategory.booleanSetting(this.forceMoutainMesasName, true,
+                    "Use Mesas as mountains in mountain chain areas");
 
     public final Mutable<Integer> bandedClimateWidth = climateZoneCategory.intSetting(bandedClimateWidthName,
             -1, "Width of banded climates (climate depends on latitude). 0 or less for normal rules. Width is in terms of climate zones, whatever they are");
@@ -160,7 +170,10 @@ public class ClimateControlSettings extends Settings {
 
     public final Mutable<Integer> rescueSearchLimit  = climateControlCategory.intSetting(
             rescueLimitName,-1,"Maximum Number of Rescue attempts. Negative numbers mean no limit");
-    
+
+    public final Mutable<Boolean> mesaMesaBorders  = climateControlCategory.booleanSetting(
+            mesaMesaBordersName,false,"Use red sand mesa for mesa borders. False uses desert like vanilla");
+
     public boolean cachingOn() {return true;}// {return cacheSize.value()> 0;}
     public int cacheSize() {
         if (cachingOn()) {
@@ -190,19 +203,22 @@ public class ClimateControlSettings extends Settings {
                     "SeparateLandmasses = false makes a continental world");
 
     public final Mutable<Integer> largeContinentFrequency = oceanControlCategory.intSetting(
-            largeContinentFrequencyName, 0,"frequency of large continent seeds, about 8000x16000");
+            largeContinentFrequencyName, 40,"frequency of large continent seeds, about 8000x16000");
     public final Mutable<Integer> mediumContinentFrequency = oceanControlCategory.intSetting(
-            mediumContinentFrequencyName, 60, "frequency of medium continent seeds, about 4000x8000");
+            mediumContinentFrequencyName, 100, "frequency of medium continent seeds, about 4000x8000");
     public final Mutable<Integer> smallContinentFrequency = oceanControlCategory.intSetting(
-            smallContinentFrequencyName, 120,"frequency of small continent seeds, about 2000x4000");
+            smallContinentFrequencyName, 60,"frequency of small continent seeds, about 2000x4000");
     public final Mutable<Integer> largeIslandFrequency = oceanControlCategory.intSetting(
-            largeIslandFrequencyName, 60,"frequency of large island seeds, about 500x1000");
+            largeIslandFrequencyName, 30,"frequency of large island seeds, about 500x1000");
     public final Mutable<Integer> mediumIslandFrequency = oceanControlCategory.intSetting(
-            mediumIslandFrequencyName, 30,"frequency of medium island seeds, about 250x500, but they tend to break up into archipelagos");
+            mediumIslandFrequencyName, 15,"frequency of medium island seeds, about 250x500, but they tend to break up into archipelagos");
     public final Mutable<Boolean> separateLandmasses = oceanControlCategory.booleanSetting(
             separateLandmassesName, true, "True mostly stops landmasses merging." +
             "With default settings you will get an oceanic world if true and " +
             "a continental world if false");
+    public final Mutable<Integer> landExpansionRounds = oceanControlCategory.intSetting(landExpansionRoundsName, 1,
+            "Rounds of continent and large island expansion in oceanic worlds (with separateLandmasses off). "+
+            "More makes continents larger and oceans narrower. Default is 1.");
 
     private OceanBiomeSettings oceanBiomeSettings = new OceanBiomeSettings();
 
@@ -249,7 +265,19 @@ public class ClimateControlSettings extends Settings {
         public boolean doFull() {return !halfSize.value() && !quarterSize.value();}
         public boolean doHalf() {return halfSize.value() && !quarterSize.value();}
         
+        private boolean vanillaMountainsForced;
+
     public ArrayList<BiomeSettings> biomeSettings() {
+        // force in ice mountains as a biome for mountains chains
+        // this is hacky but the best quick solution
+        if (!vanillaMountainsForced) {
+            vanillaMountainsForced = true;
+            if (this.mountainChains.value()) {
+                if (this.forceIceMountains.value()) {
+                    vanillaBiomeSettings.forceIceMountains();
+                }
+            }
+        }
         ArrayList<BiomeSettings> result = new ArrayList<BiomeSettings>();
         result.add(oceanBiomeSettings);
         if (this.vanillaBiomesOn.value()) result.add(vanillaBiomeSettings);
@@ -331,7 +359,7 @@ public class ClimateControlSettings extends Settings {
         }
         partitioners= new ArrayList<DistributionPartitioner>();
         if (mountainChains.value()) {
-            this.partitioners.add(new MountainFormer());
+            this.partitioners.add(new MountainFormer(this.MesaMountains.value()));
         }
     }
 

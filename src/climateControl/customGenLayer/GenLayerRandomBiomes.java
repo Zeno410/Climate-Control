@@ -66,7 +66,7 @@ public class GenLayerRandomBiomes extends GenLayerPack {
                 }else if (var9 >= 1 && var9 <= 4) {
                     var6[var8 + var7 * par3] = biomeRandomizer.global.choose(this.randomCallback).biomeID;
                 }else{
-                    var6[var8 + var7 * par3] = BiomeGenBase.mushroomIsland.biomeID;
+                    var6[var8 + var7 * par3] = BiomeGenBase.ocean.biomeID;
                 }
             }
         }

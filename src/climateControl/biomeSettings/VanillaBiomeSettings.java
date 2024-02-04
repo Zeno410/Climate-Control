@@ -36,6 +36,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     public static final String extremeHillsName="Extreme Hills";
     public static final String forestName="Forest";
     public static final String icePlainsName="Ice Plains";
+    public static final String iceMountainsName="Ice Mountains";
     public static final String jungleName="Jungle";
     public static final String megaTaigaName="Mega Taiga";
     public static final String mesaPlateauName="Mesa Plateau";
@@ -63,7 +64,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     Element savanna = new Element(savannaName,35, 20,true,Climate.HOT.name);
     Element swampland = new Element(swamplandName,6, 10,Climate.WARM.name);
     Element taiga = new Element(taigaName,5, 10,Climate.COOL.name);
-    ID iceMountains = new ID("Ice Mountains",13);
+    Element iceMountains = new Element(iceMountainsName,13, 0,Climate.SNOWY.name);
     ID mushroomIsland = new ID("Mushroom Island",14);
     ID desertHills = new ID("Desert Hills",17);
     ID forestHills = new ID("Forest Hills",18);
@@ -152,4 +153,9 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
         // no action
     }
 
+    public void forceIceMountains() {
+        if (iceMountains.biomeIncidences().value() <10) {
+            iceMountains.biomeIncidences().set(10);
+        }
+    }
 }

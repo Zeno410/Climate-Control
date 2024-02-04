@@ -4,7 +4,6 @@ import climateControl.ClimateControl;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.Numbered;
 import climateControl.utils.PlaneLocation;
-import climateControl.utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;

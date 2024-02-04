@@ -1,18 +1,17 @@
 package climateControl.customGenLayer;
 import climateControl.api.IslandClimateMaker;
-import climateControl.utils.RandomIntUser;
-import climateControl.utils.IntRandomizer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntPad;
+import climateControl.utils.IntRandomizer;
 import climateControl.utils.Numbered;
 import climateControl.utils.PlaneLocation;
+import climateControl.utils.RandomIntUser;
 import climateControl.utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
+import net.minecraft.world.gen.layer.IntCache;
 /**
  *
  * @author Zeno410
@@ -30,9 +29,6 @@ public class GenLayerOceanicIslands extends GenLayerPack {
     private final int milleFill;
     private final IslandClimateMaker island;
     private final String layerName;
-
-    private final IntPad output = new IntPad();
-    private final IntPad input = new IntPad();
 
     private GenLayerOceanicIslands(long p_i45480_1_, GenLayer p_i45480_3_, int milleFill, final int islandValue,
             boolean suppressDiagonals,String layerName){
@@ -77,7 +73,7 @@ public class GenLayerOceanicIslands extends GenLayerPack {
      * Every pixel of "water" (value 0) has percentFilled chance of being made land
      * amounts, or biomeList[] indices based on the particular GenLayer subclass.
      */
-    public synchronized int[] getInts(int par1, int par2, int par3, int par4) {
+    public int[] getInts(int par1, int par2, int par3, int par4) {
         if (suppressDiagonals) {
             return this.getSeparatedIslands(par1, par2, par3, par4);
         }
@@ -86,7 +82,7 @@ public class GenLayerOceanicIslands extends GenLayerPack {
         int k1 = par3 + 2;
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
-        int[] aint1 = output.pad(par3 * par4);
+        int[] aint1 = IntCache.getIntCache(par3 * par4);
 
         for (int i2 = 0; i2 < par4; ++i2){
             for (int j2 = 0; j2 < par3; ++j2){
@@ -118,73 +114,70 @@ public class GenLayerOceanicIslands extends GenLayerPack {
         return aint1;
     }
 
-    public synchronized int[] getSeparatedIslands(int par1, int par2, int par3, int par4) {
+    public int[] getSeparatedIslands(int par1, int par2, int par3, int par4) {
         ArrayList<Numbered<LocatedInt>> newIslands = new ArrayList<Numbered<LocatedInt>>();
         int i1 = par1 - 2;
         int j1 = par2 - 2;
-        int k1 = par3 + 4;
+        int parentXSize = par3 + 4;
         int l1 = par4 + 4;
-        int[] aint = this.parent.getInts(i1, j1, k1, l1);
-        int [] parent = input.pad(k1*l1);
-        for (int i = 0; i < parent.length; i ++) {
-            parent [i] = aint [i];
+        int[] parentVals = this.parent.getInts(i1, j1, parentXSize, l1);
+        int [] changed = new int[parentVals.length];
+        for (int i = 0; i < parentVals.length; i++) {
+            changed[i] = parentVals [i];
         }
-        taste(parent,k1*l1);
 
         for (int i2 = 1; i2 < par4+3; ++i2){
             for (int j2 = 1; j2 < par3+3; ++j2){
-                int k2 = parent[j2 + (i2  - 1) * k1];
-                int l2 = parent[j2 + 1 + (i2 ) * k1];
-                int i3 = parent[j2  - 1 + (i2 ) * k1];
-                int j3 = parent[j2  + (i2  + 1) * k1];
-                int k3 = parent[j2  + (i2 ) * k1];
+                int k2 = parentVals[j2 + (i2  - 1) * parentXSize];
+                int l2 = parentVals[j2 + 1 + (i2 ) * parentXSize];
+                int i3 = parentVals[j2  - 1 + (i2 ) * parentXSize];
+                int j3 = parentVals[j2  + (i2  + 1) * parentXSize];
+                int k3 = parentVals[j2  + (i2 ) * parentXSize];
                 // apply test
                 if (isOceanic(k3) && isOceanic(k2) && isOceanic(l2) && isOceanic(i3) && isOceanic(j3) ){
                     if (suppressDiagonals) {
-                        int upperLeft = parent[j2 -1 + (i2-1) * (par3 + 4)];
-                        int upperRight = parent[j2 +1 + (i2-1) * (par3 + 4)];
-                        int lowerLeft = parent[j2 -1+ (i2+1) * (par3 + 4)];
-                        int lowerRight = parent[j2+1 + (i2+1) * (par3 + 4)];
+                        int upperLeft = parentVals[j2 -1 + (i2-1) * parentXSize];
+                        int upperRight = parentVals[j2 +1 + (i2-1) * parentXSize];
+                        int lowerLeft = parentVals[j2 -1+ (i2+1) * parentXSize];
+                        int lowerRight = parentVals[j2+1 + (i2+1) * parentXSize];
                         if (!isOceanic(upperLeft) || !isOceanic(upperRight) || !isOceanic(lowerLeft) || !isOceanic(lowerRight)) {
                             continue;
                         }
                     }
-                    this.initChunkSeed((long)(j2 + i1), (long)(i2 + j1));
+                    this.initChunkSeed((long)(j2 + par1), (long)(i2 + par2));
                     if (this.nextInt(1000) < milleFill) {
                         LocatedInt toAdd = new LocatedInt(new PlaneLocation(j2,i2),
-                                island.climate(j2 + i1,i2 + j1,passer));
+                                island.climate(j2 + par1,i2 + par2,passer));
                         newIslands.add(new Numbered<LocatedInt>(passer.nextInt(Integer.MAX_VALUE),toAdd));
                     }
                 }
             }
         }
 
-        // sort and make changes, zeroing out adjacent land.
-        // parent land suppresses adjacent islands so it don't get lost
+        // sort and make changes with new placements returning old ones to ocean.
+        // that won't affect parental land because the placement would be disallowed
         Collections.sort(newIslands, Numbered.comparator(locatedIntComparator()));
         for (Numbered<LocatedInt> attempt : newIslands) {
             int j2 = attempt.item().location.x();
             int i2 = attempt.item().location.z();
-            int target = parent[j2  + (i2 ) * k1];
-            if (!isOceanic(target)) throw new RuntimeException("unexpected land area during generation");
-            forceOcean(parent,j2-1,i2,k1,target);
-            forceOcean(parent,j2,i2-1,k1,target);
-            forceOcean(parent,j2+1,i2,k1,target);
-            forceOcean(parent,j2,i2+1,k1,target);
-            parent[j2 + (i2) * k1] = attempt.item().climate;
+            changed[j2 + (i2 ) * parentXSize] = attempt.item().climate;
+            revertNonOcean(j2 + (i2  - 1) * parentXSize,parentVals,changed);
+            revertNonOcean(j2 + 1 + (i2 ) * parentXSize,parentVals,changed);
+            revertNonOcean(j2 - 1 + (i2 ) * parentXSize,parentVals,changed);
+            revertNonOcean(j2 + (i2  + 1) * parentXSize,parentVals,changed);
+            // apply test
             if (suppressDiagonals) {
-                forceOcean(parent,j2-1,i2-1,k1,target);
-                forceOcean(parent,j2+1,i2-1,k1,target);
-                forceOcean(parent,j2+1,i2+1,k1,target);
-                forceOcean(parent,j2-1,i2+1,k1,target);
+                revertNonOcean(j2 - 1 + (i2 - 1) * parentXSize,parentVals,changed);
+                revertNonOcean(j2 + 1 + (i2 - 1) * parentXSize,parentVals,changed);
+                revertNonOcean(j2 - 1 + (i2 + 1) * parentXSize,parentVals,changed);
+                revertNonOcean(j2 + 1 + (i2  + 1) * parentXSize,parentVals,changed);
             }
         }
         // now copy the values
-        int[] aint1 = output.pad(par3 * par4);
-        poison(aint1,par3*par4);
-        for (int i2 = 2; i2 < par4+2; i2++){
-            for (int j2 = 2; j2 < par3+2; j2++){
-                int k3 = parent[j2  + (i2) * k1];
+        int[] aint1 = new int[par3 * par4];
+        for (int i2 = 2; i2 < par4+2; ++i2){
+            for (int j2 = 2; j2 < par3+2; ++j2){
+                int k3 = changed[j2  + (i2) * parentXSize];
                 // copy
                 aint1[j2-2  + (i2-2) * par3] = k3;
                 if (k3>0){
@@ -193,15 +186,12 @@ public class GenLayerOceanicIslands extends GenLayerPack {
 
             }
         }
-        taste(aint1,par3*par4);
+
         return aint1;
     }
 
-    private void forceOcean(int[] array, int x, int z, int xSize, int ocean) {
-        if (isOceanic(array[x + z*xSize])) return;
-        // convert deep ocean to ocean;
-        if (ocean == BiomeGenBase.deepOcean.biomeID) ocean = 0;
-        array[x + z*xSize] = ocean;
+    private final void revertNonOcean(int location, int [] original, int [] changed){
+        if (!isOceanic(changed[location])) changed[location] = original[location];
     }
 
     private static Comparator<LocatedInt> locatedIntComparator() {

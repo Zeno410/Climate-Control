@@ -1,15 +1,12 @@
 package climateControl.customGenLayer;
 
 import climateControl.api.BiomeRandomizer;
-import climateControl.utils.IntRandomizer;
-import climateControl.ClimateControl;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DistributionPartitioner;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Zeno410Logger;
+import climateControl.utils.IntRandomizer;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
@@ -71,7 +68,7 @@ public class GenLayerBiomeByTaggedClimate extends GenLayerPack {
                 int k1 = aint[j1 + i1 * par3];
                 int climate = k1%4;
                 if (climate == 0) climate = 4;
-                if (k1 == BiomeGenBase.deepOcean.biomeID) climate = k1; 
+                if (k1 == BiomeGenBase.deepOcean.biomeID) climate = k1;
                 if (k1 == BiomeGenBase.mushroomIsland.biomeID) climate = k1;
                 if (k1 == BiomeGenBase.frozenOcean.biomeID) climate = k1;
 

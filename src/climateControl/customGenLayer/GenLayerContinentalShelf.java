@@ -1,9 +1,9 @@
 
 package climateControl.customGenLayer;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
-import climateControl.ClimateControl;
+import net.minecraft.world.biome.BiomeGenBase;
+
 
 /**
  * Sets ocean areas to deep ocean if they have no land next to them

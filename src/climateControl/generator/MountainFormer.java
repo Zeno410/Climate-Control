@@ -26,9 +26,11 @@ import net.minecraftforge.common.BiomeDictionary;
 public class MountainFormer extends DistributionPartitioner {
 
     private GenLayer mountainGens;
+    private final boolean mesaMountains; // the variable is not used but recorded for debugging
 
-    public MountainFormer() {
-        super(incidenceModifiers());
+    public MountainFormer(boolean mesaMountains) {
+        super(incidenceModifiers(mesaMountains));
+        this.mesaMountains = mesaMountains;
         mountainGens = mountainGenLayers();
     }
 
@@ -68,14 +70,18 @@ public class MountainFormer extends DistributionPartitioner {
         }
         return reportedOn;
     }
-    private static ArrayList<IncidenceModifier> incidenceModifiers() {
+    private static ArrayList<IncidenceModifier> incidenceModifiers(boolean mesaMountains) {
         ArrayList<IncidenceModifier> result = new ArrayList<IncidenceModifier>();
-        result.add(new LowlandModifier());
-        result.add(new MountainModifier());
+        result.add(new LowlandModifier(mesaMountains));
+        result.add(new MountainModifier(mesaMountains));
         return result;
     }
 
     private static class MountainModifier implements IncidenceModifier {
+        private final boolean mesaMountains;
+        MountainModifier(boolean mesaMountains) {
+            this.mesaMountains = mesaMountains;
+        }
 
         public int modifiedIncidence(Numbered<BiomeGenBase> biomeIncidence) {
             BiomeGenBase biome = biomeIncidence.item();
@@ -87,6 +93,11 @@ public class MountainFormer extends DistributionPartitioner {
             // check that extreme hills are a mountain biome
             if (biomeIncidence.item().biomeID == BiomeGenBase.extremeHills.biomeID) {
                 return biomeIncidence.count()*4;
+            }
+            if (mesaMountains) {
+                if (biomeIncidence.item().equals(BiomeGenBase.mesaPlateau)||biomeIncidence.item().equals(BiomeGenBase.mesaPlateau_F)) {
+                        return biomeIncidence.count() * 4;
+                }
             }
             // Hills unaffected
             if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.HILLS)) {
@@ -104,7 +115,10 @@ public class MountainFormer extends DistributionPartitioner {
     }
 
     private static class LowlandModifier implements IncidenceModifier {
-
+        private final boolean mesaMountains;
+        LowlandModifier(boolean mesaMountains) {
+            this.mesaMountains = mesaMountains;
+        }
         public int modifiedIncidence(Numbered<BiomeGenBase> biomeIncidence) {
             BiomeGenBase biome = biomeIncidence.item();
             // erase mountains;
@@ -114,6 +128,11 @@ public class MountainFormer extends DistributionPartitioner {
             // check that extreme hills are a mountain biome
             if (biomeIncidence.item().biomeID == BiomeGenBase.extremeHills.biomeID) {
                 return 0;
+            }
+            if (mesaMountains) {
+                if (biomeIncidence.item().equals(BiomeGenBase.mesaPlateau)||biomeIncidence.item().equals(BiomeGenBase.mesaPlateau_F)) {
+                    return 0;
+                }
             }
             // Hills unaffected
             if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.HILLS)) {

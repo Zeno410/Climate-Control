@@ -1,13 +1,12 @@
 package climateControl.customGenLayer;
 
 import climateControl.api.BiomeRandomizer;
-import climateControl.utils.IntRandomizer;
 import climateControl.ClimateControl;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DistributionPartitioner;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Zeno410Logger;
+import climateControl.utils.IntRandomizer;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import net.minecraft.world.biome.BiomeGenBase;

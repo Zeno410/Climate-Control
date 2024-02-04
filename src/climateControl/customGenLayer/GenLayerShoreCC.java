@@ -12,6 +12,8 @@ public class GenLayerShoreCC extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000568";
     private final ClimateControlRules rules;
+    private int oceanID = BiomeGenBase.ocean.biomeID;
+    private int beachID = BiomeGenBase.beach.biomeID;;
 
     public GenLayerShoreCC(long par1, GenLayer par3GenLayer, ClimateControlRules rules)
     {
@@ -36,7 +38,7 @@ public class GenLayerShoreCC extends GenLayerPack
             for (int j1 = 0; j1 < par3; ++j1){
                 this.initChunkSeed((long)(j1 + par1), (long)(i1 + par2));
                 int k1 = aint[j1 + 1 + (i1 + 1) * (par3 + 2)];
-                BiomeGenBase biomegenbase = BiomeGenBase.getBiome(k1);
+                BiomeGenBase biome = BiomeGenBase.getBiome(k1);
                 int l1;
                 int i2;
                 int j2;
@@ -48,7 +50,7 @@ public class GenLayerShoreCC extends GenLayerPack
                     j2 = aint[j1 + 1 - 1 + (i1 + 1) * (par3 + 2)];
                     k2 = aint[j1 + 1 + (i1 + 1 + 1) * (par3 + 2)];
 
-                    if (l1 != BiomeGenBase.ocean.biomeID && i2 != BiomeGenBase.ocean.biomeID && j2 != BiomeGenBase.ocean.biomeID && k2 != BiomeGenBase.ocean.biomeID)
+                    if (l1 != oceanID && i2 != oceanID && j2 != oceanID && k2 != oceanID)
                     {
                         aint1[j1 + i1 * par3] = k1;
                     }
@@ -57,7 +59,7 @@ public class GenLayerShoreCC extends GenLayerPack
                         aint1[j1 + i1 * par3] = BiomeGenBase.mushroomIslandShore.biomeID;
                     }
                 }
-                else if (biomegenbase != null && biomegenbase.biomeID >20&& biomegenbase.biomeID <24 ) //jungle
+                else if (biome != null && k1 >20&& k1<24 ) //jungle
                 {
                     l1 = aint[j1 + 1 + (i1 + 1 - 1) * (par3 + 2)];
                     i2 = aint[j1 + 1 + 1 + (i1 + 1) * (par3 + 2)];
@@ -72,7 +74,7 @@ public class GenLayerShoreCC extends GenLayerPack
                         }
                         else
                         {
-                            aint1[j1 + i1 * par3] = BiomeGenBase.beach.biomeID;
+                            aint1[j1 + i1 * par3] = beachID;
                         }
                     }
                     else
@@ -80,13 +82,13 @@ public class GenLayerShoreCC extends GenLayerPack
                         aint1[j1 + i1 * par3] = BiomeGenBase.jungleEdge.biomeID;
                     }
                 }
-                else if (k1 != BiomeGenBase.extremeHills.biomeID && k1 != BiomeGenBase.extremeHillsPlus.biomeID && k1 != BiomeGenBase.extremeHillsEdge.biomeID)
+                else if (k1 != BiomeGenBase.extremeHills.biomeID && k1 != BiomeGenBase.extremeHillsEdge.biomeID && k1 != BiomeGenBase.extremeHillsPlus.biomeID)
                 {
-                    if ((biomegenbase != null )&& biomegenbase.func_150559_j())
+                    if ((biome != null )&& biome.func_150559_j())
                     {
                         this.func_151632_a(aint, aint1, j1, i1, par3, k1, BiomeGenBase.coldBeach.biomeID);
                     }
-                    else if (k1 != BiomeGenBase.mesa.biomeID && k1 != BiomeGenBase.mesaPlateau_F.biomeID)
+                    else if (k1 != BiomeGenBase.mesaPlateau.biomeID && k1 != BiomeGenBase.mesaPlateau_F.biomeID)
                     {
                         if (!waterBiome(k1))
                         {
@@ -101,7 +103,7 @@ public class GenLayerShoreCC extends GenLayerPack
                             }
                             else
                             {
-                                aint1[j1 + i1 * par3] = BiomeGenBase.beach.biomeID;
+                                aint1[j1 + i1 * par3] = beachID;
                             }
                         }
                         else
@@ -124,7 +126,7 @@ public class GenLayerShoreCC extends GenLayerPack
                             }
                             else
                             {
-                                aint1[j1 + i1 * par3] = BiomeGenBase.desert.biomeID;
+                                aint1[j1 + i1 * par3] = BiomeGenBase.mesa.biomeID;
                             }
                         }
                         else
@@ -168,10 +170,13 @@ public class GenLayerShoreCC extends GenLayerPack
 
     private boolean func_151631_c(int p_151631_1_)
     {
-        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID || p_151631_1_ == BiomeGenBase.taiga.biomeID || isOceanic(p_151631_1_);
+        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class
+                ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID
+                || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID
+                || p_151631_1_ == BiomeGenBase.taiga.biomeID || isOceanic(p_151631_1_);
     }
 
     private boolean func_151633_d(int p_151633_1_){
-        return BiomeGenBase.getBiome(p_151633_1_) != null && BiomeGenBase.getBiome(p_151633_1_).biomeID > 36&& BiomeGenBase.getBiome(p_151633_1_).biomeID > 40;
+        return BiomeGenBase.getBiome(p_151633_1_) != null && p_151633_1_ > 36&& p_151633_1_ < 40;
     }
 }

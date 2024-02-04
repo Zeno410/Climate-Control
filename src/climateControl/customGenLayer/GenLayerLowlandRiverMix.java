@@ -1,13 +1,9 @@
 
 package climateControl.customGenLayer;
 
-
 import climateControl.api.ClimateControlRules;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.IntPad;
-import climateControl.utils.Receiver;
-import climateControl.utils.StringWriter;
-import java.io.File;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
@@ -46,7 +42,7 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
     public GenLayer forLocking() {
         return biomePatternGeneratorChain;
     }
-    
+
     public void setMaxChasm(float newValue) {
         this.maxChasm = newValue;
     }
@@ -72,7 +68,7 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
         }
         for (int i1 = 0; i1 < par3 * par4; ++i1)
         {
-            if (aint[i1] != BiomeGenBase.ocean.biomeID && aint[i1] != BiomeGenBase.deepOcean.biomeID)
+            if (aint[i1] != BiomeGenBase.ocean.biomeID && aint[i1] != BiomeGenBase.deepOcean.biomeID && aint[i1] != BiomeGenBase.frozenOcean.biomeID)
             {
                 if (aint1[i1] == BiomeGenBase.river.biomeID)
                 {

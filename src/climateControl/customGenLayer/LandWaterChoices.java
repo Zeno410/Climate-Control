@@ -47,7 +47,6 @@ public class LandWaterChoices {
     }
 
     int mostCommon(IntRandomizer randomizer) {
-        if (water.count + land.count != 4) throw new RuntimeException();
         int oldCount = water.count;
         // if mostly land return one of the land items
         if (oldCount <2) {

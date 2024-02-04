@@ -41,7 +41,7 @@ public class GenLayerMountainChains extends GenLayerPack {
 
                 Direction direction = compass.direction(plate%8);
 
-                int adjacent = parentVals[j2 + 1 + direction.zOffset + (i2 + 1+direction.xOffset) * k1];
+                int adjacent = parentVals[j2 + 1 + direction.zOffset + (i2 + 1+ direction.xOffset) * k1];
 
                 if (plate == adjacent) {
                     // same plate; lowlands

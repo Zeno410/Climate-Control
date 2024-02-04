@@ -1,7 +1,6 @@
 
 package climateControl.customGenLayer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntPad;
 import climateControl.utils.IntRandomizer;
 import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
@@ -14,7 +13,7 @@ public class GenLayerSmoothCoast extends GenLayerPack {
     private static final String __OBFID = "CL_00000569";
     private static int sinkLand = 7;
     private static int raiseWater = 10;
-    private IntPad output = new IntPad();
+    private LandWaterChoices choices = new LandWaterChoices();
     private IntRandomizer passable = new IntRandomizer() {
 
         @Override
@@ -36,17 +35,13 @@ public class GenLayerSmoothCoast extends GenLayerPack {
      */
     public int[] getInts(int par1, int par2, int par3, int par4)
     {
-        LandWaterChoices choices = new LandWaterChoices();
         int i1 = par1 - 1;
         int j1 = par2 - 1;
         int k1 = par3 + 2;
         int l1 = par4 + 2;
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
-        for (int i = 0; i < k1*l1;i ++) {
-            if (aint[i] >255) throw new RuntimeException();
-        }
         taste(aint,k1*l1);
-        int[] aint1 = output.pad(par3 * par4);
+        int[] aint1 = new int[par3 * par4];
         poison(aint1,par3*par4);
 
         for (int i2 = 0; i2 < par4; i2++){
