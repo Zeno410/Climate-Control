@@ -1,14 +1,15 @@
 package climateControl.api ;
 
-import climateControl.utils.IntRandomizer;
-import climateControl.utils.Numbered;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.IntRandomizer;
+import com.Zeno410Utils.Numbered;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 
 /**
  *
@@ -64,12 +65,12 @@ public class BiomeRandomizer {
 
     private void add(ClimateDistribution.Incidence incidence) {
         if (incidence.climate !=Climate.DEEP_OCEAN&&incidence.climate !=Climate.OCEAN) {
-            global.append(incidence.incidence, BiomeGenBase.getBiomeGenArray()[incidence.biome]);
+            global.append(incidence.incidence, Biome.getBiome(incidence.biome));
         }
         //if (ClimateControl.testing) {
-            //int checkBiome = BiomeGenBase.getBiomeGenArray()[incidence.biome].biomeID;
+            //int checkBiome = Biome.getBiomeGenArray()[incidence.biome].biomeID;
         //}
-        randomizer(incidence.climate).append(incidence.incidence, BiomeGenBase.getBiomeGenArray()[incidence.biome]);
+        randomizer(incidence.climate).append(incidence.incidence, Biome.getBiome(incidence.biome));
     }
 
 
@@ -79,13 +80,13 @@ public class BiomeRandomizer {
 
     public class PickByClimate {
         public int biome(int climate, IntRandomizer source) {
-            if (climate == 0) return ocean.choose(source).biomeID;
-            if (climate == 1) return hot.choose(source).biomeID;
-            if (climate == 2) return warm.choose(source).biomeID;
-            if (climate == 3) return cool.choose(source).biomeID;
-            if (climate == 4) return snowy.choose(source).biomeID;
-            if (climate == BiomeGenBase.deepOcean.biomeID) return deepOcean.choose(source).biomeID;
-            if (climate == BiomeGenBase.mushroomIsland.biomeID) return climate;
+            if (climate == 0) return Biome.getIdForBiome(ocean.choose(source));
+            if (climate == 1) return Biome.getIdForBiome(hot.choose(source));
+            if (climate == 2) return Biome.getIdForBiome(warm.choose(source));
+            if (climate == 3) return Biome.getIdForBiome(cool.choose(source));
+            if (climate == 4) return Biome.getIdForBiome(snowy.choose(source));
+            if (climate == Biome.getIdForBiome(Biomes.DEEP_OCEAN)) return Biome.getIdForBiome(deepOcean.choose(source));
+            if (climate == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)) return climate;
             //if (ClimateControl.testing) {
                 //ClimateControl.logger.info("problem climate "+climate);
                 //throw new RuntimeException();
@@ -100,7 +101,7 @@ public class BiomeRandomizer {
             if (climate == 2) return warm.biomes.length>0;
             if (climate == 3) return cool.biomes.length>0;
             if (climate == 4) return snowy.biomes.length>0;
-            if (climate == BiomeGenBase.deepOcean.biomeID) return deepOcean.biomes.length>0;
+            if (climate == Biome.getIdForBiome(Biomes.DEEP_OCEAN)) return deepOcean.biomes.length>0;
             return false;
         }
 
@@ -179,12 +180,12 @@ public class BiomeRandomizer {
 
 
     public class BiomeList {
-        private BiomeGenBase[] biomes = new BiomeGenBase[0] ;
+        private Biome[] biomes = new Biome[0] ;
         private int nextIndex = 0;
 
-        private void append(int count, BiomeGenBase biome) {
+        private void append(int count, Biome biome) {
             int lastIndex = nextIndex;
-            BiomeGenBase[] newArray = new BiomeGenBase[nextIndex + count];
+            Biome[] newArray = new Biome[nextIndex + count];
             for (int i = 0; i < lastIndex ; i++) {
                 newArray[i] = biomes[i];
             }
@@ -194,15 +195,15 @@ public class BiomeRandomizer {
             }
         }
 
-        public BiomeGenBase choose(IntRandomizer source) {
+        public Biome choose(IntRandomizer source) {
             return biomes[source.nextInt(biomes.length)];
         }
 
         private BiomeList modifiedSubRandomizer(IncidenceModifier modifier) {
             BiomeList result = new BiomeList();
-            for (Numbered<BiomeGenBase> oldIncidence: incidences()) {
+            for (Numbered<Biome> oldIncidence: incidences()) {
                 int newIncidence = modifier.modifiedIncidence(oldIncidence);
-                logger.info(oldIncidence.item().biomeName + " "+ oldIncidence.count() + " to " + newIncidence);
+                //logger.info(oldIncidence.item().getBiomeName() + " "+ oldIncidence.count() + " to " + newIncidence);
                 if (newIncidence>0) {
                     result.append(newIncidence, oldIncidence.item());
                 }
@@ -210,11 +211,11 @@ public class BiomeRandomizer {
             return result;
         }
 
-        private ArrayList<Numbered<BiomeGenBase>> incidences() {
-            ArrayList<Numbered<BiomeGenBase>> result= new ArrayList<Numbered<BiomeGenBase>>();
-            BiomeGenBase current = null;
+        private ArrayList<Numbered<Biome>> incidences() {
+            ArrayList<Numbered<Biome>> result= new ArrayList<Numbered<Biome>>();
+            Biome current = null;
             int occurances = 0;
-            for (BiomeGenBase biome: this.biomes) {
+            for (Biome biome: this.biomes) {
                 if (biome == current) {
                     occurances ++;
                 } else {

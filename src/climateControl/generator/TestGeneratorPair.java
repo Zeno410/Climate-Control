@@ -2,8 +2,8 @@
 package climateControl.generator;
 
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.AccessLong;
-import climateControl.utils.Accessor;
+import com.Zeno410Utils.AccessLong;
+import com.Zeno410Utils.Accessor;
 import net.minecraft.world.gen.layer.GenLayer;
 
 /**

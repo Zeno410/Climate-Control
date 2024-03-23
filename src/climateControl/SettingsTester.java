@@ -4,12 +4,13 @@ package climateControl;
 import climateControl.api.BiomeRandomizer;
 import climateControl.api.Climate;
 import climateControl.api.ClimateControlSettings;
-import climateControl.utils.GuiChoice;
+import com.Zeno410Utils.GuiChoice;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 
 /**
  *
@@ -84,7 +85,7 @@ public class SettingsTester {
             // ocean always active
             if (testClimatePicker.hasBiomes(0) == false)
                 activeWithoutBiomes = activeWithoutBiomes.concat(Climate.OCEAN.name+" ");
-            if (testClimatePicker.hasBiomes(BiomeGenBase.deepOcean.biomeID) == false)
+            if (testClimatePicker.hasBiomes(Biome.getIdForBiome(Biomes.DEEP_OCEAN)) == false)
                 activeWithoutBiomes = activeWithoutBiomes.concat(Climate.DEEP_OCEAN.name+" ");
             for (int i = 1; i < 5; i ++) {
                 if (active[i]) {

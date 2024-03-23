@@ -2,8 +2,8 @@
 package climateControl.customGenLayer;
 
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Compass;
-import climateControl.utils.Direction;
+import com.Zeno410Utils.Compass;
+import com.Zeno410Utils.Direction;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 

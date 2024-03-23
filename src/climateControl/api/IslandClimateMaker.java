@@ -4,7 +4,7 @@
 
 package climateControl.api;
 
-import climateControl.utils.IntRandomizer;
+import com.Zeno410Utils.IntRandomizer;
 
 /**
  *

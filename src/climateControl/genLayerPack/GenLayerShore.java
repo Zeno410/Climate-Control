@@ -1,6 +1,7 @@
 package climateControl.genLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.BiomeGenJungle;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeJungle;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -21,38 +22,34 @@ public class GenLayerShore extends GenLayerPack
     public int[] getInts(int par1, int par2, int par3, int par4)
     {
         int[] aint = this.parent.getInts(par1 - 1, par2 - 1, par3 + 2, par4 + 2);
-        for (int i =0; i <(par3 + 2) * (par4 + 2);i++ ) {
-            if (aint[i]<0) throw new RuntimeException("i " + i + " value " + aint[i]);
-
-        }
         int[] aint1 = IntCache.getIntCache(par3 * par4);
 
         for (int i1 = 0; i1 < par4; ++i1){
             for (int j1 = 0; j1 < par3; ++j1){
                 this.initChunkSeed((long)(j1 + par1), (long)(i1 + par2));
                 int k1 = aint[j1 + 1 + (i1 + 1) * (par3 + 2)];
-                BiomeGenBase biomegenbase = BiomeGenBase.getBiome(k1);
+                Biome biome = Biome.getBiome(k1);
                 int l1;
                 int i2;
                 int j2;
                 int k2;
 
-                if (k1 == BiomeGenBase.mushroomIsland.biomeID) {
+                if (k1 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)) {
                     l1 = aint[j1 + 1 + (i1 + 1 - 1) * (par3 + 2)];
                     i2 = aint[j1 + 1 + 1 + (i1 + 1) * (par3 + 2)];
                     j2 = aint[j1 + 1 - 1 + (i1 + 1) * (par3 + 2)];
                     k2 = aint[j1 + 1 + (i1 + 1 + 1) * (par3 + 2)];
 
-                    if (l1 != BiomeGenBase.ocean.biomeID && i2 != BiomeGenBase.ocean.biomeID && j2 != BiomeGenBase.ocean.biomeID && k2 != BiomeGenBase.ocean.biomeID)
+                    if (l1 != 0 && i2 != 0 && j2 != 0 && k2 != 0)
                     {
                         aint1[j1 + i1 * par3] = k1;
                     }
                     else
                     {
-                        aint1[j1 + i1 * par3] = BiomeGenBase.mushroomIslandShore.biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE);
                     }
                 }
-                else if (biomegenbase != null && biomegenbase.biomeID >20&& biomegenbase.biomeID <24 ) //jungle
+                else if (biome != null && Biome.getIdForBiome(biome) >20&& Biome.getIdForBiome(biome) <24 ) //jungle
                 {
                     l1 = aint[j1 + 1 + (i1 + 1 - 1) * (par3 + 2)];
                     i2 = aint[j1 + 1 + 1 + (i1 + 1) * (par3 + 2)];
@@ -67,23 +64,25 @@ public class GenLayerShore extends GenLayerPack
                         }
                         else
                         {
-                            aint1[j1 + i1 * par3] = BiomeGenBase.beach.biomeID;
+                            aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.BEACH);
                         }
                     }
                     else
                     {
-                        aint1[j1 + i1 * par3] = BiomeGenBase.jungleEdge.biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.JUNGLE_EDGE);
                     }
                 }
-                else if (k1 != BiomeGenBase.extremeHills.biomeID && k1 != BiomeGenBase.extremeHillsPlus.biomeID && k1 != BiomeGenBase.extremeHillsEdge.biomeID)
+                else if (k1 != Biome.getIdForBiome(Biomes.EXTREME_HILLS)
+                        && k1 != Biome.getIdForBiome(Biomes.EXTREME_HILLS_WITH_TREES)
+                        && k1 != Biome.getIdForBiome(Biomes.EXTREME_HILLS_EDGE))
                 {
-                    if ((biomegenbase != null )&& biomegenbase.func_150559_j())
+                    if ((biome != null )&& biome.isSnowyBiome())
                     {
-                        this.func_151632_a(aint, aint1, j1, i1, par3, k1, BiomeGenBase.coldBeach.biomeID);
+                        this.func_151632_a(aint, aint1, j1, i1, par3, k1, Biome.getIdForBiome(Biomes.COLD_BEACH));
                     }
-                    else if (k1 != BiomeGenBase.mesa.biomeID && k1 != BiomeGenBase.mesaPlateau_F.biomeID)
+                    else if (k1 != Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK) && k1 != Biome.getIdForBiome(Biomes.MESA_ROCK))
                     {
-                        if (k1 != BiomeGenBase.ocean.biomeID && k1 != BiomeGenBase.deepOcean.biomeID && k1 != BiomeGenBase.river.biomeID && k1 != BiomeGenBase.swampland.biomeID)
+                        if (k1 != Biome.getIdForBiome(Biomes.OCEAN) && k1 != Biome.getIdForBiome(Biomes.DEEP_OCEAN) && k1 != Biome.getIdForBiome(Biomes.RIVER) && k1 != Biome.getIdForBiome(Biomes.SWAMPLAND))
                         {
                             l1 = aint[j1 + 1 + (i1 + 1 - 1) * (par3 + 2)];
                             i2 = aint[j1 + 1 + 1 + (i1 + 1) * (par3 + 2)];
@@ -96,7 +95,7 @@ public class GenLayerShore extends GenLayerPack
                             }
                             else
                             {
-                                aint1[j1 + i1 * par3] = BiomeGenBase.beach.biomeID;
+                                aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.BEACH);
                             }
                         }
                         else
@@ -119,7 +118,7 @@ public class GenLayerShore extends GenLayerPack
                             }
                             else
                             {
-                                aint1[j1 + i1 * par3] = BiomeGenBase.desert.biomeID;
+                                aint1[j1 + i1 * par3] = k1;//Biome.getIdForBiome(Biomes.DESERT);
                             }
                         }
                         else
@@ -129,15 +128,11 @@ public class GenLayerShore extends GenLayerPack
                     }
                 }
                 else {
-                    this.func_151632_a(aint, aint1, j1, i1, par3, k1, BiomeGenBase.stoneBeach.biomeID);
+                    this.func_151632_a(aint, aint1, j1, i1, par3, k1, Biome.getIdForBiome(Biomes.STONE_BEACH));
                 }
             }
         }
 
-        for (int i =0; i <(par3) * (par4);i++ ) {
-            if (aint1[i]<0) throw new RuntimeException("i " + i + " value " + aint1[i]);
-
-        }
         return aint1;
     }
 
@@ -167,10 +162,10 @@ public class GenLayerShore extends GenLayerPack
 
     private boolean func_151631_c(int p_151631_1_)
     { 
-        return BiomeGenBase.getBiome(p_151631_1_) != null && BiomeGenBase.getBiome(p_151631_1_).getBiomeClass() == BiomeGenJungle.class ? true : p_151631_1_ == BiomeGenBase.jungleEdge.biomeID || p_151631_1_ == BiomeGenBase.jungle.biomeID || p_151631_1_ == BiomeGenBase.jungleHills.biomeID || p_151631_1_ == BiomeGenBase.forest.biomeID || p_151631_1_ == BiomeGenBase.taiga.biomeID || isBiomeOceanic(p_151631_1_);
+        return Biome.getBiome(p_151631_1_) != null && Biome.getBiome(p_151631_1_).getBiomeClass() == BiomeJungle.class ? true : p_151631_1_ == Biome.getIdForBiome(Biomes.JUNGLE_EDGE) || p_151631_1_ == Biome.getIdForBiome(Biomes.JUNGLE) || p_151631_1_ == Biome.getIdForBiome(Biomes.JUNGLE_HILLS) || p_151631_1_ == Biome.getIdForBiome(Biomes.FOREST) || p_151631_1_ == Biome.getIdForBiome(Biomes.TAIGA) || isBiomeOceanic(p_151631_1_);
     }
 
     private boolean func_151633_d(int p_151633_1_){
-        return BiomeGenBase.getBiome(p_151633_1_) != null && BiomeGenBase.getBiome(p_151633_1_).biomeID > 36;
+        return Biome.getBiome(p_151633_1_) != null && p_151633_1_ > 36;
     }
 }

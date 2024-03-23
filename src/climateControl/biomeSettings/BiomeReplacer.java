@@ -3,8 +3,8 @@ package climateControl.biomeSettings;
 
 import climateControl.api.BiomeSettings;
 import climateControl.generator.SubBiomeChooser;
-import climateControl.utils.IntRandomizer;
-import climateControl.utils.RandomIntUser;
+import com.Zeno410Utils.IntRandomizer;
+import com.Zeno410Utils.RandomIntUser;
 
 /**
  *
@@ -23,6 +23,17 @@ abstract public class BiomeReplacer {
             for (int i = 0; i < alternatives.length;i++) newAlternatives[i]= alternatives[i];
             for (int i = alternatives.length; i < newAlternatives.length; i ++ ) {
                 newAlternatives[i] = biome.biomeID().value();
+                //BiomeSettings.logger.info("subBiome added" + biome.biomeID().value());
+            }
+            alternatives = newAlternatives;
+        }
+        
+        public void addByNumber(int biome,int count) {
+            totalPossibilities += count;
+            int [] newAlternatives = new int[alternatives.length+count];
+            for (int i = 0; i < alternatives.length;i++) newAlternatives[i]= alternatives[i];
+            for (int i = alternatives.length; i < newAlternatives.length; i ++ ) {
+                newAlternatives[i] = biome;
                 //BiomeSettings.logger.info("subBiome added" + biome.biomeID().value());
             }
             alternatives = newAlternatives;

@@ -1,13 +1,17 @@
 package climateControl.customGenLayer;
 
 import climateControl.api.BiomeRandomizer;
+import com.Zeno410Utils.IntRandomizer;
+import climateControl.ClimateControl;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DistributionPartitioner;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.ArrayList;
-import net.minecraft.world.biome.BiomeGenBase;
+import java.util.logging.Logger;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 /**
@@ -68,15 +72,15 @@ public class GenLayerBiomeByTaggedClimate extends GenLayerPack {
                 int k1 = aint[j1 + i1 * par3];
                 int climate = k1%4;
                 if (climate == 0) climate = 4;
-                if (k1 == BiomeGenBase.deepOcean.biomeID) climate = k1;
-                if (k1 == BiomeGenBase.mushroomIsland.biomeID) climate = k1;
-                if (k1 == BiomeGenBase.frozenOcean.biomeID) climate = k1;
+                if (k1 == Biome.getIdForBiome(Biomes.DEEP_OCEAN)) climate = k1; 
+                if (k1 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)) climate = k1;
+                if (k1 == Biome.getIdForBiome(Biomes.FROZEN_OCEAN)) climate = k1;
 
                 // set to ocean if really ocean
                 if (k1== 0) climate = 0;
-                if (k1 == BiomeGenBase.frozenOcean.biomeID){
+                if (k1 == Biome.getIdForBiome(Biomes.FROZEN_OCEAN)){
                     aint1[j1 + i1 * par3] = k1;
-                }else if (k1 == BiomeGenBase.mushroomIsland.biomeID){
+                }else if (k1 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)){
 
                     aint1[j1 + i1 * par3] = k1;
                 }
@@ -92,7 +96,7 @@ public class GenLayerBiomeByTaggedClimate extends GenLayerPack {
             }
         }
         for (int i = 0; i < par3 * par4;i++) {
-            if (aint1[i]>255) throw new RuntimeException();
+            //if (aint1[i]>255) throw new RuntimeException();
         }
         return aint1;
     }

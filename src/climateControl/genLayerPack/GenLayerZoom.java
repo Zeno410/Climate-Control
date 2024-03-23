@@ -1,6 +1,5 @@
 package climateControl.genLayerPack;
-import climateControl.customGenLayer.GenLayerConfirm;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -8,12 +7,11 @@ public class GenLayerZoom extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000572";
     private boolean biomesOnly = false;
-    private int [] scratchpad = new int [7*7];
-    private int [] resultpad = new int [7*7];
 
     public GenLayerZoom(long par1, GenLayer par3GenLayer)
     {
-        this(par1 , par3GenLayer, false);
+        super(par1);
+        super.parent = par3GenLayer;
     }
 
     public GenLayerZoom(long par1, GenLayer par3GenLayer, boolean biomesOnly)
@@ -21,7 +19,6 @@ public class GenLayerZoom extends GenLayerPack
         super(par1);
         super.parent = par3GenLayer;
         this.biomesOnly = biomesOnly;
-        if (biomesOnly&&par3GenLayer.getClass().getCanonicalName().contains("River")) throw new RuntimeException();
     }
 
     /**
@@ -32,59 +29,38 @@ public class GenLayerZoom extends GenLayerPack
     {
         int i1 = par1 >> 1;
         int j1 = par2 >> 1;
-        int parentXSize = (par3 >> 1) + 2;
-        int parentZSize = (par4 >> 1) + 2;
-        int[] aint = this.parent.getInts(i1, j1, parentXSize, parentZSize);
-        int i2 = parentXSize - 1 << 1;
-        int j2 = parentZSize - 1 << 1;
-
-        if (scratchpad.length != i2 * j2) {
-            scratchpad= new int[i2 * j2];
-        }
-        int[] aint1 = scratchpad;
+        int k1 = (par3 >> 1) + 2;
+        int l1 = (par4 >> 1) + 2;
+        int[] aint = this.parent.getInts(i1, j1, k1, l1);
+        int i2 = k1 - 1 << 1;
+        int j2 = l1 - 1 << 1;
+        int[] aint1 = new int[i2 * j2];
         poison(aint1,i2*j2);
         int l2;
 
-        //if ((par1/2)*2!= par1) throw new RuntimeException("par1 "+ par1 + " i1 " + i1 + " i2 "+ i2);
         if (biomesOnly) {
-        for (int i = 0; i < parentXSize; i ++) {
-            for (int j = 0 ; j< parentZSize; j++) {
-                if (aint[i*parentZSize+j]>256) throw new RuntimeException("biome ID"+aint[i*par3+j] + " " + this.parent.toString());
+        for (int i = 0; i < k1; i ++) {
+            for (int j = 0 ; j< l1; j++) {
+                //if (aint[i*l1+j]>256) throw new RuntimeException("biome ID"+aint[i*par3+j] + " " + this.parent.toString());
             }
         }
         }
-        /*for (int parentX = 0; parentX < parentXSize -1; parentX ++) {
-            for (int parentZ = 0; parentZ < parentZSize-1; parentZ ++) {
-                final int upperLeft =  aint[parentX +     parentZ * parentXSize];
-                final int upperRight = aint[parentX + 1 + parentZ *parentXSize];
-                final int lowerLeft =  aint[parentX +     (parentZ + 1) * parentXSize];
-                final int lowerRight = aint[parentX + 1 + (parentZ + 1) *parentXSize];
-                this.initChunkSeed((long)((parentX + i1)<<1 ), (long)((parentZ + j1))<<1);
-                final int childX = parentX << 1;
-                final int childZ = parentZ << 1;
-                aint1[childX +     childZ *i2] = upperLeft;
-                aint1[childX     + (childZ + 1) *i2] = selectRandom(new int[] {upperLeft,lowerLeft});
-                aint1[childX + 1 + childZ *i2] =  selectRandom(new int[] {upperLeft,upperRight});
-                aint1[childX + 1 + (childZ + 1) *i2] = selectModeOrRandom(upperLeft,upperRight,lowerLeft,lowerRight);
-            }
-        }*/
-
-        for (int k2 = 0; k2 < parentZSize -1 ; k2++)
+        for (int k2 = 0; k2 < l1 - 1; k2++)
         {
             l2 = (k2 << 1) * i2;
             int i3 = 0;
-            int j3 = aint[i3 + 0 + (k2 + 0) * parentXSize];
+            int j3 = aint[i3 + 0 + (k2 + 0) * k1];
 
-            for (int k3 = aint[i3 + 0 + (k2 + 1) * parentXSize]; i3 < parentXSize - 1; ++i3)
+            for (int k3 = aint[i3 + 0 + (k2 + 1) * k1]; i3 < k1 - 1; ++i3)
             {
                 this.initChunkSeed((long)(i3 + i1 << 1), (long)(k2 + j1 << 1));
-                int l3 = aint[i3 + 1 + (k2 + 0) * parentXSize];
-                int i4 = aint[i3 + 1 + (k2 + 1) * parentXSize];
+                int l3 = aint[i3 + 1 + (k2 + 0) * k1];
+                int i4 = aint[i3 + 1 + (k2 + 1) * k1];
                 if (biomesOnly) {
-                    if (j3 > 256) throw new RuntimeException("j3 " + j3 + " l2 " + l2);
-                    if (k3 > 256) throw new RuntimeException("k3 " + k3 + " l2 " + l2);
-                    if (l3 > 256) throw new RuntimeException("l3 " + l3 + " l2 " + l2);
-                    if (l3 > 256) throw new RuntimeException("i4 " + i4 + " l2 " + l2);
+                    //if (j3 > 256) throw new RuntimeException("j3 " + j3 + " l2 " + l2);
+                    //if (k3 > 256) throw new RuntimeException("k3 " + k3 + " l2 " + l2);
+                    //if (l3 > 256) throw new RuntimeException("l3 " + l3 + " l2 " + l2);
+                    //if (l3 > 256) throw new RuntimeException("i4 " + i4 + " l2 " + l2);
                     if (j3 < -1) throw new RuntimeException("j3 " + j3 + " l2 " + l2);
                     if (k3 < -1) throw new RuntimeException("k3 " + k3 + " l2 " + l2);
                     if (l3 < -1) throw new RuntimeException("l3 " + l3 + " l2 " + l2);
@@ -99,23 +75,11 @@ public class GenLayerZoom extends GenLayerPack
             }
         }
 
-        taste(aint1,i2*j2);
-        if (resultpad.length != i2 * j2) {
-            resultpad= new int[i2 * j2];
-        }
-        int[] aint2 = resultpad;
+
+        int[] aint2 = new int[par3 * par4];
         poison(aint2,par3*par4);
 
 
-        /*for (int i = 0; i < par3; i ++) {
-            for (int j = 0; j < par4; j++) {
-                aint2[i + par3 * j]= aint1[i  + (par1 & 1) + i2 * (j+ (par2 & 1))];
-                if (biomesOnly&&((aint2[i + par3 * j] > 256)||(aint2[i + par3 * j] < -2 ))) {
-                    throw new RuntimeException( "i " + i + " j " + j + " par1 " + par1 + " par2 " +
-                            par2 + " par3 " + par3 + " par4 " + par4);
-                }
-            }
-        }*/
         for (l2 = 0; l2 < par4; l2++)
         {
             System.arraycopy(aint1, (l2 + (par2 & 1)) * i2 + (par1 & 1), aint2, l2 * par3, par3);
@@ -123,8 +87,7 @@ public class GenLayerZoom extends GenLayerPack
 
         if (biomesOnly) {
             for (int i =0; i <  par3*par4; i ++) {
-                if (aint2[i]>256) throw new RuntimeException();
-                if (aint2[i]==-1) throw new RuntimeException();
+                //if (aint2[i]>256) throw new RuntimeException();
             }
         }
         taste(aint2,par3*par4);

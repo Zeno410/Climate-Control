@@ -1,12 +1,12 @@
 
 package climateControl.api;
 
-import climateControl.utils.Acceptor;
-import climateControl.utils.DimensionSet;
-import climateControl.utils.Mutable;
-import climateControl.utils.Named;
-import climateControl.utils.Settings;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.Acceptor;
+import com.Zeno410Utils.DimensionSet;
+import com.Zeno410Utils.Mutable;
+import com.Zeno410Utils.Named;
+import com.Zeno410Utils.Settings;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
 
 

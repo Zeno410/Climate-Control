@@ -1,9 +1,11 @@
 
 package climateControl.customGenLayer;
 
+import climateControl.api.ClimateControlSettings;
 import climateControl.api.IslandClimateMaker;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
+import com.Zeno410Utils.IntRandomizer;
+import com.Zeno410Utils.RandomIntUser;
 import net.minecraft.world.gen.layer.GenLayer;
 
 /**

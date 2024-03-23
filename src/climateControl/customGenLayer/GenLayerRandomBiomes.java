@@ -4,10 +4,11 @@ import climateControl.api.BiomeRandomizer;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.IntRandomizer;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 /**
@@ -61,12 +62,12 @@ public class GenLayerRandomBiomes extends GenLayerPack {
                 // Random biome distribution
                 if (isOceanic(var9)){
                     var6[var8 + var7 * par3] = var9;
-                } else if (var9 == BiomeGenBase.mushroomIsland.biomeID){
+                } else if (var9 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)){
                     var6[var8 + var7 * par3] = var9;
                 }else if (var9 >= 1 && var9 <= 4) {
-                    var6[var8 + var7 * par3] = biomeRandomizer.global.choose(this.randomCallback).biomeID;
+                    var6[var8 + var7 * par3] = Biome.getIdForBiome(biomeRandomizer.global.choose(this.randomCallback));
                 }else{
-                    var6[var8 + var7 * par3] = BiomeGenBase.ocean.biomeID;
+                    var6[var8 + var7 * par3] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND);
                 }
             }
         }

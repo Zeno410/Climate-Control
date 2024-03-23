@@ -1,15 +1,19 @@
 package climateControl.customGenLayer;
 
 import climateControl.api.BiomeRandomizer;
+import climateControl.api.BiomeSettings;
+
+import com.Zeno410Utils.IntRandomizer;
 import climateControl.ClimateControl;
 
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DistributionPartitioner;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 /**
@@ -18,6 +22,8 @@ import net.minecraft.world.gen.layer.IntCache;
  */
 public class GenLayerBiomeByClimate extends GenLayerPack {
     //public static Logger logger = new Zeno410Logger("GenLayerBiomeByClimate").logger();
+
+	private int maxBiomeID = BiomeSettings.highestBiomeID();
 
     private BiomeRandomizer biomeRandomizer;
 
@@ -73,14 +79,13 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
                     throw new RuntimeException();
                     }
                 }
-                if (k1 == BiomeGenBase.frozenOcean.biomeID){
+                if (k1 == Biome.getIdForBiome(Biomes.FROZEN_OCEAN)){
                     aint1[j1 + i1 * par3] = k1;
-                }else if (k1 == BiomeGenBase.mushroomIsland.biomeID){
+                }else if (k1 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)){
                     aint1[j1 + i1 * par3] = k1;
                 }
                 else {
                     BiomeRandomizer.PickByClimate picker= pickByClimate;
-                    if (partitioners.size() <1) throw new RuntimeException();
                     for (DistributionPartitioner partitioner: partitioners) {
                         picker = partitioner.partitioned(picker, j1 + par1, i1 + par2);
                     }
@@ -91,7 +96,7 @@ public class GenLayerBiomeByClimate extends GenLayerPack {
             }
         }
         for (int i = 0; i < par3 * par4;i++) {
-            if (aint1[i]>255) throw new RuntimeException();
+            if (aint1[i]>maxBiomeID) throw new RuntimeException();
         }
         return aint1;
     }

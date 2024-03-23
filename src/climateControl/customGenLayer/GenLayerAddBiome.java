@@ -2,6 +2,7 @@
 package climateControl.customGenLayer;
 
 import climateControl.genLayerPack.GenLayerPack;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 
 /**
@@ -31,7 +32,7 @@ public class GenLayerAddBiome extends GenLayerPack
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
         int[] aint1 = new int[(par3 * par4)];
         taste(aint,k1*l1);
-        poison(aint1,par3*par4);
+        //poison(aint1,par3*par4);
 
         for (int i2 = 0; i2 < par4 ; i2++)
         {
@@ -77,7 +78,7 @@ public class GenLayerAddBiome extends GenLayerPack
             }
         }
 
-        taste(aint1,par3*par4);
+        //taste(aint1,par3*par4);
         return aint1;
     }
 }

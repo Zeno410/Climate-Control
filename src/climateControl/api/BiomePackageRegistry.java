@@ -1,8 +1,8 @@
 
 package climateControl.api;
 
-import climateControl.utils.Named;
-import climateControl.utils.TaggedConfigManager;
+import climateControl.utils.BiomeConfigManager;
+import com.Zeno410Utils.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,9 +20,9 @@ public class BiomePackageRegistry {
     private ArrayList<BiomePackage> orderedPackages  = new ArrayList<BiomePackage>();
     private ArrayList<Named<BiomeSettings>> settings = new ArrayList<Named<BiomeSettings>>();
     private final File configDirectory;
-    private final TaggedConfigManager taggedConfigManager;
+    private final BiomeConfigManager taggedConfigManager;
 
-    public BiomePackageRegistry(File configDirectory,TaggedConfigManager taggedConfigManager) {
+    public BiomePackageRegistry(File configDirectory,BiomeConfigManager taggedConfigManager) {
         this.configDirectory= configDirectory;
         this.taggedConfigManager = taggedConfigManager;
     }

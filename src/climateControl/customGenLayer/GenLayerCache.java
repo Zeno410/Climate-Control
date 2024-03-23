@@ -1,9 +1,9 @@
 
 package climateControl.customGenLayer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Acceptor;
-import climateControl.utils.PlaneLocated;
-import climateControl.utils.PlaneLocation;
+import com.Zeno410Utils.Acceptor;
+import com.Zeno410Utils.PlaneLocated;
+import com.Zeno410Utils.PlaneLocation;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;

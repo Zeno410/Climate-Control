@@ -2,9 +2,10 @@
 package climateControl.customGenLayer;
 
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 /**
  *
@@ -39,7 +40,7 @@ public class GenLayerNoPlains extends GenLayerPack {
                 int center = aint[x  + (z) * parentSpan];
 
                 //logger.info("at "+(x  + (z) * parentSpan)+", "+center);
-                if (center == BiomeGenBase.plains.biomeID) throw new RuntimeException("at "+(x  + (z) * parentSpan));
+                if (center == Biome.getIdForBiome(Biomes.PLAINS)) throw new RuntimeException("at "+(x  + (z) * parentSpan));
 
             }
         }

@@ -1,7 +1,8 @@
 package climateControl.genLayerPack;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -9,24 +10,24 @@ import net.minecraft.world.WorldType;
 public class GenLayerBiome extends GenLayerPack
 {
     private static Logger logger = new Zeno410Logger("GenLayerBiome").logger();
-    private BiomeGenBase[] field_151623_c;
-    private BiomeGenBase[] field_151621_d;
-    private BiomeGenBase[] field_151622_e;
-    private BiomeGenBase[] field_151620_f;
+    private Biome[] field_151623_c;
+    private Biome[] field_151621_d;
+    private Biome[] field_151622_e;
+    private Biome[] field_151620_f;
     private static final String __OBFID = "CL_00000555";
 
     public GenLayerBiome(long par1, GenLayer par3GenLayer, WorldType worldType)//, WorldType par4WorldType)
     {
         super(par1);
-        this.field_151623_c = new BiomeGenBase[] {BiomeGenBase.desert, BiomeGenBase.desert, BiomeGenBase.desert, BiomeGenBase.savanna, BiomeGenBase.savanna, BiomeGenBase.plains};
-        this.field_151621_d = new BiomeGenBase[] {BiomeGenBase.forest, BiomeGenBase.roofedForest, BiomeGenBase.extremeHills, BiomeGenBase.plains, BiomeGenBase.birchForest, BiomeGenBase.swampland};
-        this.field_151622_e = new BiomeGenBase[] {BiomeGenBase.forest, BiomeGenBase.extremeHills, BiomeGenBase.taiga, BiomeGenBase.plains};
-        this.field_151620_f = new BiomeGenBase[] {BiomeGenBase.icePlains, BiomeGenBase.icePlains, BiomeGenBase.icePlains, BiomeGenBase.coldTaiga};
+        this.field_151623_c = new Biome[] {Biomes.DESERT, Biomes.DESERT, Biomes.DESERT, Biomes.SAVANNA, Biomes.SAVANNA, Biomes.PLAINS};
+        this.field_151621_d = new Biome[] {Biomes.FOREST, Biomes.ROOFED_FOREST, Biomes.EXTREME_HILLS, Biomes.PLAINS, Biomes.BIRCH_FOREST, Biomes.SWAMPLAND};
+        this.field_151622_e = new Biome[] {Biomes.FOREST, Biomes.EXTREME_HILLS, Biomes.TAIGA, Biomes.PLAINS};
+        this.field_151620_f = new Biome[] {Biomes.ICE_PLAINS, Biomes.ICE_PLAINS, Biomes.ICE_PLAINS, Biomes.COLD_TAIGA};
         this.parent = par3GenLayer;
 
         if (worldType == WorldType.DEFAULT_1_1)
         {
-            this.field_151623_c = new BiomeGenBase[] {BiomeGenBase.desert, BiomeGenBase.forest, BiomeGenBase.extremeHills, BiomeGenBase.swampland, BiomeGenBase.plains, BiomeGenBase.taiga};
+            this.field_151623_c = new Biome[] {Biomes.DESERT, Biomes.FOREST, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.PLAINS, Biomes.TAIGA};
         }
     }
 
@@ -52,7 +53,7 @@ public class GenLayerBiome extends GenLayerPack
                 {
                     aint1[j1 + i1 * par3] = k1;
                 }
-                else if (k1 == BiomeGenBase.mushroomIsland.biomeID)
+                else if (k1 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND))
                 {
                     aint1[j1 + i1 * par3] = k1;
                 }
@@ -62,47 +63,47 @@ public class GenLayerBiome extends GenLayerPack
                     {
                         if (this.nextInt(3) == 0)
                         {
-                            aint1[j1 + i1 * par3] = BiomeGenBase.mesaPlateau.biomeID;
+                            aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK);
                         }
                         else
                         {
-                            aint1[j1 + i1 * par3] = BiomeGenBase.mesaPlateau_F.biomeID;
+                            aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.MESA_ROCK);
                         }
                     }
                     else
                     {
-                        aint1[j1 + i1 * par3] = this.field_151623_c[this.nextInt(this.field_151623_c.length)].biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(this.field_151623_c[this.nextInt(this.field_151623_c.length)]);
                     }
                 }
                 else if (k1 == 2)
                 {
                     if (l1 > 0)
                     {
-                        aint1[j1 + i1 * par3] = BiomeGenBase.jungle.biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.JUNGLE);
                     }
                     else
                     {
-                        aint1[j1 + i1 * par3] = this.field_151621_d[this.nextInt(this.field_151621_d.length)].biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(this.field_151621_d[this.nextInt(this.field_151621_d.length)]);
                     }
                 }
                 else if (k1 == 3)
                 {
                     if (l1 > 0)
                     {
-                        aint1[j1 + i1 * par3] = BiomeGenBase.megaTaiga.biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.REDWOOD_TAIGA);
                     }
                     else
                     {
-                        aint1[j1 + i1 * par3] = this.field_151622_e[this.nextInt(this.field_151622_e.length)].biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(this.field_151622_e[this.nextInt(this.field_151622_e.length)]);
                     }
                 }
                 else if (k1 == 4)
                 {
-                    aint1[j1 + i1 * par3] = this.field_151620_f[this.nextInt(this.field_151620_f.length)].biomeID;
+                    aint1[j1 + i1 * par3] = Biome.getIdForBiome(this.field_151620_f[this.nextInt(this.field_151620_f.length)]);
                 }
                 else
                 {
-                    aint1[j1 + i1 * par3] = BiomeGenBase.mushroomIsland.biomeID;
+                    aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND);
                 }
                 logger.info("("+(i1+par2)+","+(j1+par1)+") Climate "+k1 + " " + aint[j1 + i1 * par3]+" Biome " + aint1[j1 + i1 * par3]);
             }

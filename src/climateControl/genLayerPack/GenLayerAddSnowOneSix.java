@@ -1,7 +1,8 @@
 
 package climateControl.genLayerPack;
 
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -44,7 +45,7 @@ public class GenLayerAddSnowOneSix extends GenLayer
 
                     if (l2 == 0)
                     {
-                        l2 = BiomeGenBase.icePlains.biomeID;
+                        l2 = Biome.getIdForBiome(Biomes.ICE_PLAINS);
                     }
                     else
                     {

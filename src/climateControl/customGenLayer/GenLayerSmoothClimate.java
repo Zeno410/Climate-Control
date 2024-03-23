@@ -1,13 +1,16 @@
 
 package climateControl.customGenLayer;
 import climateControl.ClimateControl;
+import climateControl.api.ClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Numbered;
-import climateControl.utils.PlaneLocation;
+import com.Zeno410Utils.Numbered;
+import com.Zeno410Utils.PlaneLocation;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -22,11 +25,13 @@ import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerSmoothClimate extends GenLayerPack {
     //public static Logger logger = new Zeno410Logger("GenLayerSmoothClimate").logger();
+    private final boolean extremeSeparation;
 
 
-    public GenLayerSmoothClimate(long par1, GenLayer par3GenLayer) {
+    public GenLayerSmoothClimate(long par1, GenLayer par3GenLayer, ClimateControlSettings settings) {
         super(par1);
         this.parent = par3GenLayer;
+        extremeSeparation = settings.extremeClimateSeparation.value();
     }
 
     public int[] getInts(int x0, int z0, int xSize, int zSize){
@@ -62,7 +67,7 @@ public class GenLayerSmoothClimate extends GenLayerPack {
                 int k2 = parentClimates[parentX  + (parentZ) * parentXSize];
                 setFromParentCoords(k2,parentX,parentZ,xSize,zSize,vals);
                 if (k2 > 4) {
-                    if ((k2 != 24)&&(k2!=BiomeGenBase.mushroomIsland.biomeID)&&(k2!=BiomeGenBase.frozenOcean.biomeID)) {
+                    if ((k2 != 24)&&(k2!=Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND))&&(k2!=Biome.getIdForBiome(Biomes.FROZEN_OCEAN))) {
                         if (ClimateControl.testing) {
                             ClimateControl.logger.info("GenLayerSmoothClimate "+k2);
                             throw new RuntimeException("GenLayerSmoothClimate "+k2);
@@ -87,7 +92,11 @@ public class GenLayerSmoothClimate extends GenLayerPack {
         parentClimates = null;
 
         for (ExtremeTemp temp: changes) {
-            temp.adjust(parentClimates,xSize, zSize, vals);
+            if (this.extremeSeparation) {
+                temp.adjustExtreme(parentClimates,xSize, zSize, vals);
+            } else {
+                temp.adjust(parentClimates,xSize, zSize, vals);
+            }
         }
         return vals;
     }
@@ -100,6 +109,7 @@ public class GenLayerSmoothClimate extends GenLayerPack {
         final int x() {return item().x();}
         final int z() {return item().z();}
         abstract void adjust(int [] parentVals, int xSize, int zSize, int [] vals);
+        abstract void adjustExtreme(int [] parentVals, int xSize, int zSize, int [] vals);
     }
 
     private class Hot extends ExtremeTemp {
@@ -128,6 +138,48 @@ public class GenLayerSmoothClimate extends GenLayerPack {
             warmerThanSnowy(x()-1,z()+1,xSize,zSize,vals);
 
         }
+
+        void adjustExtreme(int [] parentVals, int xSize, int zSize, int [] vals) {
+
+            // seems logical to skip if already eliminated but that sets up possible
+            // side effects that can travel an infinite distance
+            // instead we put it back. It can be erased again later.
+            setFromParentCoords(1,x(),z(),xSize,zSize,vals);
+
+            warmerThanCool(x()-1,z(),xSize,zSize,vals);
+            warmerThanCool(x(),z()-1,xSize,zSize,vals);
+            warmerThanCool(x()+1,z(),xSize,zSize,vals);
+            warmerThanCool(x(),z()+1,xSize,zSize,vals);
+            warmerThanCool(x()-1,z()-1,xSize,zSize,vals);
+            warmerThanCool(x()+1,z()-1,xSize,zSize,vals);
+            warmerThanCool(x()+1,z()+1,xSize,zSize,vals);
+            warmerThanCool(x()-1,z()+1,xSize,zSize,vals);
+
+            warmerThanSnowy(x()-2,z(),xSize,zSize,vals);
+            warmerThanSnowy(x()-2,z()+1,xSize,zSize,vals);
+            warmerThanSnowy(x()-2,z()-1,xSize,zSize,vals);
+            warmerThanSnowy(x()-2,z()+2,xSize,zSize,vals);
+            warmerThanSnowy(x()-2,z()-2,xSize,zSize,vals);
+
+            warmerThanSnowy(x(),z()-2,xSize,zSize,vals);
+            warmerThanSnowy(x()+1,z()-2,xSize,zSize,vals);
+            warmerThanSnowy(x()-1,z()-2,xSize,zSize,vals);
+            warmerThanSnowy(x()+2,z()-2,xSize,zSize,vals);
+            warmerThanSnowy(x()-2,z()-2,xSize,zSize,vals);
+
+            warmerThanSnowy(x()+2,z(),xSize,zSize,vals);
+            warmerThanSnowy(x()+2,z()+1,xSize,zSize,vals);
+            warmerThanSnowy(x()+2,z()-1,xSize,zSize,vals);
+            warmerThanSnowy(x()+2,z()+2,xSize,zSize,vals);
+            warmerThanSnowy(x()+2,z()-2,xSize,zSize,vals);
+
+            warmerThanSnowy(x()-2,z()+2,xSize,zSize,vals);
+            warmerThanSnowy(x()-1,z()+2,xSize,zSize,vals);
+            warmerThanSnowy(x(),z()+2,xSize,zSize,vals);
+            warmerThanSnowy(x()+1,z()+2,xSize,zSize,vals);
+            warmerThanSnowy(x()+2,z()+2,xSize,zSize,vals);
+
+        }
     }
 
     private class Cold extends ExtremeTemp {
@@ -154,6 +206,48 @@ public class GenLayerSmoothClimate extends GenLayerPack {
             coolerThanHot(x()+1,z()+1,xSize,zSize,vals);
             coolerThanHot(x(),z()+2,xSize,zSize,vals);
             coolerThanHot(x()-1,z()+1,xSize,zSize,vals);
+        }
+
+        void adjustExtreme(int [] parentVals, int xSize, int zSize, int [] vals) {
+
+            // seems logical to skip if already eliminated but that sets up possible
+            // side effects that can travel an infinite distance
+            // instead we put it back. It can be erased again later.
+            setFromParentCoords(4,x(),z(),xSize,zSize,vals);
+
+            coolerThanWarm(x()-1,z(),xSize,zSize,vals);
+            coolerThanWarm(x(),z()-1,xSize,zSize,vals);
+            coolerThanWarm(x()+1,z(),xSize,zSize,vals);
+            coolerThanWarm(x(),z()+1,xSize,zSize,vals);
+            coolerThanWarm(x()-1,z()-1,xSize,zSize,vals);
+            coolerThanWarm(x()+1,z()-1,xSize,zSize,vals);
+            coolerThanWarm(x()+1,z()+1,xSize,zSize,vals);
+            coolerThanWarm(x()-1,z()+1,xSize,zSize,vals);
+
+            coolerThanHot(x()-2,z(),xSize,zSize,vals);
+            coolerThanHot(x()-2,z()+1,xSize,zSize,vals);
+            coolerThanHot(x()-2,z()-1,xSize,zSize,vals);
+            coolerThanHot(x()-2,z()+2,xSize,zSize,vals);
+            coolerThanHot(x()-2,z()-2,xSize,zSize,vals);
+
+            coolerThanHot(x(),z()-2,xSize,zSize,vals);
+            coolerThanHot(x()+1,z()-2,xSize,zSize,vals);
+            coolerThanHot(x()-1,z()-2,xSize,zSize,vals);
+            coolerThanHot(x()+2,z()-2,xSize,zSize,vals);
+            coolerThanHot(x()-2,z()-2,xSize,zSize,vals);
+
+            coolerThanHot(x()+2,z(),xSize,zSize,vals);
+            coolerThanHot(x()+2,z()+1,xSize,zSize,vals);
+            coolerThanHot(x()+2,z()-1,xSize,zSize,vals);
+            coolerThanHot(x()+2,z()+2,xSize,zSize,vals);
+            coolerThanHot(x()+2,z()-2,xSize,zSize,vals);
+
+            coolerThanHot(x()-2,z()+2,xSize,zSize,vals);
+            coolerThanHot(x()-1,z()+2,xSize,zSize,vals);
+            coolerThanHot(x(),z()+2,xSize,zSize,vals);
+            coolerThanHot(x()+1,z()+2,xSize,zSize,vals);
+            coolerThanHot(x()+2,z()+2,xSize,zSize,vals);
+
         }
     }
 

@@ -8,7 +8,8 @@ package climateControl.customGenLayer;
  */
 
 import climateControl.genLayerPack.GenLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiver;
 import net.minecraft.world.gen.layer.IntCache;
@@ -48,30 +49,32 @@ public class GenLayerWidenRiver extends GenLayerPack
                 // set to parent
                 aint1[j2 + i2 * par3] = aint[j2 + 1 + (i2 + 1) * k1];
                 // if anything horizontal is river, make it river
-                if  (aint[j2 + 0 + (i2 + 1) * k1]==BiomeGenBase.river.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.river.biomeID;
+                int riverID = Biome.getIdForBiome(Biomes.RIVER);
+                if  (aint[j2 + 0 + (i2 + 1) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-                if  (aint[j2 + 2 + (i2 + 1) * k1]==BiomeGenBase.river.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.river.biomeID;
+                if  (aint[j2 + 2 + (i2 + 1) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-                if  (aint[j2 + 1 + (i2 + 0) * k1]==BiomeGenBase.river.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.river.biomeID;
+                if  (aint[j2 + 1 + (i2 + 0) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-                if  (aint[j2 + 1 + (i2 + 2) * k1]==BiomeGenBase.river.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.river.biomeID;
+                if  (aint[j2 + 1 + (i2 + 2) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-
-                if  (aint[j2 + 0 + (i2 + 1) * k1]==BiomeGenBase.frozenRiver.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.frozenRiver.biomeID;
+                // and frozen rivers
+                riverID = Biome.getIdForBiome(Biomes.FROZEN_RIVER);
+                if  (aint[j2 + 0 + (i2 + 1) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-                if  (aint[j2 + 2 + (i2 + 1) * k1]==BiomeGenBase.frozenRiver.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.frozenRiver.biomeID;
+                if  (aint[j2 + 2 + (i2 + 1) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-                if  (aint[j2 + 1 + (i2 + 0) * k1]==BiomeGenBase.frozenRiver.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.frozenRiver.biomeID;
+                if  (aint[j2 + 1 + (i2 + 0) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
-                if  (aint[j2 + 1 + (i2 + 2) * k1]==BiomeGenBase.frozenRiver.biomeID) {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.frozenRiver.biomeID;
+                if  (aint[j2 + 1 + (i2 + 2) * k1]==riverID) {
+                    aint1[j2 + i2 * par3] = riverID;
                 }
             }
         }

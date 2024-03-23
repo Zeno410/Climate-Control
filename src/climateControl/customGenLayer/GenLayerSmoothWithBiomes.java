@@ -2,7 +2,8 @@
 package climateControl.customGenLayer;
 
 import climateControl.genLayerPack.GenLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 /**
@@ -24,8 +25,8 @@ public class GenLayerSmoothWithBiomes extends GenLayerPack {
      * amounts, or biomeList[] indices based on the particular GenLayer subclass.
      */
     public int[] getInts(int par1, int par2, int par3, int par4){
-        deepOcean = BiomeGenBase.deepOcean.biomeID;
-        mushroomIsland = BiomeGenBase.mushroomIsland.biomeID;
+        deepOcean = Biome.getIdForBiome(Biomes.DEEP_OCEAN);
+        mushroomIsland = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND);
         int i1 = par1 - 1;
         int j1 = par2 - 1;
         int parentSpan = par3 + 2;

@@ -1,10 +1,14 @@
 
 package climateControl.customGenLayer;
 
+import climateControl.api.BiomeSettings;
 import climateControl.api.ClimateControlRules;
 import climateControl.genLayerPack.GenLayerPack;
 import climateControl.utils.IntPad;
-import net.minecraft.world.biome.BiomeGenBase;
+import com.Zeno410Utils.AccessFloat;
+import java.io.File;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
 
@@ -14,7 +18,10 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
     private GenLayer riverPatternGeneratorChain;
     private ClimateControlRules rules;
     private float maxChasm;
+    private int maxBiomeID = BiomeSettings.highestBiomeID();
     private IntPad output = new IntPad();
+    private AccessFloat<Biome> baseHeight = new AccessFloat<Biome>("field_76748_D");
+    private AccessFloat<Biome> heightVariation = new AccessFloat<Biome>("field_76749_E");
 
     public GenLayerLowlandRiverMix(long par1, GenLayer par3GenLayer, GenLayer par4GenLayer, float maxChasm,
             ClimateControlRules rules)
@@ -58,35 +65,35 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
             aint = this.biomePatternGeneratorChain.getInts(par1, par2, par3, par4);
             aint1 = this.riverPatternGeneratorChain.getInts(par1, par2, par3, par4);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw e;
         }
         int[] aint2 = output.pad(par3 * par4);
 
         for (int i = 0; i < par3 * par4;i++) {
-            if (aint[i]>255) throw new RuntimeException(biomePatternGeneratorChain.toString());
+            if (aint[i]>maxBiomeID) throw new RuntimeException(biomePatternGeneratorChain.toString());
             if (aint[i]<0) throw new RuntimeException(biomePatternGeneratorChain.toString());
         }
         for (int i1 = 0; i1 < par3 * par4; ++i1)
         {
-            if (aint[i1] != BiomeGenBase.ocean.biomeID && aint[i1] != BiomeGenBase.deepOcean.biomeID && aint[i1] != BiomeGenBase.frozenOcean.biomeID)
+            if (aint[i1] != Biome.getIdForBiome(Biomes.OCEAN) && aint[i1] != Biome.getIdForBiome(Biomes.DEEP_OCEAN)&& aint[i1] != Biome.getIdForBiome(Biomes.FROZEN_OCEAN)&&(rules.beachesAllowed(aint[i1])))
             {
-                if (aint1[i1] == BiomeGenBase.river.biomeID)
+                if (aint1[i1] == Biome.getIdForBiome(Biomes.RIVER))
                 {
                     int biomeID = aint[i1];
-                    if (biomeID>255) throw new RuntimeException();
-                    BiomeGenBase biome = BiomeGenBase.getBiome(biomeID);
-                    float height = biome.rootHeight + biome.heightVariation;
+                    if (biomeID>maxBiomeID) throw new RuntimeException();
+                    Biome biome = Biome.getBiome(biomeID);
+                    float height = this.baseHeight.get(biome) + this.heightVariation.get(biome);
                     if ((height>maxChasm)||rules.riversDisallowed(biomeID)) {
                             aint2[i1] = aint[i1];
 
                     } else {
-                        if (biome.getTempCategory() == BiomeGenBase.TempCategory.COLD){
-                            aint2[i1] = BiomeGenBase.frozenRiver.biomeID;
-                        } else if (aint[i1] != BiomeGenBase.mushroomIsland.biomeID
-                                && aint[i1] != BiomeGenBase.mushroomIslandShore.biomeID){
-                                aint2[i1] = BiomeGenBase.river.biomeID;
+                        if (biome.getTempCategory() == Biome.TempCategory.COLD){
+                            aint2[i1] = Biome.getIdForBiome(Biomes.FROZEN_RIVER);
+                        } else if (aint[i1] != Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)
+                                && aint[i1] != Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE)){
+                                aint2[i1] = Biome.getIdForBiome(Biomes.RIVER);
                         } else {
-                            aint2[i1] = BiomeGenBase.mushroomIslandShore.biomeID;
+                            aint2[i1] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE);
                         }
                     }
                 }
@@ -99,11 +106,10 @@ public class GenLayerLowlandRiverMix extends GenLayerRiverMix
             {
                 aint2[i1] = aint[i1];
             }
-            //if (aint2[i1] >256) throw new RuntimeException();
         }
 
         for (int i = 0; i < par3 * par4;i++) {
-            if (aint2[i]>255) throw new RuntimeException();
+            if (aint2[i]>maxBiomeID) throw new RuntimeException();
             if (aint2[i]<0) throw new RuntimeException();
         }
         return aint2;

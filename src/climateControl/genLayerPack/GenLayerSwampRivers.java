@@ -1,6 +1,7 @@
 
 package climateControl.genLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -28,13 +29,13 @@ public class GenLayerSwampRivers extends GenLayer
                 this.initChunkSeed((long)(j1 + par1), (long)(i1 + par2));
                 int k1 = aint[j1 + 1 + (i1 + 1) * (par3 + 2)];
 
-                if ((k1 != BiomeGenBase.swampland.biomeID || this.nextInt(6) != 0) && (k1 != BiomeGenBase.jungle.biomeID && k1 != BiomeGenBase.jungleHills.biomeID || this.nextInt(8) != 0))
+                if ((k1 != Biome.getIdForBiome(Biomes.SWAMPLAND) || this.nextInt(6) != 0) && (k1 != Biome.getIdForBiome(Biomes.JUNGLE) && k1 != Biome.getIdForBiome(Biomes.JUNGLE_HILLS) || this.nextInt(8) != 0))
                 {
                     aint1[j1 + i1 * par3] = k1;
                 }
                 else
                 {
-                    aint1[j1 + i1 * par3] = BiomeGenBase.river.biomeID;
+                    aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.RIVER);
                 }
             }
         }

@@ -1,5 +1,6 @@
 package climateControl.genLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.IntCache;
 public class GenLayerDeepOcean extends GenLayerPack
 {
@@ -57,7 +58,7 @@ public class GenLayerDeepOcean extends GenLayerPack
 
                 if (k3 == 0 && l3 > 3)
                 {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.deepOcean.biomeID;
+                    aint1[j2 + i2 * par3] = Biome.getIdForBiome(Biomes.DEEP_OCEAN);
                 }
                 else
                 {

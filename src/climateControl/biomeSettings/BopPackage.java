@@ -3,7 +3,8 @@ package climateControl.biomeSettings;
 
 import climateControl.api.BiomePackage;
 import climateControl.api.BiomeSettings;
-import biomesoplenty.api.content.BOPCBiomes;
+import biomesoplenty.api.biome.BOPBiomes;
+import biomesoplenty.common.init.ModBiomes;
 
 /**
  *
@@ -13,10 +14,10 @@ public class BopPackage extends BiomePackage {
 
     public BopPackage() {
         super("biomesoplentyInCC.cfg");
-        // confirm Highlands is there.
-        Class biomesClass = BOPCBiomes.class;
+        // confirm BoP is there.
+        Class biomesClass = ModBiomes.class;
         try {
-            int throwaway = BOPCBiomes.alps.biomeID;
+            int throwaway = BOPBiomes.alps.hashCode();
         } catch (NullPointerException e) {
             //not yet set is fine, this is testing for the field
         }

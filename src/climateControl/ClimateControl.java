@@ -5,65 +5,62 @@ import climateControl.api.BiomeSettings;
 import climateControl.api.CCDimensionSettings;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.DimensionalSettingsRegistry;
-import climateControl.biomeSettings.ArsMagicaPackage;
+import climateControl.biomeSettings.BYGPackage;
 import climateControl.biomeSettings.BopPackage;
-import climateControl.biomeSettings.EBPackage;
-import climateControl.biomeSettings.EBXLController;
 import climateControl.biomeSettings.ExternalBiomePackage;
-import climateControl.biomeSettings.GrowthcraftPackage;
-import climateControl.biomeSettings.HighlandsPackage;
-import climateControl.biomeSettings.ReikasPackage;
 import climateControl.biomeSettings.ThaumcraftPackage;
-import climateControl.biomeSettings.VampirismPackage;
 import climateControl.customGenLayer.GenLayerRiverMixWrapper;
-import climateControl.utils.ConfigManager;
-import climateControl.utils.Zeno410Logger;
+import climateControl.utils.BiomeConfigManager;
+import com.Zeno410Utils.ConfigManager;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
 
 
 
-import climateControl.utils.Named;
-import climateControl.utils.PropertyManager;
-import climateControl.utils.TaggedConfigManager;
-import net.minecraft.world.biome.BiomeGenBase;
+import com.Zeno410Utils.Named;
+import com.Zeno410Utils.PropertyManager;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.event.terraingen.WorldTypeEvent;
 
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.*;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.*;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.*;
-import cpw.mods.fml.common.event.*;
-
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldType;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 
-@Mod(modid = "climatecontrol", name = "Climate Control", version = "0.8.2.1",acceptableRemoteVersions = "*")
+@Mod(modid = "geographicraft", name = "GeographiCraft", version = "0.9.4",acceptableRemoteVersions = "*", acceptedMinecraftVersions = "[1.12,1.12.2]")
 
 public class ClimateControl {
-    public static Logger logger = new Zeno410Logger("ClimateControl").logger();
-    public static boolean testing = true;
+    public static Logger logger = new Zeno410Logger("ClimateControlLogs").logger();
+    public static boolean testing = false;
 
-    private Configuration config;
+    //private Configuration config;
     //private OldClimateControlSettings settings = new OldClimateControlSettings();
     //private OldClimateControlSettings defaultSettings = new OldClimateControlSettings();
     //private OverworldDataStorage storage;
 
     private ClimateControlSettings newSettings;
-    private ConfigManager<ClimateControlSettings> configManager;
-    private TaggedConfigManager addonConfigManager;
+    //private ConfigManager<ClimateControlSettings> configManager;
+    private BiomeConfigManager addonConfigManager;
     private CCDimensionSettings dimensionSettings;
 
     private HashMap<Integer,WorldServer> servedWorlds = new HashMap<Integer,WorldServer>();
-    private GenLayerRiverMixWrapper riverLayerWrapper = new GenLayerRiverMixWrapper(0L);
+    private Named<ClimateControlSettings> masterSettings;
     //private GenLayer[] vanillaGenerators;
     //private GenLayer[] modifiedGenerators;
 
@@ -72,9 +69,12 @@ public class ClimateControl {
 
     private ExternalBiomePackage externalBiomesPackage;
 
+    public final static String geographicraftFolderName = "GeographiCraft";
+    public final static String geographicraftConfigName = "geographicraft.cfg";
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        addonConfigManager = new TaggedConfigManager("climatecontrol.cfg","ClimateControl");
+        addonConfigManager = new BiomeConfigManager(geographicraftFolderName);
         BiomePackageRegistry.instance = new BiomePackageRegistry(
                 event.getSuggestedConfigurationFile().getParentFile(),addonConfigManager);
         externalBiomesPackage = new ExternalBiomePackage();
@@ -83,27 +83,16 @@ public class ClimateControl {
 
         DimensionalSettingsRegistry.instance= new DimensionalSettingsRegistry();
         
-        newSettings = new ClimateControlSettings();
-        suggestedConfigFile = event.getSuggestedConfigurationFile();
-        config = new Configuration(suggestedConfigFile);
-        config.load();
-        //if (this.rescueOldCCMode) defaultSettings.set(config);
-        //this.settings = defaultSettings.clone();
-
-        setupRegistry();
-        newSettings.readFrom(config);
-        
-        // settings need to be reset so the mod-specific configs go into the CC file.
-        // can't be done first because we don't have a set of biomeSettings yet.
-
+        newSettings = new ClimateControlSettings(WorldType.DEFAULT);
+        masterSettings = Named.from(geographicraftConfigName, newSettings);
         configDirectory = event.getSuggestedConfigurationFile().getParentFile();
-        newSettings.setDefaults(configDirectory);
-        logger.info(configDirectory.getAbsolutePath());
+        //config = new Configuration(suggestedConfigFile);
+        //config.load();
+        //if (1>0) throw new RuntimeException(configDirectory.getAbsolutePath());
+        addonConfigManager.initializeConfig(masterSettings, configDirectory);
+
         this.dimensionSettings = new CCDimensionSettings();
 
-        configManager = new ConfigManager<ClimateControlSettings>(
-                config,newSettings,event.getSuggestedConfigurationFile());
-        config.save();
 
     }
 
@@ -114,10 +103,14 @@ public class ClimateControl {
     }
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) throws Exception {
+        setupRegistry();
+        // settings need to be reset so the mod-specific configs go into the CC file.
         newSettings.setDefaults(configDirectory);
-        newSettings.copyTo(config);
-        config.save();
-        logger.info("biome setting count: "+BiomePackageRegistry.instance.biomeSettings().size());
+
+        addonConfigManager.saveConfigs(configDirectory, configDirectory, masterSettings);
+        //newSettings.copyTo(config);
+        //config.save();
+        //logger.info("biome setting count: "+BiomePackageRegistry.instance.biomeSettings().size());
         for (Named<BiomeSettings> addonSetting: BiomePackageRegistry.instance.biomeSettings()) {
             this.addonConfigManager.initializeConfig(addonSetting, configDirectory);
         }
@@ -130,21 +123,24 @@ public class ClimateControl {
     private DimensionManager dimensionManager;
     @SubscribeEvent(priority=EventPriority.LOWEST)
     public void onWorldLoad(WorldEvent.Load event) {
+    	if (testing) logger.info("Mod " + Loader.instance().activeModContainer().getModId());
         DimensionalSettingsRegistry.instance.onWorldLoad(event);
         if (dimensionManager == null) {
-            if (MinecraftServer.getServer()!=null)
-                dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
+            MinecraftServer server = event.getWorld().getMinecraftServer();
+            if (server!=null)
+                dimensionManager = new DimensionManager(masterSettings,dimensionSettings,server);
         }
         if (dimensionManager != null) {
-            dimensionManager.onWorldLoad(event.world);
+            dimensionManager.onWorldLoad(event.getWorld());
         }
     }
 
     @SubscribeEvent
     public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
         if (dimensionManager == null) {
-            if (MinecraftServer.getServer()!=null)
-                dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
+            MinecraftServer server = event.getWorld().getMinecraftServer();
+            if (server!=null)
+                dimensionManager = new DimensionManager(masterSettings,dimensionSettings,server);
         }
         if (dimensionManager != null) {
             dimensionManager.onCreateSpawn(event);
@@ -155,33 +151,36 @@ public class ClimateControl {
     @SubscribeEvent
     public void unloadWorld(WorldEvent.Unload event) {
         DimensionalSettingsRegistry.instance.unloadWorld(event);
-        if (event.world instanceof WorldServer) {
-            servedWorlds.remove(event.world.provider.dimensionId);
+        if (event.getWorld() instanceof WorldServer) {
+            servedWorlds.remove(event.getWorld().provider.getDimension());
         }
     }
     @EventHandler
     public void serverStarted(FMLServerStartedEvent event) {
+    	
+    	logBiomes();
         newSettings.setDefaults(configDirectory);
-        newSettings.copyTo(config);
+        addonConfigManager.updateConfig(masterSettings, configDirectory, configDirectory);
         DimensionalSettingsRegistry.instance.serverStarted(event);
         File worldSaveDirectory = null;
-        String worldName = MinecraftServer.getServer().getFolderName();
-        if (MinecraftServer.getServer().isSinglePlayer()) {
-            File saveDirectory = MinecraftServer.getServer().getFile("saves");
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        String worldName = server.getFolderName();
+        if (server.isSinglePlayer()) {
+            File saveDirectory = server.getFile("saves");
             worldSaveDirectory = new File(saveDirectory,worldName);
         } else {
-            PropertyManager settings = new PropertyManager(MinecraftServer.getServer().getFile("server.properties"));
+            PropertyManager settings = new PropertyManager(server.getFile("server.properties"));
             worldName = settings.getProperty("level-name", worldName);
-            worldSaveDirectory = MinecraftServer.getServer().getFile(worldName);
+            worldSaveDirectory = server.getFile(worldName);
         }
-        File worldConfigDirectory = new File(worldSaveDirectory,TaggedConfigManager.worldSpecificConfigFileName);
+        File worldConfigDirectory = new File(worldSaveDirectory,BiomeConfigManager.worldSpecificConfigFileName);
         addonConfigManager.updateConfig(dimensionSettings.named(), configDirectory, worldConfigDirectory);
     }
 
     @EventHandler
     public void serverStopped(FMLServerStoppedEvent event) {
-        this.riverLayerWrapper =new GenLayerRiverMixWrapper(0L);
-        this.configManager.clearWorldFile();
+
+        addonConfigManager.updateConfig(masterSettings, configDirectory, configDirectory);
         for (Named<BiomeSettings> addonSetting: BiomePackageRegistry.instance.biomeSettings()) {
             this.addonConfigManager.initializeConfig(addonSetting, configDirectory);
         }
@@ -193,9 +192,9 @@ public class ClimateControl {
 
     @SubscribeEvent
     public void onWorldSave(WorldEvent.Save event){
-        World world = event.world;
+        World world = event.getWorld();
         if (world.isRemote) return;
-        int dimension = world.provider.dimensionId;
+        int dimension = world.provider.getDimension();
         if (dimension != 0) return;
         //storage.onWorldSave(event,this.settings);
 
@@ -208,31 +207,21 @@ public class ClimateControl {
     @EventHandler
     public void onServerStarting(FMLServerStartingEvent event) {
 
-        File directory = event.getServer().worldServerForDimension(0).getChunkSaveLocation();
+        File directory = event.getServer().worlds[0].getChunkSaveLocation();
         directory = new File(directory,"worldSpecificConfig");
         directory.mkdir();
         if (dimensionManager == null) {
             if (event.getServer()!=null)
-                dimensionManager = new DimensionManager(newSettings,dimensionSettings,event.getServer());
+                dimensionManager = new DimensionManager(masterSettings,dimensionSettings,event.getServer());
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBiomeGenInit(WorldTypeEvent.InitBiomeGens event) {
         if (dimensionManager == null) {
-            if (MinecraftServer.getServer()!= null)
-            dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
-        }
-        if (dimensionManager != null) {
-            dimensionManager.onBiomeGenInit(event);
-        }
-    }
-
-    //@SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void earlyOnBiomeGenInit(WorldTypeEvent.InitBiomeGens event) {
-        if (dimensionManager == null) {
-            if (MinecraftServer.getServer()!= null)
-            dimensionManager = new DimensionManager(newSettings,dimensionSettings,MinecraftServer.getServer());
+           MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            if (server!= null)
+            dimensionManager = new DimensionManager(masterSettings,dimensionSettings,server);
         }
         if (dimensionManager != null) {
             dimensionManager.onBiomeGenInit(event);
@@ -240,73 +229,35 @@ public class ClimateControl {
     }
 
     public void setupRegistry() {
-                try {
-            // see if highlands is there
-            BiomePackageRegistry.instance.register(new HighlandsPackage());
-        } catch (java.lang.NoClassDefFoundError e){
-            // Highlands isn't installed
-        }
         try {
-            // see if BoP is there
+            // see if BoP is there biomesoplenty
             BiomePackageRegistry.instance.register(new BopPackage());
         } catch (java.lang.NoClassDefFoundError e){
             // BoP isn't installed
         }
         try {
-            // see if EB is there
-            BiomePackageRegistry.instance.register(new EBPackage());
-        } catch (java.lang.NoClassDefFoundError e){
-            // EB isn't installed
-        }
-        try {
-            // see if thaumcraft is there
-            // attach a setting
+            // see if Thaumcraft is there thaumcraft
             BiomePackageRegistry.instance.register(new ThaumcraftPackage());
+        } catch (java.lang.NoClassDefFoundError e){
+            // BoP isn't installed
+        }
+        if (Loader.isModLoaded("byg")) {
 
-        } catch (java.lang.NoClassDefFoundError e){
-            // thaumcraft isn't installed
-        }
-        try {
-            // see if EBXL is there
-            BiomePackageRegistry.instance.register(new EBXLController());
-
-        } catch (java.lang.NoClassDefFoundError e){
-            // EBXL isn't installed
-        }
-        try {
-            // see if ChromatiCraft is there
-            BiomePackageRegistry.instance.register(new ReikasPackage());
-
-        } catch (java.lang.NoClassDefFoundError e){
-            // ChromatiCraft isn't installed
-        }
-        try {
-            // see if ArsMagica is there
-            BiomePackageRegistry.instance.register(new ArsMagicaPackage());
-        } catch (java.lang.NoClassDefFoundError e){
-            // ArsMagica isn't installed
-        }
-        try {
-            // see if Growthcraft is there
-            BiomePackageRegistry.instance.register(new GrowthcraftPackage());
-        } catch (java.lang.NoClassDefFoundError e){
-            // Growthcraft isn't installed
-        }
-
-        try {
-            // see if Vampirism is there
-            BiomePackageRegistry.instance.register(new VampirismPackage());
-        } catch (java.lang.NoClassDefFoundError e){
-            // Vampirism isn't installed
+            BiomePackageRegistry.instance.register(new BYGPackage());
         }
     }
 
     public void logBiomes(){
-        BiomeGenBase [] biomes = BiomeGenBase.getBiomeGenArray();
-        for (BiomeGenBase biome: biomes ) {
-            if (biome == null) continue;
-            logger.info(biome.biomeName+" "+biome.biomeID+ " temp " +biome.getTempCategory().toString() +
-                   " " + biome.getFloatTemperature(0, 64, 0)+ " rain "  + biome.getFloatRainfall());
+    	if (!testing) return;
+    	for (ModContainer container: Loader.instance().getActiveModList()) {
+    		logger.info(container.getModId());
+    	}
+        Iterator<ResourceLocation> registries = Biome.REGISTRY.getKeys().iterator();
+        while (registries.hasNext()) {
+        	ResourceLocation location = registries.next();
+        	Biome biome = Biome.REGISTRY.getObject(location);
+            int number = Biome.getIdForBiome(biome);
+            logger.info(biome.getBiomeName()+" "+number+ " temp " +biome.getTempCategory().toString()+ " rain "  + biome.getRainfall());
         }
     }
 

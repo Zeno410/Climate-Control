@@ -1,10 +1,10 @@
 
 package climateControl.customGenLayer;
 import climateControl.api.Climate;
+import com.Zeno410Utils.Zeno410Logger;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.PlaneLocated;
-import climateControl.utils.PlaneLocation;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.PlaneLocated;
+import com.Zeno410Utils.PlaneLocation;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 import java.util.logging.Logger;

@@ -1,7 +1,8 @@
 
 package climateControl.api;
 
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 
 /**
  *
@@ -14,8 +15,8 @@ public class Climate {
             if (climate == 2) return true;
             if (climate == 3) return true;
             if (climate == 4) return true;
-            if (climate == BiomeGenBase.deepOcean.biomeID) return true;
-            if (climate == BiomeGenBase.mushroomIsland.biomeID) return true;
+            if (climate == Biome.getIdForBiome(Biomes.DEEP_OCEAN)) return true;
+            if (climate == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND)) return true;
             return false;
     }
     public static Climate SNOWY = new Climate("Snowy");

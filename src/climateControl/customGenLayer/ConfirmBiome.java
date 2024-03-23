@@ -1,11 +1,12 @@
 
 package climateControl.customGenLayer;
+import com.Zeno410Utils.Zeno410Logger;
+
+import climateControl.api.BiomeSettings;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.PlaneLocated;
-import climateControl.utils.PlaneLocation;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.PlaneLocated;
+import com.Zeno410Utils.PlaneLocation;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.IntCache;
 import java.util.logging.Logger;
 
 /**
@@ -16,10 +17,10 @@ import java.util.logging.Logger;
 public class ConfirmBiome extends GenLayerPack{
 
     private int exclusion;
+    
+    private int maxBiomeID = BiomeSettings.highestBiomeID();
 
     public static Logger logger = new Zeno410Logger("ConfirmBiome").logger();
-
-    private PlaneLocated<Integer> storedVals  = new PlaneLocated<Integer>();
 
     public ConfirmBiome(GenLayer parent, int exclusion) {
         super(0L);
@@ -42,7 +43,7 @@ public class ConfirmBiome extends GenLayerPack{
             for (int z = exclusion; z<zSize-exclusion;z++) {
                 probe.setZ(z+z0);
                 Integer locked = result[(z)*(xSize)+x];
-                if ((locked>255)||(locked<0)) {
+                if ((locked>maxBiomeID)||(locked<0)) {
                     problems += new PlaneLocation(x,z).toString()+locked+" ";
                 };
             }

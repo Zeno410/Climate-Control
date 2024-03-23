@@ -1,10 +1,11 @@
 
 package climateControl.customGenLayer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.IntRandomizer;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
 import net.minecraft.world.gen.layer.GenLayer;
+import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerSmoothCoast extends GenLayerPack {
 
@@ -82,7 +83,7 @@ public class GenLayerSmoothCoast extends GenLayerPack {
         }
 
         for (int i =0; i <  par3*par4; i ++) {
-            if (aint1[i]>256) throw new RuntimeException();
+            //if (aint1[i]>256) throw new RuntimeException();
         }
         taste(aint1,par3*par4);
         return aint1;

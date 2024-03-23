@@ -1,8 +1,8 @@
 
 package climateControl;
 
-import climateControl.utils.RandomIntUser;
-import climateControl.utils.IntRandomizer;
+import com.Zeno410Utils.RandomIntUser;
+import com.Zeno410Utils.IntRandomizer;
 
 /**
  *

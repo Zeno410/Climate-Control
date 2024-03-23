@@ -1,11 +1,11 @@
 package climateControl.customGenLayer;
 import climateControl.api.IslandClimateMaker;
+import com.Zeno410Utils.RandomIntUser;
+import com.Zeno410Utils.IntRandomizer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
-import climateControl.utils.Numbered;
-import climateControl.utils.PlaneLocation;
-import climateControl.utils.RandomIntUser;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.Numbered;
+import com.Zeno410Utils.PlaneLocation;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

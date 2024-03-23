@@ -5,6 +5,7 @@ import climateControl.ClimateControl;
 import climateControl.api.ClimateControlRules;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.BiomeSettings;
+import climateControl.biomeSettings.BoPSettings;
 import climateControl.customGenLayer.GenLayerBiomeByClimate;
 import climateControl.customGenLayer.GenLayerCache;
 import climateControl.customGenLayer.GenLayerRandomBiomes;
@@ -19,15 +20,18 @@ import climateControl.genLayerPack.GenLayerOneSixBiome;
 import climateControl.genLayerPack.GenLayerRareBiome;
 import climateControl.genLayerPack.GenLayerRiver;
 import climateControl.genLayerPack.GenLayerRiverInit;
-import climateControl.genLayerPack.GenLayerShore;
 import climateControl.genLayerPack.GenLayerSmooth;
 import climateControl.genLayerPack.GenLayerSwampRivers;
 import climateControl.genLayerPack.GenLayerVoronoiZoom;
 import climateControl.genLayerPack.GenLayerZoom;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.Zeno410Utils.Accessor;
+
+import net.minecraft.init.Biomes;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerBiomeEdge;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
@@ -52,37 +56,47 @@ abstract public class AbstractWorldGenerator {
     }
     
     protected GenLayer smoothClimates(ClimateControlSettings settings, long worldSeed, GenLayer parent,long masterSeed) {
-        if (false) {//if (settings.climateControlcompatibility.value()) {
-            // old climate smoothing
-            GenLayer genlayeraddisland = new GenLayerCache(new GenLayerTemperClimate(masterSeed,parent));
-            GenLayerEdge genlayeredge = new GenLayerEdge(2L, genlayeraddisland, GenLayerEdge.Mode.COOL_WARM);
-            genlayeredge = new GenLayerEdge(2L, genlayeredge, GenLayerEdge.Mode.HEAT_ICE);
-            genlayeredge = new GenLayerEdge(3L, genlayeraddisland, GenLayerEdge.Mode.SPECIAL);
-            return genlayeredge;
-        } else {
-            //new climate smoothing
-            return new GenLayerSmoothClimate(masterSeed,parent);
-        }
+        return new GenLayerSmoothClimate(masterSeed,parent,settings);
     }
 
     protected ClimateControlRules rules() {return rules;}
 
     protected void setRules() {
         ClimateControlRules newRules = new ClimateControlRules();
-        newRules = new ClimateControlRules();
+        
+        Accessor<Biome,Float> biomeTemperature= new Accessor<>("field_76750_F");
+        if (settings.complexSubbiomes.value()) {
+        	newRules.setComplexSubBiomes();
+        	//Biomes.EXTREME_HILLS.
+        	// set extreme Hills to temp 0.4
+        	biomeTemperature.setField(Biomes.EXTREME_HILLS, 0.24f);
+        	biomeTemperature.setField(Biomes.EXTREME_HILLS_EDGE, 0.24f);
+        	biomeTemperature.setField(Biomes.EXTREME_HILLS_WITH_TREES, 0.24f);
+        	biomeTemperature.setField(Biomes.MUTATED_EXTREME_HILLS, 0.24f);
+        	biomeTemperature.setField(Biomes.MUTATED_EXTREME_HILLS_WITH_TREES, 0.24f);
+        	
+        } else {
+        	// set extreme Hills to temp 0.2
+        	biomeTemperature.setField(Biomes.EXTREME_HILLS, 0.2f);
+        	biomeTemperature.setField(Biomes.EXTREME_HILLS_EDGE, 0.2f);
+        	biomeTemperature.setField(Biomes.EXTREME_HILLS_WITH_TREES, 0.2f);
+        	biomeTemperature.setField(Biomes.MUTATED_EXTREME_HILLS, 0.2f);
+        	biomeTemperature.setField(Biomes.MUTATED_EXTREME_HILLS_WITH_TREES, 0.2f);
+        }
+        
         for (BiomeSettings biomeSettings: settings().biomeSettings()) {
             biomeSettings.setRules(newRules);
         }
-        List<BiomeGenBase> villageSpawnBiomes = new ArrayList<BiomeGenBase>();
+        List<Biome> villageSpawnBiomes = new ArrayList<Biome>();
         for (int i = 0 ; i < 256;i++) {
             if (newRules.hasVillages(i)) {
-                villageSpawnBiomes.add(BiomeGenBase.getBiomeGenArray()[i]);
+                villageSpawnBiomes.add(Biome.getBiome(i));
             }
         }
         VillageBiomes villageBiomes = new VillageBiomes(villageSpawnBiomes);
         villageBiomes.reportMembers();
         if (settings.controlVillageBiomes.value()) {
-            MapGenVillage.villageSpawnBiomes = villageBiomes;
+            MapGenVillage.VILLAGE_SPAWN_BIOMES = villageBiomes;
         }
         rules = newRules;
     }
@@ -90,7 +104,7 @@ abstract public class AbstractWorldGenerator {
     abstract GenLayerRiverMix fromSeed(long worldSeed, WorldType worldType);
 
     public int rtgAwareRiverReduction(int baseReduction, WorldType worldType) {
-        if (worldType.getWorldTypeName().equalsIgnoreCase("RTG")) return 100;
+        if (worldType.getName().equalsIgnoreCase("RTG")) return 100;
         return baseReduction;
     }
     
@@ -106,7 +120,6 @@ abstract public class AbstractWorldGenerator {
     public GenLayerRiverMix oneSevenExpansion(long worldSeed, WorldType par2WorldType,
             GenLayer genlayer3,ClimateControlSettings settings){
         byte b0 = settings().biomeSize.value().byteValue();
-        ClimateControl.logger.info("biome size "+b0);
 
         GenLayer genlayer = GenLayerZoom.magnify(1000L, genlayer3, 0);
         GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, genlayer);
@@ -123,6 +136,10 @@ abstract public class AbstractWorldGenerator {
         object = new GenLayerBiomeEdge(1000L, object);
 
         GenLayer genlayer1 = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
+        for (BiomeSettings setting: settings.biomeSettings()) {
+        	// note the default routine just returns the passed GenLayer
+        	genlayer1 = setting.subBiomeEdges(1030, genlayer1, settings.maximumBiomes());
+        }
         GenLayer genlayerhills = new GenLayerSubBiome(1000L, object, genlayer1,subBiomeChooser,mBiomeChooser,
                 settings().doBoPSubBiomes());
 
@@ -138,6 +155,10 @@ abstract public class AbstractWorldGenerator {
 
             if (j == 0)
             {
+                for (BiomeSettings setting: settings.biomeSettings()) {
+                	// note the default routine just returns the passed GenLayer
+                	object = setting.subBiomeEdges(1030, object, settings.maximumBiomes());
+                }
                 object = new GenLayerAddIsland(3L, (GenLayer)object);
             }
 

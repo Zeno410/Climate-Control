@@ -2,7 +2,7 @@
 package climateControl.customGenLayer;
 
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Receiver;
+import com.Zeno410Utils.Receiver;
 import net.minecraft.world.gen.layer.GenLayer;
 
 /**

@@ -5,12 +5,14 @@ package climateControl.customGenLayer;
  * it also calls the BoP subbiome replacer after determining the subbiome, if BoP is on
  */
 
+import com.Zeno410Utils.IntRandomizer;
+import com.Zeno410Utils.Zeno410Logger;
 import climateControl.generator.BiomeSwapper;
 import climateControl.generator.SubBiomeChooser;
+import climateControl.biomeSettings.BiomeReplacer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
-import climateControl.utils.Zeno410Logger;
 import java.util.logging.Logger;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -49,7 +51,7 @@ public class GenLayerSubBiome extends GenLayerPack{
         int[] aint2 = IntCache.getIntCache(par3 * par4);
         poison(aint2,par3 * par4);
         for (int i =0; i <  (par3+2)*(par4+2); i ++) {
-            if (biomeVals[i]>256) throw new RuntimeException(""+biomeVals[i]);
+            //if (biomeVals[i]>256) throw new RuntimeException(""+biomeVals[i]);
         }
 
         for (int i1 = 0; i1 < par4; ++i1)

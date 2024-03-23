@@ -1,9 +1,10 @@
 
 package climateControl.customGenLayer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
-import net.minecraft.world.biome.BiomeGenBase;
-
+import climateControl.ClimateControl;
+import net.minecraft.init.Biomes;
 
 /**
  * Sets ocean areas to deep ocean if they have no land next to them
@@ -59,7 +60,7 @@ public class GenLayerContinentalShelf extends GenLayer {
 
                 if (k3 == 0 && l3 > 7)
                 {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.deepOcean.biomeID;
+                    aint1[j2 + i2 * par3] = Biome.getIdForBiome(Biomes.DEEP_OCEAN);
                 }
                 else
                 {

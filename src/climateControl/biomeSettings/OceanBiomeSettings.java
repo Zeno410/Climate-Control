@@ -4,7 +4,7 @@ package climateControl.biomeSettings;
 import climateControl.api.BiomeSettings;
 import climateControl.api.ClimateControlRules;
 import climateControl.api.ClimateDistribution;
-import climateControl.utils.Mutable;
+import com.Zeno410Utils.Mutable;
 import java.io.File;
 
 /**

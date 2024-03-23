@@ -1,9 +1,8 @@
 
 package climateControl;
 
-import climateControl.utils.PlaneLocation;
-import climateControl.utils.Accessor;
-import climateControl.utils.Named;
+import com.Zeno410Utils.Accessor;
+import com.Zeno410Utils.Named;
 import climateControl.api.BiomeSettings;
 import climateControl.api.CCDimensionSettings;
 import climateControl.api.ClimateControlSettings;
@@ -15,26 +14,28 @@ import climateControl.generator.CorrectedContinentsGenerator;
 import climateControl.generator.OneSixCompatibleGenerator;
 import climateControl.generator.TestGeneratorPair;
 import climateControl.generator.VanillaCompatibleGenerator;
-import climateControl.utils.ChunkGeneratorExtractor;
-import climateControl.utils.ChunkLister;
-import climateControl.utils.ConfigManager;
-import climateControl.utils.TaggedConfigManager;
-import climateControl.utils.Zeno410Logger;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import climateControl.utils.BiomeConfigManager;
+import com.Zeno410Utils.Zeno410Logger;
+import com.Zeno410Utils.ChunkGeneratorExtractor;
+import com.Zeno410Utils.ChunkLister;
+import com.Zeno410Utils.Maybe;
+import com.Zeno410Utils.PlaneLocation;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.logging.Logger;
-import net.minecraft.init.Blocks;
+import net.minecraft.init.Biomes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.WorldChunkManager;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -42,11 +43,9 @@ import net.minecraft.world.gen.feature.WorldGeneratorBonusChest;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.GenLayerRiverMix;
 import net.minecraft.world.gen.layer.IntCache;
-import net.minecraft.world.gen.structure.MapGenVillage;
 import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.ChestGenHooks;
-import static net.minecraftforge.common.ChestGenHooks.BONUS_CHEST;
-import net.minecraftforge.common.config.Configuration;
+import net.minecraft.util.math.BlockPos;
+//import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.terraingen.WorldTypeEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -62,10 +61,12 @@ public class DimensionManager {
 
     private final ClimateControlSettings newSettings;
     private final CCDimensionSettings dimensionSettings;
-    private GenLayerUpdater genLayerUpdater = new GenLayerUpdater();
+    private final Named<ClimateControlSettings> masterSettings;
+    //private GenLayerUpdater genLayerUpdater = new GenLayerUpdater();
 
-    public DimensionManager(ClimateControlSettings newSettings,CCDimensionSettings dimensionSettings,MinecraftServer server) {
-        this.newSettings = newSettings;
+    public DimensionManager(Named<ClimateControlSettings> masterSettings,CCDimensionSettings dimensionSettings,MinecraftServer server) {
+        this.masterSettings = masterSettings;
+        this.newSettings = masterSettings.object;
         this.dimensionSettings = dimensionSettings;
         if (server == null) {
             this.configDirectory= null;
@@ -73,7 +74,7 @@ public class DimensionManager {
             return;
         }
         this.configDirectory= server.getFile("config");
-        this.suggestedConfigFile = new File(configDirectory,"climatecontrol.cfg");
+        this.suggestedConfigFile = new File(configDirectory,"geographicraft.cfg");
     }
     
     private GenLayerRiverMix patchedGenLayer(ClimateControlSettings settings,
@@ -127,36 +128,30 @@ public class DimensionManager {
     private HashMap<Integer,ClimateControlSettings> dimensionalSettings = new HashMap<Integer,ClimateControlSettings>();
     private HashMap<Integer,GenLayerRiverMixWrapper> wrappers = new HashMap<Integer,GenLayerRiverMixWrapper>();
 
-    private GenLayerRiverMixWrapper riverLayerWrapper(int dimension) {
-        GenLayerRiverMixWrapper result = wrappers.get(dimension);
-        if (result == null) {
-            result = new GenLayerRiverMixWrapper(0L);
-            result.setOriginal(original);
-            wrappers.put(dimension,result);
-        }
-        return result;
-    }
-
     private final File suggestedConfigFile;
     private final File configDirectory;
     
-    private TaggedConfigManager addonConfigManager = 
-            new TaggedConfigManager("climatecontrol.cfg","ClimateControl");
+    private BiomeConfigManager addonConfigManager =
+            new BiomeConfigManager("GeographiCraft");
 
-    private ClimateControlSettings defaultSettings(MinecraftFilesAccess dimension, boolean newWorld) {
-        ClimateControlSettings result = defaultSettings(newWorld);
+    private ClimateControlSettings defaultSettings(MinecraftFilesAccess dimension, boolean newWorld, WorldType worldType) {
+        ClimateControlSettings result = defaultSettings(newWorld, worldType);
         //logger.info(dimension.baseDirectory().getAbsolutePath());
         if (!dimension.baseDirectory().exists()) {
             dimension.baseDirectory().mkdir();
             if (!dimension.baseDirectory().exists()) {
             }
         }
-        Configuration workingConfig = new Configuration(suggestedConfigFile);
+        Named<ClimateControlSettings> dimensionSetting = Named.from(masterSettings.name, result);
+        addonConfigManager.updateConfig(dimensionSetting, configDirectory, dimension.configDirectory());
+        /*Configuration workingConfig = new Configuration(suggestedConfigFile);
         workingConfig.load();
         ConfigManager<ClimateControlSettings> workingConfigManager = new ConfigManager<ClimateControlSettings>(
         workingConfig,result,suggestedConfigFile);
         workingConfigManager.setWorldFile(dimension.baseDirectory());
-        workingConfigManager.saveWorldSpecific();
+        workingConfigManager.saveWorldSpecific();*/
+
+        addonConfigManager.saveConfigs(configDirectory, dimension.configDirectory(), dimensionSetting);
 
         for (Named<BiomeSettings> addonSetting: result.registeredBiomeSettings()) {
             addonConfigManager.initializeConfig(addonSetting, configDirectory);
@@ -169,11 +164,10 @@ public class DimensionManager {
         return result;
     }
 
-    private ClimateControlSettings defaultSettings(boolean newWorld) {
-        ClimateControlSettings result = new ClimateControlSettings();
-        Configuration workingConfig = new Configuration(suggestedConfigFile);
-        workingConfig.load();
-        result.readFrom(workingConfig);
+    private ClimateControlSettings defaultSettings(boolean newWorld, WorldType worldType) {
+        ClimateControlSettings result = new ClimateControlSettings(worldType);
+        Named<ClimateControlSettings> namedResult = Named.from(ClimateControl.geographicraftConfigName, result);
+        addonConfigManager.initializeConfig(namedResult, configDirectory);
         result.setDefaults(configDirectory);
         for (Named<BiomeSettings> addonSetting: result.registeredBiomeSettings()) {
             if (newWorld) addonSetting.object.onNewWorld();
@@ -184,10 +178,10 @@ public class DimensionManager {
         return result;
     }
 
-    private ClimateControlSettings dimensionalSettings(DimensionAccess dimension, boolean newWorld) {
+    private ClimateControlSettings dimensionalSettings(DimensionAccess dimension, boolean newWorld, WorldType worldType) {
         ClimateControlSettings result = dimensionalSettings.get(dimension.dimension);
         if (result == null) {
-            result = defaultSettings(dimension,newWorld);
+            result = defaultSettings(dimension,newWorld,worldType);
             DimensionalSettingsRegistry.instance.modify(dimension.dimension, result);
             dimensionalSettings.put(dimension.dimension,result);
         }
@@ -210,22 +204,23 @@ public class DimensionManager {
     public void onBiomeGenInit(WorldTypeEvent.InitBiomeGens event) {
         // skip if ignoring
 
-        ClimateControlSettings generationSettings = defaultSettings(true);
+        ClimateControlSettings generationSettings = defaultSettings(true,event.getWorldType());
         // this only gets used for new worlds,
         //when WorldServer is initializing and there are no spawn chunks yet
         generationSettings.onNewWorld();
-        if (this.ignore(event.worldType,this.newSettings)) return;
-        MinecraftServer server = MinecraftServer.getServer();
+        if (this.ignore(event.getWorldType(),this.newSettings)){
+            return;
+        }
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         if (server== null) {
-            original = event.originalBiomeGens[0];
-            riverLayerWrapper(0).setOriginal(event.originalBiomeGens[0]);
-            riverLayerWrapper(0).useOriginal();
+            original = event.getOriginalBiomeGens()[0];
+            // maybe no longer necessary
             return;
         }
 
         // get overworld dimension;
         boolean newWorld = true;
-        for (WorldServer worldServer: server.worldServers){
+        for (WorldServer worldServer: server.worlds){
             if (worldServer.getTotalWorldTime()>0 ) newWorld = false;
         }
         //logger.info(worldType.getTranslateName());
@@ -234,20 +229,18 @@ public class DimensionManager {
         //logBiomes();
         //this.activeRiverMix = (GenLayerRiverMix)(event.originalBiomeGens[0]);
 
-        original = event.originalBiomeGens[0];
-        riverLayerWrapper(0).setOriginal(event.originalBiomeGens[0]);
+        original = event.getOriginalBiomeGens()[0];
+        GenLayerRiverMixWrapper result = new GenLayerRiverMixWrapper(event.getSeed(),original,this);
 
         if (generationSettings.noGenerationChanges.value()) {
-            event.newBiomeGens = riverLayerWrapper(0).modifiedGenerators();
-            riverLayerWrapper(0).useOriginal();
+            event.setNewBiomeGens(result.modifiedGenerators()) ;
+            event.setResult(WorldTypeEvent.Result.ALLOW);
             return;
-        } else {
-            // continue below
-        }
+        } //implied else
         if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-            GenLayerRiverMix patched = patchedGenLayer(generationSettings, event.worldType, event.seed);
-            riverLayerWrapper(0).setRedirection(patched);
-            event.newBiomeGens = riverLayerWrapper(0).modifiedGenerators();
+            GenLayerRiverMix patched = patchedGenLayer(generationSettings, event.getWorldType(), event.getSeed());
+            //riverLayerWrapper(0).setRedirection(patched);
+            event.setNewBiomeGens(result.modifiedGenerators());
             event.setResult(WorldTypeEvent.Result.ALLOW);
         } else {
             //riverLayerWrapper(0).useOriginal();
@@ -270,50 +263,56 @@ public class DimensionManager {
             if (considered.equals(WorldType.DEFAULT_1_1)) return false;
             if (considered.equals(WorldType.LARGE_BIOMES)) return false;
         }
+        if (settings.interveneInCustomizedWorlds.value()) {
+            if (considered.equals(WorldType.CUSTOMIZED)) return false;
+        }
         if (considered.equals(WorldType.FLAT)) return true;
+        if (considered.getName().equalsIgnoreCase("TerrainControl")) return false;
         if (settings.interveneInBOPWorlds.value()) {
-            if (considered.getWorldTypeName().equalsIgnoreCase("BIOMESOP")) return false;
+            if (considered.getName().equalsIgnoreCase("BIOMESOP")) return false;
         }
         if (settings.interveneInHighlandsWorlds.value()) {
 
-            if (considered.getWorldTypeName().equalsIgnoreCase("Highlands")) return false;
-            if (considered.getWorldTypeName().equalsIgnoreCase("HighlandsLB")) return false;
+            if (considered.getName().equalsIgnoreCase("Highlands")) return false;
+            if (considered.getName().equalsIgnoreCase("HighlandsLB")) return false;
         }
         if (true) {
-            if (considered.getWorldTypeName().equalsIgnoreCase("FWG")) return false;
+            if (considered.getName().equalsIgnoreCase("FWG")) return false;
         }
 
-        if (considered.getWorldTypeName().equalsIgnoreCase("RTG")) return false;
+        if (considered.getName().equalsIgnoreCase("RTG")) return false;
         return true;
     }
 
     public void onCreateSpawn(WorldEvent.CreateSpawnPosition event) {
-        WorldServer world = (WorldServer)(event.world);
-        if (ignore(world.provider.terrainType,this.newSettings)) {
+        WorldServer world = (WorldServer)(event.getWorld());
+        if (ignore(world.getWorldType(),this.newSettings)) {
             return;
         }
-        int dimension = world.provider.dimensionId;
+        int dimension = world.provider.getDimension();
         if (!this.dimensionSettings.ccOnIn(dimension)) {
             if (!DimensionalSettingsRegistry.instance.useCCIn(dimension)) {
                 return;
             }
         }// only change dimensions we're supposed to;
-        onWorldLoad(event.world);
-        salvageSpawn(event.world);
-        if (event.settings.isBonusChestEnabled()) {
+        onWorldLoad(event.getWorld());
+        salvageSpawn(event.getWorld());
+        if (event.getSettings().isBonusChestEnabled()) {
             Random rand = new Random(world.getSeed());
-            WorldGeneratorBonusChest worldgeneratorbonuschest =
-                    new WorldGeneratorBonusChest(ChestGenHooks.getItems(BONUS_CHEST, rand), ChestGenHooks.getCount(BONUS_CHEST, rand));
-;
+            WorldGeneratorBonusChest worldgeneratorbonuschest =new WorldGeneratorBonusChest();
 
             for (int i = 0; i < 100; ++i){
                 int j = world.getWorldInfo().getSpawnX() + rand.nextInt(6+i/10) - rand.nextInt(6+i/10);
                 int k = world.getWorldInfo().getSpawnZ() + rand.nextInt(6+i/10) - rand.nextInt(6+i/10);
 
-                int l = world.getTopSolidOrLiquidBlock(j, k)+1;
+                BlockPos topBlockSpot = new BlockPos(j,world.getActualHeight()-1,k);
+                while (!world.getBlockState(topBlockSpot).isSideSolid(world, topBlockSpot, EnumFacing.UP)) {
+                    topBlockSpot = topBlockSpot.down();
+                }
+                BlockPos above = topBlockSpot.up();
 
-                if (world.getBlock(j, l, k).equals(Blocks.air)){
-                    if (worldgeneratorbonuschest.generate(world, rand, j, l, k)) break;
+                if (world.getBlockState(above).getBlock().isAir(world.getBlockState(above),world, above)){
+                    if (worldgeneratorbonuschest.generate(world, rand, above)) break;
                 }
             }
         }
@@ -323,34 +322,23 @@ public class DimensionManager {
     private HashSet<Integer> dimensionsDone = new HashSet<Integer>();
 
     public void onWorldLoad(World world) {
-        //logger.info(world.provider.terrainType.getWorldTypeName()+ " "+ world.provider.dimensionId);
-        if (dimensionsDone.contains(world.provider.dimensionId)) return;
-        dimensionsDone.add(world.provider.dimensionId);
-        if (ignore(world.provider.terrainType,this.newSettings)) {
-            return;
+        // functionalty moved
+    }
+
+    public Maybe<GenLayerRiverMix> getGeographicraftGenlayers(WorldServer world, int dimension, GenLayer original) {
+        // returns the geographicraft layers if appropriate. 
+        // If not and chunk wall prevention is on, installs chunk layer prevention into the originals
+
+        if (ignore(world.getWorldType(),this.newSettings)) {
+            return Maybe.unknown();
         }
-        int dimension = world.provider.dimensionId;
-        //logger.info(""+this.dimensionSettings.ccOnIn(dimension));
+        
         if (!this.dimensionSettings.ccOnIn(dimension)) {
             if (!DimensionalSettingsRegistry.instance.useCCIn(dimension)) {
-                return;
+                return Maybe.unknown();
             }
-        }// only change dimensions we're supposed to;
-        if (world.isRemote) {
-            return;
         }
-        // pull out the Chunk Generator
-        // this whole business will crash if things aren't right. Probably the best behavior,
-        // although a polite message might be appropriate
-
-        // salvage spawn if new world
-
-        // do nothing for client worlds
-
-        if (!(world instanceof WorldServer)) return;
-
-        WorldServer worldServer = (WorldServer)(world);
-        DimensionAccess dimensionAccess = new DimensionAccess(dimension,worldServer);
+        DimensionAccess dimensionAccess = new DimensionAccess(dimension,world);
 
         long worldSeed = world.getSeed();
         if (world instanceof WorldServer&&worldSeed!=0)  {
@@ -361,78 +349,55 @@ public class DimensionManager {
                 // new world
                 newWorld = true;
             }
-            currentSettings = dimensionalSettings(dimensionAccess,newWorld);
+            currentSettings = dimensionalSettings(dimensionAccess,newWorld,world.getWorldType());
             //logger.info(""+dimension +" "+ currentSettings.snowyIncidence.value() +" "+ currentSettings.coolIncidence.value());
 
-            riverLayerWrapper(dimension).setOriginal(original);
-
             try {
-                GenLayerRiverMix patched = patchedGenLayer(currentSettings,world.provider.terrainType,worldSeed);
+                GenLayerRiverMix patched = patchedGenLayer(currentSettings,world.getWorldType(),worldSeed);
                 if (patched != null) {
-                    riverLayerWrapper(dimension).setRedirection(patched);
-                    genLayerUpdater.update(this.riverLayerWrapper(dimension), world.provider);
-                    this.riverLayerWrapper(dimension).lock(dimension, world,currentSettings);
+                    //genLayerUpdater.update(this.riverLayerWrapper(dimension), world.provider);
+                    
+                    // locking has to get a "normal" GenLayer with a "normal" parent
+                        Accessor<GenLayerRiverMix,GenLayer> riverMixBiome =
+                        new Accessor<GenLayerRiverMix,GenLayer>("field_75910_b");
+                        GenLayer lockable = riverMixBiome.get((GenLayerRiverMix)patched);
+                    new LockGenLayers().lock(lockable, dimension, world, currentSettings);
+                    
+                    return Maybe.definitely(patched);
                 } else {
                     // lock manually
                     LockGenLayers biomeLocker = new LockGenLayers();
-                    WorldChunkManager chunkGenerator = world.getWorldChunkManager();
-                    Accessor<WorldChunkManager,GenLayer> worldGenLayer =
-                        new Accessor<WorldChunkManager,GenLayer>("field_76944_d");
-                    GenLayer toLock = worldGenLayer.get(chunkGenerator);
-                    if (toLock instanceof GenLayerRiverMixWrapper) {
-                       toLock = original;
-                    }
                         Accessor<GenLayerRiverMix,GenLayer> riverMixBiome =
                         new Accessor<GenLayerRiverMix,GenLayer>("field_75910_b");
-                        toLock = riverMixBiome.get((GenLayerRiverMix)toLock);
-                    biomeLocker.lock(toLock, dimension, world, currentSettings);
+                        original = riverMixBiome.get((GenLayerRiverMix)original);
+                    biomeLocker.lock(original, dimension, world, currentSettings);
+                    return Maybe.unknown();
                 }
-            if (currentSettings.vanillaLandAndClimate.value() == false){
-                if (currentSettings.noGenerationChanges.value() == false) {
-                    //logger.info(new ChunkGeneratorExtractor().extractFrom((WorldServer)world).toString());
-                    try {
-                        new ChunkGeneratorExtractor().impose((WorldServer) world, new MapGenVillage());
-                    } catch (Exception e) {
-                    } catch (NoClassDefFoundError e) {
-                    }
-                    if(world.getWorldInfo().getWorldTotalTime()<40000) {
-                        ArrayList<PlaneLocation> existingChunks =
-                        new ChunkLister().savedChunks(levelSavePath((WorldServer)world));
-                        logger.info("existing chunks:"+existingChunks.size());
-                        //world.provider.worldChunkMgr.
-                        //salvageSpawn(world);
-                    }
-                }
-            }
             } catch (Exception e) {
                 logger.info(e.toString());
                 logger.info(e.getMessage());
-                throw new RuntimeException(e);
+                return Maybe.unknown();
             } catch (Error e) {
                 logger.info(e.toString());
                 logger.info(e.getMessage());
+                return Maybe.unknown();
             }
-            logger.info("start rescued");
-        } else {
-            genLayerUpdater.update(this.riverLayerWrapper(dimension), world.provider);
-            LockGenLayer.logger.info(world.toString());
-            /*
-            if (!(world instanceof WorldClient)) {
-                logger.info("World Client problem");
-                throw new RuntimeException();
-                //logger.info("locking "+riverLayerWrapper.forLocking().toString());
-                //this.biomeLocker.lock(riverMixBiome.get(activeRiverMix), dimension, this.servedWorlds.get(dimension),newSettings);
-            } else {
-                //logger.info("client world");
-            }*/
-            //this.riverMixBiome.setField(this.vanillaGenLayer,replacement);
-            //this.riverMixRiver.setField(this.vanillaGenLayer,replacement);
-
+            //logger.info("start rescued");
         }
-        //this.biomeLocker.showGenLayers(accessGenLayer.get(world.provider.worldChunkMgr));
+        return Maybe.unknown();
     }
+    
+    private String controllingGenLayer(World world) {
+        BiomeProvider chunkManager = world.getBiomeProvider();
 
+        Accessor<BiomeProvider,GenLayer> worldGenLayer =
+            new Accessor<BiomeProvider,GenLayer>("field_76944_d");
+
+        return worldGenLayer.get(chunkManager).toString();
+
+    }
    PlaneLocation lastTry = new PlaneLocation(Integer.MIN_VALUE,Integer.MIN_VALUE);
+
 
     private void salvageSpawn(World world) {
         WorldInfo info = world.getWorldInfo();
@@ -447,7 +412,7 @@ public class DimensionManager {
         int spawnX = 0;
         int spawnZ = 0;
         int spawnY = 0;
-        BiomeGenBase checkSpawn = world.getBiomeGenForCoords(x, z);
+        Biome checkSpawn = world.getBiomeForCoordsBody(new BlockPos(x,64,z));
         int nextTry = 50;
         int nextTryIncrement = 80;
         int nextTryStretch = 20;
@@ -469,7 +434,8 @@ public class DimensionManager {
                 //spiral out around spawn;
             if (checked > 50) {
                 if (chunkServer != null) {
-                    chunkServer.unloadAllChunks();
+                    chunkServer.queueUnloadAll();
+                    chunkServer.chunkLoader.flush();
                     //chunkServer.unloadQueuedChunks();
                 }
                 checked = 0;
@@ -506,20 +472,19 @@ public class DimensionManager {
                 IntCache.resetIntCache();
                 logger.info("checking for spawn at "+ (x+xMove*16) + ","+ (z+zMove*16) + "move " + move
                         + " ring "+ ring + " inRing " + inRing+ " caches " + IntCache.getCacheSizes()
-                        + " dimension " + world.provider.dimensionId);
-                checkSpawn = world.getBiomeGenForCoords(x+xMove*16, z+zMove*16);
+                        + " dimension " + world.provider.getDimension());
+                checkSpawn = world.getBiomeForCoordsBody(new BlockPos(x+xMove*16, 64, z+zMove*16));
             //}
             //int spawnY = checkSpawn.getHeightValue(8,8);
             spawnX = x+xMove*16;
             spawnZ = z+zMove*16;
             logger.info("setting spawn at "+ spawnX + ","+ spawnZ);
-            if (checkSpawn.biomeID == BiomeGenBase.mushroomIsland.biomeID) continue;
-            spawnY = world.getTopSolidOrLiquidBlock(spawnX, spawnZ)+1;
+            if (checkSpawn == Biomes.MUSHROOM_ISLAND) continue;
+            spawnY = world.getTopSolidOrLiquidBlock(new BlockPos(spawnX, 64, spawnZ)).getY()+1;
             PlaneLocation newLocation = new PlaneLocation(spawnX,spawnZ);
-            logger.info(lastTry.toString()+ newLocation.toString());
             if (newLocation.equals(lastTry)) break;
         }
-        world.setSpawnLocation(spawnX,spawnY,spawnZ);
+        world.setSpawnPoint(new BlockPos(spawnX,spawnY,spawnZ));
     }
 
     private String levelSavePath(WorldServer world) {
@@ -530,17 +495,17 @@ public class DimensionManager {
     private boolean hasOnlySea(Chunk tested) {
         byte [] biomes = tested.getBiomeArray();
         for (byte biome: biomes) {
-            if (biome == BiomeGenBase.ocean.biomeID) continue;
-            if (biome == BiomeGenBase.deepOcean.biomeID) continue;
+            if (biome == 0) continue;
+            if (biome == Biome.getIdForBiome(Biomes.DEEP_OCEAN)) continue;
             return false;
         }
         return true;
     }
 
-    private boolean isSea(BiomeGenBase tested) {
-        if (tested.biomeID == BiomeGenBase.ocean.biomeID) return true;
-        if (tested.biomeID == BiomeGenBase.deepOcean.biomeID) return true;
-        if (tested.biomeID == BiomeGenBase.mushroomIsland.biomeID) return true;
+    private boolean isSea(Biome tested) {
+        if (tested == Biomes.OCEAN) return true;
+        if (tested == Biomes.DEEP_OCEAN) return true;
+        if (tested == Biomes.MUSHROOM_ISLAND) return true;
         return false;
     }
 }

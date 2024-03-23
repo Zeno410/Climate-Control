@@ -24,6 +24,7 @@ import net.minecraft.world.gen.layer.GenLayerFuzzyZoom;
 import net.minecraft.world.gen.layer.GenLayerHills;
 import net.minecraft.world.gen.layer.GenLayerIsland;
 import net.minecraft.world.WorldType;
+import net.minecraft.world.gen.ChunkGeneratorSettings;
 import net.minecraft.world.gen.layer.GenLayerRareBiome;
 import net.minecraft.world.gen.layer.GenLayerRemoveTooMuchOcean;
 import net.minecraft.world.gen.layer.GenLayerRiver;
@@ -82,7 +83,6 @@ public class OneSixCompatibleGenerator extends AbstractWorldGenerator {
         GenLayerDeepOcean genlayerdeepocean = new GenLayerDeepOcean(4L, genlayeraddmushroomisland);
         GenLayer genlayer3 = GenLayerZoom.magnify(1000L, genlayerdeepocean, 0);
         byte b0 = settings().biomeSize.value().byteValue();
-        ClimateControl.logger.info("biome size "+b0);
 
         GenLayer genlayer = GenLayerZoom.magnify(1000L, genlayer3, 0);
         GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, genlayer);
@@ -233,7 +233,7 @@ public class OneSixCompatibleGenerator extends AbstractWorldGenerator {
 
         GenLayer genlayer = GenLayerZoom.magnify(1000L, genlayer3, 0);
         GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, genlayer);
-        Object object = new GenLayerBiome(par0, genlayer3,WorldType.DEFAULT);
+        Object object = new GenLayerBiome(par0, genlayer3,WorldType.DEFAULT, ChunkGeneratorSettings.Factory.jsonToFactory("").build());
 
         GenLayer genlayer1 = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         GenLayerHills genlayerhills = new GenLayerHills(1000L, (GenLayer)object, genlayer1);

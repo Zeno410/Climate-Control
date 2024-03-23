@@ -4,13 +4,13 @@
 
 package climateControl.api;
 
-import climateControl.utils.Numbered;
-import net.minecraft.world.biome.BiomeGenBase;
+import com.Zeno410Utils.Numbered;
+import net.minecraft.world.biome.Biome;
 
 /**
  *
  * @author Zeno410
  */
 public interface IncidenceModifier {
-    public int modifiedIncidence(Numbered<BiomeGenBase> biomeIncidence);
+    public int modifiedIncidence(Numbered<Biome> biomeIncidence);
 }

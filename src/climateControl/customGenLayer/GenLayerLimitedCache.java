@@ -1,7 +1,7 @@
 package climateControl.customGenLayer;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.PlaneLocated;
-import climateControl.utils.PlaneLocation;
+import com.Zeno410Utils.PlaneLocated;
+import com.Zeno410Utils.PlaneLocation;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 import net.minecraft.world.gen.layer.GenLayer;

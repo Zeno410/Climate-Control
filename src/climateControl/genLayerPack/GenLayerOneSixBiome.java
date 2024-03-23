@@ -2,17 +2,18 @@
 package climateControl.genLayerPack;
 
 import com.google.common.collect.ObjectArrays;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerOneSixBiome extends GenLayer
 {
     /** this sets all the biomes that are allowed to appear in the overworld */
-    private BiomeGenBase[] allowedBiomes;
-    public static final BiomeGenBase[] base11Biomes = new BiomeGenBase[] {BiomeGenBase.desert, BiomeGenBase.forest, BiomeGenBase.extremeHills, BiomeGenBase.swampland, BiomeGenBase.plains, BiomeGenBase.coldTaiga};
-    public static final BiomeGenBase[] base12Biomes = ObjectArrays.concat(base11Biomes, BiomeGenBase.jungle);
+    private Biome[] allowedBiomes;
+    public static final Biome[] base11Biomes = new Biome[] {Biomes.DESERT, Biomes.FOREST, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.PLAINS, Biomes.COLD_TAIGA};
+    public static final Biome[] base12Biomes = ObjectArrays.concat(base11Biomes, Biomes.JUNGLE);
 
     public GenLayerOneSixBiome(long par1, GenLayer par3GenLayer, WorldType par4WorldType) {
         super(par1);
@@ -42,25 +43,25 @@ public class GenLayerOneSixBiome extends GenLayer
                 {
                     aint1[j1 + i1 * par3] = 0;
                 }
-                else if (k1 == BiomeGenBase.mushroomIsland.biomeID)
+                else if (k1 == Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND))
                 {
                     aint1[j1 + i1 * par3] = k1;
                 }
                 else if (k1 == 1)
                 {
-                    aint1[j1 + i1 * par3] = this.allowedBiomes[this.nextInt(this.allowedBiomes.length)].biomeID;
+                    aint1[j1 + i1 * par3] = Biome.getIdForBiome(this.allowedBiomes[this.nextInt(this.allowedBiomes.length)]);
                 }
                 else
                 {
-                    int l1 = this.allowedBiomes[this.nextInt(this.allowedBiomes.length)].biomeID;
+                    int l1 = Biome.getIdForBiome(this.allowedBiomes[this.nextInt(this.allowedBiomes.length)]);
 
-                    if (l1 == BiomeGenBase.coldTaiga.biomeID)
+                    if (l1 == Biome.getIdForBiome(Biomes.COLD_TAIGA))
                     {
                         aint1[j1 + i1 * par3] = l1;
                     }
                     else
                     {
-                        aint1[j1 + i1 * par3] = BiomeGenBase.icePlains.biomeID;
+                        aint1[j1 + i1 * par3] = Biome.getIdForBiome(Biomes.ICE_PLAINS);
                     }
                 }
             }

@@ -10,12 +10,17 @@ import climateControl.customGenLayer.GenLayerMountainChains;
 import climateControl.genLayerPack.GenLayerRiverInit;
 import climateControl.genLayerPack.GenLayerSmooth;
 import climateControl.genLayerPack.GenLayerZoom;
-import climateControl.utils.Numbered;
-import climateControl.utils.StringWriter;
+import com.Zeno410Utils.Numbered;
+import com.Zeno410Utils.StringWriter;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import net.minecraft.world.biome.BiomeGenBase;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraftforge.common.BiomeDictionary;
 
@@ -54,7 +59,7 @@ public class MountainFormer extends DistributionPartitioner {
         result = new GenLayerMountainChains(3005L,result);
         result = new GenLayerLimitedCache(result,64);
 
-        //result = reportOn(result, "mountains.txt");
+        result = reportOn(result, "mountains.txt");
         return result;
     }
 
@@ -77,73 +82,125 @@ public class MountainFormer extends DistributionPartitioner {
         return result;
     }
 
+    //This grim hack is required because forge changed a name
+     public static Method getBiomeTypeMethod() {
+        // hunts through the class object and all superclasses looking for the field name
+            Method method = null;
+            {try {
+                method = BiomeDictionary.class.getMethod("isBiomeOfType", Biome.class, BiomeDictionary.Type.class);
+            } catch (NoSuchMethodException noSuchMethodException) {
+                try {
+                    method = BiomeDictionary.class.getMethod("hasType", Biome.class, BiomeDictionary.Type.class);
+                } catch (NoSuchMethodException ex) {
+                    Logger.getLogger(MountainFormer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SecurityException ex) {
+                    Logger.getLogger(MountainFormer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (SecurityException securityException) {
+            }
+        }
+            return method;
+    }
+
     private static class MountainModifier implements IncidenceModifier {
+
+        Method method;
         private final boolean mesaMountains;
         MountainModifier(boolean mesaMountains) {
+            method = getBiomeTypeMethod();
             this.mesaMountains = mesaMountains;
         }
 
-        public int modifiedIncidence(Numbered<BiomeGenBase> biomeIncidence) {
-            BiomeGenBase biome = biomeIncidence.item();
-            // increase mountains;
-            if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MOUNTAIN)) {
-                // multiply by 4
-                return biomeIncidence.count()*4;
-            }
-            // check that extreme hills are a mountain biome
-            if (biomeIncidence.item().biomeID == BiomeGenBase.extremeHills.biomeID) {
-                return biomeIncidence.count()*4;
-            }
-            if (mesaMountains) {
-                if (biomeIncidence.item().equals(BiomeGenBase.mesaPlateau)||biomeIncidence.item().equals(BiomeGenBase.mesaPlateau_F)) {
-                        return biomeIncidence.count() * 4;
+        public int modifiedIncidence(Numbered<Biome> biomeIncidence) {
+            try {
+                Biome biome = biomeIncidence.item();
+                // increase mountains;
+                Boolean isMountain = (Boolean) method.invoke(null, biome, BiomeDictionary.Type.MOUNTAIN);
+                if (isMountain) {
+                    //if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MOUNTAIN)) {
+                    // multiply by 4
+                    return biomeIncidence.count() * 4;
                 }
+                // check that extreme hills are a mountain biome
+                if (biomeIncidence.item() == Biomes.EXTREME_HILLS) {
+                    return biomeIncidence.count() * 4;
+                }
+                if (mesaMountains) {
+                    if (biomeIncidence.item() == Biomes.MESA_CLEAR_ROCK||biomeIncidence.item() == Biomes.MESA_ROCK) {
+                        return biomeIncidence.count() * 4;
+                    }
+                }
+                // Hills unaffected
+                Boolean isHill = (Boolean) method.invoke(null, biome, BiomeDictionary.Type.HILLS);
+                if (isHill) {
+                    return biomeIncidence.count();
+                }
+                // Oceans unaffected
+                Boolean isOcean = (Boolean) method.invoke(null, biome, BiomeDictionary.Type.OCEAN);
+                if (isOcean) {
+                    // multiply by 4
+                    return biomeIncidence.count();
+                }
+                // everything else suppressed;
+                return 0;
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex);
             }
-            // Hills unaffected
-            if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.HILLS)) {
-                // multiply by 4
-                return biomeIncidence.count();
-            }
-            // Oceans unaffected
-            if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN)) {
-                // multiply by 4
-                return biomeIncidence.count();
-            }
-            // everything else suppressed;
-            return 0;
         }
     }
 
     private static class LowlandModifier implements IncidenceModifier {
         private final boolean mesaMountains;
+        Method method;
         LowlandModifier(boolean mesaMountains) {
+            method = getBiomeTypeMethod();
             this.mesaMountains = mesaMountains;
         }
-        public int modifiedIncidence(Numbered<BiomeGenBase> biomeIncidence) {
-            BiomeGenBase biome = biomeIncidence.item();
-            // erase mountains;
-            if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MOUNTAIN)) {
-                 return 0;
-            }
-            // check that extreme hills are a mountain biome
-            if (biomeIncidence.item().biomeID == BiomeGenBase.extremeHills.biomeID) {
-                return 0;
-            }
-            if (mesaMountains) {
-                if (biomeIncidence.item().equals(BiomeGenBase.mesaPlateau)||biomeIncidence.item().equals(BiomeGenBase.mesaPlateau_F)) {
+
+        public int modifiedIncidence(Numbered<Biome> biomeIncidence) {
+            try {
+                Biome biome = biomeIncidence.item();
+                // erase mountains;
+                Boolean isMountain = (Boolean) method.invoke(null, biome, BiomeDictionary.Type.MOUNTAIN);
+                if (isMountain) {
+                    //if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MOUNTAIN)) {
+                    // multiply by 4
                     return 0;
                 }
+                // check that extreme hills are a mountain biome
+                if (biomeIncidence.item() == Biomes.EXTREME_HILLS) {
+                    return 0;
+                }
+                if (mesaMountains) {
+                    if (biomeIncidence.item() == Biomes.MESA_CLEAR_ROCK||biomeIncidence.item() == Biomes.MESA_ROCK) {
+                        return 0;
+                    }
+                }
+                // Hills unaffected
+                Boolean isHill = (Boolean) method.invoke(null, biome, BiomeDictionary.Type.HILLS);
+                if (isHill) {
+                    // multiply by 4
+                    return biomeIncidence.count();
+                }
+                // Oceans unaffected
+                Boolean isOcean = (Boolean) method.invoke(null, biome, BiomeDictionary.Type.OCEAN);
+                if (isOcean) {
+                    // multiply by 4
+                    return biomeIncidence.count();
+                }
+                // everything else increased slightly;
+                return (biomeIncidence.count()*4)/3;
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvocationTargetException ex) {
+                throw new RuntimeException(ex);
             }
-            // Hills unaffected
-            if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.HILLS)) {
-                return biomeIncidence.count();
-            }
-            // Oceans unaffected
-            if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN)) {
-                return biomeIncidence.count();
-            }
-            // everything else increased slightly;
-            return (biomeIncidence.count()*4)/3;
         }
     }
 

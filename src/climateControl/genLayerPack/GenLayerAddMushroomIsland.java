@@ -1,5 +1,6 @@
 package climateControl.genLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -39,7 +40,7 @@ public class GenLayerAddMushroomIsland extends GenLayerPack
 
                 if (k3 == 0 && k2 == 0 && l2 == 0 && i3 == 0 && j3 == 0 && this.nextInt(100) == 0)
                 {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.mushroomIsland.biomeID;
+                    aint1[j2 + i2 * par3] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND);
                 }
                 else
                 {

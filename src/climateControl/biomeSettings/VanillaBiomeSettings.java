@@ -1,12 +1,15 @@
 
 package climateControl.biomeSettings;
 
+import climateControl.ClimateControl;
 import climateControl.api.BiomeSettings;
 import climateControl.api.Climate;
 import climateControl.api.ClimateControlRules;
 import climateControl.api.ClimateDistribution;
-import climateControl.utils.Mutable;
+import com.Zeno410Utils.Mutable;
 import java.io.File;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.config.Configuration;
 
 /**
@@ -48,6 +51,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     public static final String taigaName="Taiga (snowless)";
 
     public static final String biomeCategory = "VanillaBiome";
+    
 
     Element birchForest = new Element(birchForestName, 27, 10,Climate.WARM.name);
     Element coldTaiga = new Element(coldTaigaName,30 , 10,Climate.SNOWY.name);
@@ -55,7 +59,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     Element extremeHills = new Element(extremeHillsName,3 , 20,ClimateDistribution.MEDIUM.name());
     Element forest = new Element(forestName,4 , 20,ClimateDistribution.MEDIUM.name());
     Element icePlains = new Element(icePlainsName,12 , 30,Climate.SNOWY.name);
-    Element jungle = new Element(jungleName,21, 5,Climate.WARM.name);
+    Element jungle = new Element(jungleName,21, 5,Climate.HOT.name);
     Element megaTaiga = new Element(megaTaigaName,32, 5,Climate.COOL.name);
     Element mesaPlateau = new Element(mesaPlateauName,39, 1,Climate.HOT.name);
     Element mesaPlateau_F = new Element(mesaPlateau_FName,38, 4,Climate.HOT.name);
@@ -70,6 +74,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     ID forestHills = new ID("Forest Hills",18);
     ID taigaHills = new ID("Taiga Hills",19);
     ID jungleHills = new ID("Jungle Hills",22);
+    ID jungleEdge = new ID("Jungle Edge",23);
     ID birchForestHills = new ID("Birch Forest Hills",28);
     ID coldTaigaHills = new ID("Cold Taiga Hills",31);
     ID megaTaigaHills = new ID("Mega Taiga Hills",33);
@@ -118,10 +123,84 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
         jungle.setSubBiome(jungleHills);
         extremeHills.setSubBiome(extremeHillsPlus);
         savanna.setSubBiome(savannaPlateau);
-        mesaPlateau_F.setSubBiome(mesa);
+        mesaPlateau_F.setSubBiome(mesa);   
 
     }
 
+    private void setComplexSubbiomes() {
+    	{
+        	BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+        	subBiomes.add(forestHills, 2);
+        	subBiomes.add(plains, 1);
+        	subBiomes.add(extremeHills, 1);
+        	forest.setSubBiomeChooser(subBiomes);
+    	}
+    	{
+        	BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+        	subBiomes.add(birchForestHills, 2);
+        	subBiomes.add(plains, 1);
+        	subBiomes.add(extremeHills, 1);
+            birchForest.setSubBiomeChooser(subBiomes);
+    	}
+    	{
+        	BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+        	subBiomes.add(forestHills, 2);
+        	subBiomes.add(forest, 2);
+        	subBiomes.add(birchForestHills, 1);
+        	subBiomes.add(birchForest, 1);
+        	subBiomes.add(extremeHills, 3);
+        	plains.setSubBiomeChooser(subBiomes);
+    	}
+    	{
+        	BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+        	subBiomes.add(roofedForest, 1);
+        	subBiomes.add(extremeHills, 1);
+        	subBiomes.add(swampland, 3);
+        	swampland.setSubBiomeChooser(subBiomes);
+    	}
+    	{
+    	    BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+	    	subBiomes.add(taigaHills, 3);
+	    	subBiomes.add(plains, 1);
+	    	subBiomes.add(extremeHills, 1);
+	    	taiga.setSubBiomeChooser(subBiomes);
+	    }
+    	{
+    	    BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+	    	subBiomes.add(megaTaigaHills, 3);
+	    	subBiomes.add(plains, 1);
+	    	subBiomes.add(extremeHills, 1);
+	    	megaTaiga.setSubBiomeChooser(subBiomes);
+	    }
+    	{
+    	    BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+	    	subBiomes.add(coldTaigaHills, 3);
+	    	subBiomes.add(plains, 1);
+	    	subBiomes.add(iceMountains, 1);
+	    	coldTaiga.setSubBiomeChooser(subBiomes);
+	    }
+    	{
+    	    BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+	    	subBiomes.add(coldTaigaHills, 1);
+	    	subBiomes.add(icePlains, 1);
+	    	subBiomes.add(iceMountains, 3);
+	    	icePlains.setSubBiomeChooser(subBiomes);
+	    }
+    	{
+    	    BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+	    	subBiomes.add(desertHills, 3);
+	    	subBiomes.add(plains, 1);
+	    	desert.setSubBiomeChooser(subBiomes);
+	    }
+    	{
+	    	BiomeReplacer.Variable subBiomes = new BiomeReplacer.Variable();
+	    	subBiomes.add(jungleHills, 3);
+	    	subBiomes.add(this.jungleEdge, 1);
+	    	jungle.setSubBiomeChooser(subBiomes);
+	    }
+	    	
+    	
+    }
     @Override
     public void setNativeBiomeIDs(File configDirectory) {
         // never anything to do in vanilla
@@ -131,9 +210,16 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     public void setRules(ClimateControlRules rules) {
         setVillages(rules);
         rules.disallowStoneBeach(mesaPlateau.biomeID().value());
-        rules.disallowStoneBeach(mesaPlateau_F.biomeID().value());
+        rules.disallowStoneBeach(this.mesaPlateau_F.biomeID().value());
         // nothing yet
+        
+// replace if complex
+        
+        if (rules.moreComplexSubbiomes()) {
+        	setComplexSubbiomes();
+        } 
     }
+    
     static final String biomesOnName = "VanillaBiomesOn";
 
     public final Mutable<Boolean> biomesFromConfig = climateControlCategory.booleanSetting(
@@ -156,6 +242,7 @@ public class VanillaBiomeSettings extends BiomeSettings {    // biome incidences
     public void forceIceMountains() {
         if (iceMountains.biomeIncidences().value() <10) {
             iceMountains.biomeIncidences().set(10);
-        }
+        } 
     }
+
 }

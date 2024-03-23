@@ -2,16 +2,33 @@
 package climateControl.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * This class can partition an arbitrary biome distribution into sub-distributions
+ * This class can partition an arbitrary biome distributions into sub-distributions
  * Uses are mountain/lowlands, wet/moist/arid, etc.
  * @author Zeno410
  */
 public abstract class DistributionPartitioner {
+
+    private static HashMap<String,DistributionPartitioner> registered =
+            new HashMap<String,DistributionPartitioner>();
+    public static void register(String name, DistributionPartitioner partitioner) {
+        if (registered.containsKey(name)) {
+            throw new RuntimeException("Partitioner "+name+ " already registered");
+        }
+        registered.put(name, partitioner);
+    }
+
+    public static Collection<DistributionPartitioner> registeredPartitioners() {
+        return registered.values();
+    }
+
+    public static void unregister(String name) {
+        registered.remove(name);
+    }
 
     protected final ArrayList<IncidenceModifier> modifiers;
 

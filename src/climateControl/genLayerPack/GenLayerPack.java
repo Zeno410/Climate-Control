@@ -5,14 +5,15 @@ package climateControl.genLayerPack;
  * also run Climate Control in an altered form of Amidst by just changing imports
  * I can also fiddle with the parent layer, which is sometimes useful.
  */
-import climateControl.utils.Receiver;
-import climateControl.utils.StringWriter;
+import com.Zeno410Utils.Receiver;
+import com.Zeno410Utils.StringWriter;
 import java.io.File;
 import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.WorldType;
 
@@ -125,7 +126,7 @@ public abstract class GenLayerPack extends GenLayer
     public abstract int[] getInts(int var1, int var2, int var3, int var4);
 
     /**
-     * returns true if the biomeIDs are equal, or returns the result of the comparison as per BiomeGenBase.isEqualTo
+     * returns true if the biomeIDs are equal, or returns the result of the comparison as per Biome.isEqualTo
      */
     protected static boolean compareBiomesById(final int p_151616_0_, final int p_151616_1_)
     {
@@ -133,11 +134,11 @@ public abstract class GenLayerPack extends GenLayer
         {
             return true;
         }
-        else if (p_151616_0_ != BiomeGenBase.mesaPlateau_F.biomeID && p_151616_0_ != BiomeGenBase.mesaPlateau.biomeID)
+        else if (p_151616_0_ != Biome.getIdForBiome(Biomes.MESA_ROCK) && p_151616_0_ != Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK))
         {
             try
             {
-                return BiomeGenBase.getBiome(p_151616_0_) != null && BiomeGenBase.getBiome(p_151616_1_) != null ? BiomeGenBase.getBiome(p_151616_0_).equals(BiomeGenBase.getBiome(p_151616_1_)) : false;
+                return Biome.getBiome(p_151616_0_) != null && Biome.getBiome(p_151616_1_) != null ? Biome.getBiome(p_151616_0_).equals(Biome.getBiome(p_151616_1_)) : false;
             }
             catch (Throwable throwable)
             {
@@ -145,20 +146,20 @@ public abstract class GenLayerPack extends GenLayer
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Biomes being compared");
                 crashreportcategory.addCrashSection("Biome A ID", Integer.valueOf(p_151616_0_));
                 crashreportcategory.addCrashSection("Biome B ID", Integer.valueOf(p_151616_1_));
-                crashreportcategory.addCrashSectionCallable("Biome A", new Callable()
+                crashreportcategory.addCrashSection("Biome A", new Callable()
                 {
                     private static final String __OBFID = "CL_00000560";
                     public String call()
                     {
-                        return String.valueOf(BiomeGenBase.getBiome(p_151616_0_));
+                        return String.valueOf(Biome.getBiome(p_151616_0_));
                     }
                 });
-                crashreportcategory.addCrashSectionCallable("Biome B", new Callable()
+                crashreportcategory.addCrashSection("Biome B", new Callable()
                 {
                     private static final String __OBFID = "CL_00000561";
                     public String call()
                     {
-                        return String.valueOf(BiomeGenBase.getBiome(p_151616_1_));
+                        return String.valueOf(Biome.getBiome(p_151616_1_));
                     }
                 });
                 throw new ReportedException(crashreport);
@@ -166,7 +167,7 @@ public abstract class GenLayerPack extends GenLayer
         }
         else
         {
-            return p_151616_1_ == BiomeGenBase.mesaPlateau_F.biomeID || p_151616_1_ == BiomeGenBase.mesaPlateau.biomeID;
+            return p_151616_1_ == Biome.getIdForBiome(Biomes.MESA_ROCK) || p_151616_1_ == Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK);
         }
     }
 
@@ -175,14 +176,14 @@ public abstract class GenLayerPack extends GenLayer
      */
     protected static boolean isBiomeOceanic(int id)
     {
-        if (id>255) return false;// oddly the below returns true for all id>255
-        return id == BiomeGenBase.ocean.biomeID || id == BiomeGenBase.deepOcean.biomeID || id == BiomeGenBase.frozenOcean.biomeID;
+        //if (id>255) return false;// oddly the below returns true for all id>255
+        return id == Biome.getIdForBiome(Biomes.OCEAN) || id == Biome.getIdForBiome(Biomes.DEEP_OCEAN) || id == Biome.getIdForBiome(Biomes.FROZEN_OCEAN);
     }
     protected static boolean isOceanic(int id)
     {
-        if (id==BiomeGenBase.frozenOcean.biomeID) return true;
-        if (id>255) return false;// oddly the below returns true for all id>255
-        return id == BiomeGenBase.ocean.biomeID || id == BiomeGenBase.deepOcean.biomeID || id == BiomeGenBase.frozenOcean.biomeID;
+        if (id==Biome.getIdForBiome(Biomes.FROZEN_OCEAN)) return true;
+        //if (id>255) return false;// oddly the below returns true for all id>255
+        return id == Biome.getIdForBiome(Biomes.OCEAN) || id == Biome.getIdForBiome(Biomes.DEEP_OCEAN) || id == Biome.getIdForBiome(Biomes.FROZEN_OCEAN);
         //throw new RuntimeException();
     }
 
@@ -206,7 +207,7 @@ public abstract class GenLayerPack extends GenLayer
     {
         WorldTypeEvent.BiomeSize event = new WorldTypeEvent.BiomeSize(worldType, original);
         MinecraftForge.TERRAIN_GEN_BUS.post(event);
-        return event.newSize;
+        return (byte)event.getNewSize();
     }
 
     public void report(File file, int [] toReport, int length, int width) {

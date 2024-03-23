@@ -1,16 +1,23 @@
 package climateControl.api;
 
 import climateControl.biomeSettings.*;
-import climateControl.utils.Mutable;
-import climateControl.utils.Settings;
+import com.Zeno410Utils.Mutable;
+import com.Zeno410Utils.Settings;
 import climateControl.generator.BiomeSwapper;
 import climateControl.generator.SubBiomeChooser;
 import java.io.File;
 import java.util.ArrayList;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.BiomeGenBase.TempCategory;
-import climateControl.utils.Zeno410Logger;
+import java.util.Iterator;
+
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biome.TempCategory;
+import net.minecraft.world.gen.layer.GenLayer;
+
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
+
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldType;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 
@@ -19,15 +26,37 @@ import net.minecraftforge.common.config.Configuration;
  * @author Zeno410
  */
 abstract public class BiomeSettings extends Settings {
-
-    public static final Logger logger = new Zeno410Logger("BiomeSettings").logger();
+    
+    public static int extractBiomeID(String biomeTag) {
+        Iterator<ResourceLocation> registries = Biome.REGISTRY.getKeys().iterator();
+        while (registries.hasNext()) {
+        	ResourceLocation location = registries.next();
+        	if (location.toString().equals(biomeTag)) {
+                return Biome.getIdForBiome(Biome.REGISTRY.getObject(location));
+        	}
+        }
+        return -1;// not found tag
+    }
+    
+    public static int highestBiomeID() {
+        Iterator<ResourceLocation> registries = Biome.REGISTRY.getKeys().iterator();
+        int result = 256;
+        while (registries.hasNext()) {
+        	ResourceLocation location = registries.next();
+        	Biome biome = Biome.REGISTRY.getObject(location);
+        	int ID  = Biome.REGISTRY.getIDForObject(biome);
+        	result = Math.max(result, ID);
+        }
+        return result;
+    }
+    
     private final ArrayList<Element> elements = new ArrayList<Element>();
     private final ArrayList<ID> ids = new ArrayList<ID>();
     private final Category idCategory;
     private final Category incidenceCategory;
     private final Category villagesCategory;
     private final Category climateCategory;
-    public final Category climateControlCategory = category("Assorted Parameters");
+    protected final Category climateControlCategory = category("Assorted Parameters");
 
 
     public BiomeSettings (String categoryName) {
@@ -35,7 +64,7 @@ abstract public class BiomeSettings extends Settings {
         incidenceCategory = category(categoryName+"Incidences");
         villagesCategory = category(categoryName+"Villages");
         climateCategory = category(categoryName+"Climates","Climate Types are: SNOWY,COOL,WARM,HOT,OCEAN,DEEP_OCEAN"+
-                "MEDIUM,PLAINS,LAND.  MEDIUM is COOL and WARM, PLAINS is COOL and WARM and HOT, LAND is all four land");
+                "MEDIUM,PLAINS,LAND, and SEA.  MEDIUM is COOL and WARM, PLAINS is COOL and WARM and HOT, LAND is all four land, SEA is both oceans");
     }
 
     public ArrayList<Element> elements() {return elements;}
@@ -80,31 +109,35 @@ abstract public class BiomeSettings extends Settings {
             this.MBiome = MBiome;
         }
 
-        public void setIDFrom(BiomeGenBase biome) {
+        public void setIDFrom(Biome biome) {
             try {
-                if (BiomeGenBase.getBiomeGenArray()[biome.biomeID].equals(biome)) {
-                    biomeID().set(biome.biomeID);
+                if (Biome.getBiome(Biome.getIdForBiome(biome)).equals(biome)) {
+                    biomeID().set(Biome.getIdForBiome(biome));
                 } else biomeID().set(-1);
                 //ClimateControl.logger.info(name + " set to "+biomeID().value());
             } catch (NullPointerException e) {
                 biomeID().set(-1);
                 //ClimateControl.logger.info(name + " disabled");
+            } catch (IllegalStateException e) {
+                biomeID().set(-1);
             }
         }
         
+        public void setIDFrom(String biomeRegistryName) {
+        	biomeID().set(extractBiomeID(biomeRegistryName));
+        }
+        
+        
+        
         public boolean active() {
             if (biomeID.value() <0) return false;
-            if (BiomeGenBase.getBiomeGenArray()[biomeID.value()] == null) return false;
-            int oldID = BiomeGenBase.getBiomeGenArray()[biomeID.value()].biomeID;
-            if (oldID != biomeID.value()) {
-                String text = " Attempted to use biome "+this.name + " at ID + " + biomeID.value() 
-                        + " but that biome is assigned to "+oldID;
-                throw new RuntimeException(text);
-            }
+            if (Biome.getBiome(biomeID.value())== null) return false;
             return true;
         }
 
         private BiomeReplacer subBiomeChooser = BiomeReplacer.noChange;
+
+        public BiomeReplacer subBiomeChooser() {return subBiomeChooser;}
 
         public void setSubBiomeChooser(BiomeReplacer subBiomeChooser) {
             this.subBiomeChooser = subBiomeChooser;
@@ -117,11 +150,11 @@ abstract public class BiomeSettings extends Settings {
         private ClimateDistribution defaultDistribution() {
             TempCategory temp = null;
             try {
-                temp = BiomeGenBase.getBiomeGenArray()[biomeID().value()].getTempCategory();
+                temp = Biome.getBiome(biomeID().value()).getTempCategory();
                 //ClimateControl.logger.info(" temp for "+this.name + " biome id" + biomeID().value());
-                if (temp == BiomeGenBase.TempCategory.COLD) return ClimateDistribution.SNOWY;
-                if (temp == BiomeGenBase.TempCategory.MEDIUM) return ClimateDistribution.MEDIUM;
-                if (temp == BiomeGenBase.TempCategory.WARM) return ClimateDistribution.HOT;
+                if (temp == Biome.TempCategory.COLD) return ClimateDistribution.SNOWY;
+                if (temp == Biome.TempCategory.MEDIUM) return ClimateDistribution.MEDIUM;
+                if (temp == Biome.TempCategory.WARM) return ClimateDistribution.HOT;
             } catch (Exception e) {
                 //ClimateControl.logger.info("temp for " + name + " error " + e.toString());
             }
@@ -197,6 +230,11 @@ abstract public class BiomeSettings extends Settings {
 
     }
 
+    public boolean activeIn(WorldType worldType) {
+        // currently used for BoP to exclude from non-BoP non-RTG worldTypes
+        return true;
+    }
+    
     public class NoTempSetting extends RuntimeException {}
 
     protected ID M(ID original, String name) {
@@ -294,15 +332,21 @@ abstract public class BiomeSettings extends Settings {
     public abstract boolean biomesAreActive();
 
     public void report() {}
+    
+    // this is a hook for biome settings to put in edges on their biomes
+    public GenLayer subBiomeEdges(long seed, GenLayer parent, int biomeCount) {
+    	return parent;
+    }
+
+    // stub for settings to adjust one another (for subbiomes at present)
+    public void arrangeInteractions(ArrayList<BiomeSettings> biomeSettings) {}
 
     public void nameDefaultClimates() {
         for (ID element: this.ids) {
             if (element.climate.value().equalsIgnoreCase("DEFAULT")) {
                 int biomeID = element.biomeID().value();
                 if (biomeID <0) continue;
-                if (biomeID >255) continue;
-                BiomeGenBase biome = BiomeGenBase.getBiomeGenArray()[biomeID];
-                //if (biome == null) continue;\
+                if (biomeID >1024) continue;
                 try {
                     ClimateDistribution distribution = element.defaultDistribution();
                     element.setDistribution(distribution);

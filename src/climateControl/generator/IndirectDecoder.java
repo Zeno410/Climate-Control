@@ -1,7 +1,7 @@
 
 package climateControl.generator;
 
-import climateControl.utils.Acceptor;
+import com.Zeno410Utils.Acceptor;
 
 /**
  *

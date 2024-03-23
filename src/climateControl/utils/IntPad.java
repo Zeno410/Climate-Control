@@ -4,7 +4,7 @@ package climateControl.utils;
 import java.util.WeakHashMap;
 
 /**
- * Ant int array scratchpad
+ * An int array scratchpad
  * @author Zeno410
  */
 public class IntPad {

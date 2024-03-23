@@ -1,10 +1,10 @@
 
 package climateControl.api;
 
-import climateControl.utils.Numbered;
+import com.Zeno410Utils.Numbered;
 import java.util.ArrayList;
 import java.util.Collection;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 /**
  *
@@ -24,6 +24,7 @@ public class ClimateDistribution {
     public static ClimateDistribution OCEAN = new ClimateDistribution(Climate.OCEAN,"OCEAN");
     public static ClimateDistribution DEEP_OCEAN = new ClimateDistribution(Climate.DEEP_OCEAN,"DEEP_OCEAN");
     public static ClimateDistribution LAND = new ClimateDistribution(Climate.SNOWY,Climate.COOL,Climate.WARM,Climate.HOT,"LAND");
+    public static ClimateDistribution SEA = new ClimateDistribution(Climate.OCEAN,Climate.DEEP_OCEAN,"SEA");
 
     public ClimateDistribution(Climate base,String name){
         climates.add(base);

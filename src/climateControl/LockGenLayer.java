@@ -1,20 +1,17 @@
 
 package climateControl;
 
-import climateControl.utils.Accessor;
-import climateControl.utils.ChunkLister;
-import climateControl.utils.Maker;
-import climateControl.utils.PlaneLocated;
-import climateControl.utils.PlaneLocation;
-import climateControl.utils.SavedNumberedItems;
-import climateControl.utils.Streamer;
-import climateControl.utils.Zeno410Logger;
-import climateControl.customGenLayer.GenLayerBiomeByClimate;
+import com.Zeno410Utils.Accessor;
+import com.Zeno410Utils.Zeno410Logger;
 import climateControl.customGenLayer.GenLayerCache;
 import climateControl.customGenLayer.GenLayerLock;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Acceptor;
-import climateControl.utils.Filter;
+import com.Zeno410Utils.Acceptor;
+import com.Zeno410Utils.Filter;
+import com.Zeno410Utils.Maker;
+import com.Zeno410Utils.PlaneLocated;
+import com.Zeno410Utils.SavedNumberedItems;
+import com.Zeno410Utils.Streamer;
 import java.util.logging.Logger;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.layer.GenLayer;
@@ -78,7 +75,7 @@ public class LockGenLayer extends SavedNumberedItems<PlaneLocated<Integer>>{
         GenLayer current = null;
         while (parent != null) {
             current = parent;
-            //logger.info(current.toString());
+            logger.info(current.toString());
             parent = parent(current);
             if (this.targetLayerDetector.accepts(parent)) {
                 logger.info("locking with exclusion "+exclusion);

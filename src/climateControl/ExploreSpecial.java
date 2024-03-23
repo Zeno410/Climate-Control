@@ -1,7 +1,7 @@
 
 package climateControl;
 
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.Zeno410Logger;
 import java.util.logging.Logger;
 
 /**

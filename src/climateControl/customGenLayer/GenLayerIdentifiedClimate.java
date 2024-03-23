@@ -3,12 +3,14 @@ package climateControl.customGenLayer;
 import climateControl.ClimateControl;
 import climateControl.api.ClimateControlSettings;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.Numbered;
-import climateControl.utils.PlaneLocation;
-import climateControl.utils.Zeno410Logger;
+import com.Zeno410Utils.Numbered;
+import com.Zeno410Utils.PlaneLocation;
+import com.Zeno410Utils.Zeno410Logger;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 
 /**
@@ -66,7 +68,7 @@ public class GenLayerIdentifiedClimate extends GenLayerPack {
                 int k2 = parentVals[parentX  + (parentZ) * parentXSize];
                 setFromParentCoords(k2,parentX,parentZ,xSize,zSize,vals);
                 if (k2 > 4) {
-                    if ((k2 != 24)&&(k2!=BiomeGenBase.mushroomIsland.biomeID)) {
+                    if ((k2 != 24)&&(k2!=Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND))) {
                         if (ClimateControl.testing) {
                             ClimateControl.logger.info("GenLayerSmoothClimate "+k2);
                             throw new RuntimeException("GenLayerSmoothClimate "+k2);

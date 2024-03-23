@@ -1,10 +1,13 @@
 package climateControl.genLayerPack;
+import climateControl.api.BiomeSettings;
 import net.minecraft.world.gen.layer.GenLayer;
+import net.minecraft.world.gen.layer.IntCache;
 
 public class GenLayerSmooth extends GenLayerPack
 {
     private static final String __OBFID = "CL_00000569";
     private boolean onlyBiomes = false;
+	private int maxBiomeID = BiomeSettings.highestBiomeID();
 
     public GenLayerSmooth(long par1, GenLayer par3GenLayer)
     {
@@ -74,14 +77,14 @@ public class GenLayerSmooth extends GenLayerPack
 
                 aint1[j2 + i2 * par3] = k3;
                 if (onlyBiomes) {
-                    if (k3>255) throw new RuntimeException("i2 "+i2 + " j2 "+j2 + " k2 " + k2 + " l2 " + l2 +
+                    if (k3>maxBiomeID) throw new RuntimeException("i2 "+i2 + " j2 "+j2 + " k2 " + k2 + " l2 " + l2 +
                         " i3 " + i3 + " j3 " + j3 + " k3 " + k3 + " orig "+ aint[j2 + 1 + (i2 + 1) * k1]);
                 }
             }
         }
         if (onlyBiomes) {
             for (int i = 0; i < par3 * par4;i++) {
-                if (aint1[i]>255) throw new RuntimeException();
+                if (aint1[i]>maxBiomeID) throw new RuntimeException();
             }
         }
         taste(aint1,par3*par4);

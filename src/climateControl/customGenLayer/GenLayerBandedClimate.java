@@ -5,8 +5,9 @@ import climateControl.api.Climate;
 import climateControl.api.ClimateControlSettings;
 import climateControl.api.IslandClimateMaker;
 import climateControl.genLayerPack.GenLayerPack;
-import climateControl.utils.IntRandomizer;
-import net.minecraft.world.biome.BiomeGenBase;
+import com.Zeno410Utils.IntRandomizer;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -68,7 +69,7 @@ public class GenLayerBandedClimate extends GenLayerPack implements IslandClimate
                 }
                 if (aint[j1 + i1 * par3] == 0) {
                     if (this.frozenIcecaps&&bandClimate[band]==4) {
-                        aint1[j1 + i1 *par3] = BiomeGenBase.frozenOcean.biomeID;
+                        aint1[j1 + i1 *par3] = Biome.getIdForBiome(Biomes.FROZEN_OCEAN);
                     } else {
                         aint1[j1 + i1 *par3] = 0;
                     }

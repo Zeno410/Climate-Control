@@ -1,7 +1,8 @@
 
 package climateControl.customGenLayer;
 import climateControl.genLayerPack.GenLayerPack;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -34,7 +35,7 @@ public class GenLayerOceanicMushroomIsland extends GenLayerPack
         int[] aint = this.parent.getInts(i1, j1, k1, l1);
         int[] aint1 = IntCache.getIntCache(par3 * par4);
 
-        int deepOcean = BiomeGenBase.deepOcean.biomeID;
+        int deepOcean = Biome.getIdForBiome(Biomes.DEEP_OCEAN);
 
         for (int i2 = 0; i2 < par4; ++i2)
         {
@@ -49,7 +50,7 @@ public class GenLayerOceanicMushroomIsland extends GenLayerPack
 
                 if (k3 == deepOcean && k2 == deepOcean && l2 == deepOcean && i3 == deepOcean && j3 == deepOcean && this.nextInt(1000) <incidence)
                 {
-                    aint1[j2 + i2 * par3] = BiomeGenBase.mushroomIsland.biomeID;
+                    aint1[j2 + i2 * par3] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND);
                 }
                 else
                 {

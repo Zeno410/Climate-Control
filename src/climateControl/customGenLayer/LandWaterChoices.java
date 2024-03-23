@@ -1,7 +1,7 @@
 
 package climateControl.customGenLayer;
 
-import climateControl.utils.IntRandomizer;
+import com.Zeno410Utils.IntRandomizer;
 
 /**
  *

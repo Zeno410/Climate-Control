@@ -1,9 +1,8 @@
 
 package climateControl.api;
 
-import climateControl.utils.Maybe;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import java.util.HashMap;
 import net.minecraftforge.event.world.WorldEvent;
 

@@ -1,7 +1,7 @@
 
 package climateControl.api;
 
-import climateControl.utils.Named;
+import com.Zeno410Utils.Named;
 
 /**
  *

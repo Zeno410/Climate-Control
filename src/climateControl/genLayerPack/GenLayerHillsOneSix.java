@@ -1,7 +1,8 @@
 
 package climateControl.genLayerPack;
 
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.gen.layer.IntCache;
 
@@ -33,29 +34,29 @@ public class GenLayerHillsOneSix extends GenLayer
                 {
                     int l1 = k1;
 
-                    if (k1 == BiomeGenBase.desert.biomeID)
+                    if (k1 == Biome.getIdForBiome(Biomes.DESERT))
                     {
-                        l1 = BiomeGenBase.desertHills.biomeID;
+                        l1 =Biome.getIdForBiome(Biomes.DESERT_HILLS);
                     }
-                    else if (k1 == BiomeGenBase.forest.biomeID)
+                    else if (k1 == Biome.getIdForBiome(Biomes.FOREST))
                     {
-                        l1 = BiomeGenBase.forestHills.biomeID;
+                        l1 =Biome.getIdForBiome(Biomes.FOREST_HILLS);
                     }
-                    else if (k1 == BiomeGenBase.taiga.biomeID)
+                    else if (k1 == Biome.getIdForBiome(Biomes.TAIGA))
                     {
-                        l1 = BiomeGenBase.taigaHills.biomeID;
+                        l1 = Biome.getIdForBiome(Biomes.TAIGA_HILLS);
                     }
-                    else if (k1 == BiomeGenBase.plains.biomeID)
+                    else if (k1 == Biome.getIdForBiome(Biomes.PLAINS))
                     {
-                        l1 = BiomeGenBase.forest.biomeID;
+                        l1 = Biome.getIdForBiome(Biomes.FOREST);
                     }
-                    else if (k1 == BiomeGenBase.icePlains.biomeID)
+                    else if (k1 == Biome.getIdForBiome(Biomes.ICE_PLAINS))
                     {
-                        l1 = BiomeGenBase.iceMountains.biomeID;
+                        l1 = Biome.getIdForBiome(Biomes.ICE_MOUNTAINS);
                     }
-                    else if (k1 == BiomeGenBase.jungle.biomeID)
+                    else if (k1 == Biome.getIdForBiome(Biomes.JUNGLE))
                     {
-                        l1 = BiomeGenBase.jungleHills.biomeID;
+                        l1 = Biome.getIdForBiome(Biomes.JUNGLE_HILLS);
                     }
 
                     if (l1 == k1)
