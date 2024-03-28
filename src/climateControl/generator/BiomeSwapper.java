@@ -9,10 +9,10 @@ import java.util.ArrayList;
  * @author Zeno410
  */
 public class BiomeSwapper {
-    private int[] swaps = new int[256];
+    private int[] swaps = new int[BiomeSettings.highestBiomeID()+1];
 
     public BiomeSwapper() {
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < swaps.length; i++) {
             swaps[i] = i;
         }
     }

@@ -105,6 +105,11 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
         GenLayer emptyOcean = new GenLayerConstant(0);
         GenLayerPack genlayerisland = new GenLayerOceanicIslands(1L,emptyOcean,settings().largeContinentFrequency.value()
                 ,this.landmassIdentifier(),separating(),"Large Continent");
+
+        if (settings().forceLargeStartContinent.value()) {
+        	genlayerisland = new GenLayerForceStartLand(genlayerisland,withoutClimates());
+        }
+        
         GenLayerPack genlayeraddisland = growRound(genlayerisland,2L,3L,climatesAssigned);
         if (separating()) {
             genlayeraddisland = new GenLayerBreakMergers(2L+1000,genlayeraddisland);
@@ -121,6 +126,10 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
                 settings().mediumContinentFrequency.value(),this.landmassIdentifier(),
                 separating(),"Medium Continent");
 
+        if (settings().forceMediumStartContinent.value()) {
+        	mediumContinents = new GenLayerForceStartLand(mediumContinents,withoutClimates());
+        }
+        
         genlayeraddisland = growRound(mediumContinents,5L,7L,climatesAssigned);
         if (separating()) {
             genlayeraddisland = new GenLayerBreakMergers(5L+1000,genlayeraddisland);
@@ -324,6 +333,17 @@ public class CorrectedContinentsGenerator extends AbstractWorldGenerator {
                 return island.climate(x,z,randomizer) + 4 *identifier.value(randomizer);
             }
         };
+    }
+    
+    private IslandClimateMaker withoutClimates() {
+    	return new IslandClimateMaker() {
+
+			@Override
+			public int climate(int x, int z, IntRandomizer randomizer) {
+				return 2;
+			}
+    		
+    	};
     }
 
     public GenLayerRiverMix climateControlExpansion(long par0, WorldType par2WorldType,

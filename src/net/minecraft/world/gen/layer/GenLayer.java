@@ -3,9 +3,11 @@ package net.minecraft.world.gen.layer;
 import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkGeneratorSettings;
 
 import net.minecraftforge.common.*;
 import net.minecraftforge.event.terraingen.*;
@@ -69,7 +71,7 @@ public abstract class GenLayer
 
         GenLayer genlayer = GenLayerZoom.magnify(1000L, genlayer3, 0);
         GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, genlayer);
-        Object object = worldType.getBiomeLayer(par0, genlayer3);
+        Object object = worldType.getBiomeLayer(par0, genlayer3,ChunkGeneratorSettings.Factory.jsonToFactory("").build());
 
         GenLayer genlayer1 = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         GenLayerHills genlayerhills = new GenLayerHills(1000L, (GenLayer)object, genlayer1);
@@ -172,7 +174,7 @@ public abstract class GenLayer
     public abstract int[] getInts(int var1, int var2, int var3, int var4);
 
     /**
-     * returns true if the biomeIDs are equal, or returns the result of the comparison as per BiomeGenBase.isEqualTo
+     * returns true if the biomeIDs are equal, or returns the result of the comparison as per Biome.isEqualTo
      */
     protected static boolean compareBiomesById(final int p_151616_0_, final int p_151616_1_)
     {
@@ -180,11 +182,11 @@ public abstract class GenLayer
         {
             return true;
         }
-        else if (p_151616_0_ != BiomeGenBase.mesaPlateau_F.biomeID && p_151616_0_ != BiomeGenBase.mesaPlateau.biomeID)
+        else if (p_151616_0_ !=Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK) && p_151616_0_ != Biome.getIdForBiome(Biomes.MESA_ROCK))
         {
             try
             {
-                return BiomeGenBase.getBiome(p_151616_0_) != null && BiomeGenBase.getBiome(p_151616_1_) != null ? BiomeGenBase.getBiome(p_151616_0_).isEqualTo(BiomeGenBase.getBiome(p_151616_1_)) : false;
+                return Biome.getBiome(p_151616_0_) != null && Biome.getBiome(p_151616_1_) != null ? Biome.getBiome(p_151616_0_).equals(Biome.getBiome(p_151616_1_)) : false;
             }
             catch (Throwable throwable)
             {
@@ -192,20 +194,20 @@ public abstract class GenLayer
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Biomes being compared");
                 crashreportcategory.addCrashSection("Biome A ID", Integer.valueOf(p_151616_0_));
                 crashreportcategory.addCrashSection("Biome B ID", Integer.valueOf(p_151616_1_));
-                crashreportcategory.addCrashSectionCallable("Biome A", new Callable()
+                crashreportcategory.addCrashSection("Biome A", new Callable()
                 {
                     private static final String __OBFID = "CL_00000560";
                     public String call()
                     {
-                        return String.valueOf(BiomeGenBase.getBiome(p_151616_0_));
+                        return String.valueOf(Biome.getBiome(p_151616_0_));
                     }
                 });
-                crashreportcategory.addCrashSectionCallable("Biome B", new Callable()
+                crashreportcategory.addCrashSection("Biome B", new Callable()
                 {
                     private static final String __OBFID = "CL_00000561";
                     public String call()
                     {
-                        return String.valueOf(BiomeGenBase.getBiome(p_151616_1_));
+                        return String.valueOf(Biome.getBiome(p_151616_1_));
                     }
                 });
                 throw new ReportedException(crashreport);
@@ -213,7 +215,7 @@ public abstract class GenLayer
         }
         else
         {
-            return p_151616_1_ == BiomeGenBase.mesaPlateau_F.biomeID || p_151616_1_ == BiomeGenBase.mesaPlateau.biomeID;
+            return p_151616_1_ == Biome.getIdForBiome(Biomes.MESA_ROCK) || p_151616_1_ == Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK);
         }
     }
 
@@ -222,7 +224,7 @@ public abstract class GenLayer
      */
     protected static boolean isBiomeOceanic(int p_151618_0_)
     {
-        return p_151618_0_ == BiomeGenBase.ocean.biomeID || p_151618_0_ == BiomeGenBase.deepOcean.biomeID || p_151618_0_ == BiomeGenBase.frozenOcean.biomeID;
+        return p_151618_0_ == Biome.getIdForBiome(Biomes.OCEAN) || p_151618_0_ == Biome.getIdForBiome(Biomes.DEEP_OCEAN) || p_151618_0_ == Biome.getIdForBiome(Biomes.FROZEN_OCEAN);
     }
 
     /**
@@ -245,6 +247,6 @@ public abstract class GenLayer
     {
         WorldTypeEvent.BiomeSize event = new WorldTypeEvent.BiomeSize(worldType, original);
         MinecraftForge.TERRAIN_GEN_BUS.post(event);
-        return event.newSize;
+        return (byte)event.getNewSize();
     }
 }

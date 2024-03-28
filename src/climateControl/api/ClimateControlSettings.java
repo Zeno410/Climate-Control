@@ -54,6 +54,8 @@ public class ClimateControlSettings extends Settings {
     private static final String interveneInCustomizedName = "alterCustomWorlds";
     private static final String controlVillageBiomesName = "controlVillageBiomes";
     private static final String wideBeachesName = "wideBeaches";
+    private static final String forceLargeStartContinentName = "forceLargeStartContinent";
+    private static final String forceMediumStartContinentName = "forceMediumStartContinent";
     private static final String forceStartContinentName = "forceStartContinent";
     private static final String cacheSizeName = "cacheSize";
     private static final String externalBiomesListName = "externalBiomeNames";
@@ -250,8 +252,14 @@ public class ClimateControlSettings extends Settings {
         interveneInCustomizedName, true, "impose GeographiCraft generation on the Customized world type");
 
     public final Mutable<Boolean> suppressInStandardWorlds = climateControlCategory.booleanSetting(
-        suppressInStandardWorldsName, false, "suppress GeographiCraft generation in default, large biomes, and amplified worlds");
-
+        suppressInStandardWorldsName, false, "suppress GeographiCraft generation in default, large biomes, and amplified worlds");    
+    
+    public final Mutable<Boolean> forceLargeStartContinent = climateControlCategory.booleanSetting(
+                forceLargeStartContinentName,false,"force large continent near origin");
+    
+    public final Mutable<Boolean> forceMediumStartContinent = climateControlCategory.booleanSetting(
+            forceMediumStartContinentName,false,"force medium continent near origin");
+    
     public final Mutable<Boolean> forceStartContinent = climateControlCategory.booleanSetting(
             forceStartContinentName,true,"force small continent near origin");
     

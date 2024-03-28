@@ -7,7 +7,10 @@ import climateControl.api.ClimateControlSettings;
 import climateControl.api.DimensionalSettingsRegistry;
 import climateControl.biomeSettings.BYGPackage;
 import climateControl.biomeSettings.BopPackage;
+import climateControl.biomeSettings.DefiledLandsPackage;
+import climateControl.biomeSettings.EnvironsPackage;
 import climateControl.biomeSettings.ExternalBiomePackage;
+import climateControl.biomeSettings.SpookyPackage;
 import climateControl.biomeSettings.ThaumcraftPackage;
 import climateControl.customGenLayer.GenLayerRiverMixWrapper;
 import climateControl.utils.BiomeConfigManager;
@@ -43,7 +46,7 @@ import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 
-@Mod(modid = "geographicraft", name = "GeographiCraft", version = "0.9.4",acceptableRemoteVersions = "*", acceptedMinecraftVersions = "[1.12,1.12.2]")
+@Mod(modid = "geographicraft", name = "GeographiCraft", version = "0.9.5",acceptableRemoteVersions = "*", acceptedMinecraftVersions = "[1.12,1.12.2]")
 
 public class ClimateControl {
     public static Logger logger = new Zeno410Logger("ClimateControlLogs").logger();
@@ -244,6 +247,16 @@ public class ClimateControl {
         if (Loader.isModLoaded("byg")) {
 
             BiomePackageRegistry.instance.register(new BYGPackage());
+        }
+        if (Loader.isModLoaded("defiledlands")) {
+
+            BiomePackageRegistry.instance.register(new DefiledLandsPackage());
+        }
+        if (Loader.isModLoaded("environs")) {
+            BiomePackageRegistry.instance.register(new EnvironsPackage());
+        }
+        if (Loader.isModLoaded("spookybiomes")) {
+            BiomePackageRegistry.instance.register(new SpookyPackage());
         }
     }
 

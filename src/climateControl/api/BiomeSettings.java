@@ -13,9 +13,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.TempCategory;
 import net.minecraft.world.gen.layer.GenLayer;
 
-import com.Zeno410Utils.Zeno410Logger;
-import java.util.logging.Logger;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -113,8 +110,9 @@ abstract public class BiomeSettings extends Settings {
             try {
                 if (Biome.getBiome(Biome.getIdForBiome(biome)).equals(biome)) {
                     biomeID().set(Biome.getIdForBiome(biome));
-                } else biomeID().set(-1);
-                //ClimateControl.logger.info(name + " set to "+biomeID().value());
+                } else {
+                    biomeID().set(-1);
+                }
             } catch (NullPointerException e) {
                 biomeID().set(-1);
                 //ClimateControl.logger.info(name + " disabled");
@@ -125,6 +123,7 @@ abstract public class BiomeSettings extends Settings {
         
         public void setIDFrom(String biomeRegistryName) {
         	biomeID().set(extractBiomeID(biomeRegistryName));
+            //Logger.debug(biomeRegistryName + " set to "+biomeID().value());
         }
         
         
